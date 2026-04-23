@@ -1,0 +1,12 @@
+{
+  "name": "rubber-duck",
+  "version": "0.0.1",
+  "description": "Spec-driven Claude Code workflows for planning, implementation, review, and safe shipping.",
+  "author": {
+    "name": "João Vilar",
+    "email": "vilarjp93@gmail.com"
+  },
+  "repository": "https://github.com/vilarjp/rubber-duck",
+  "homepage": "https://github.com/vilarjp/rubber-duck/blob/main/README.md",
+  "license": "MIT"
+}
