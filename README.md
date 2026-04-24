@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.7" src="https://img.shields.io/badge/version-0.0.7-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.0.8" src="https://img.shields.io/badge/version-0.0.8-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.

@@ -38,20 +38,26 @@ If implementation reveals a material gap or contradiction in an approved plan, d
 2. Confirm the implementable scope.
    - Prefer approved plans, diagnoses, and code-review documents when they exist.
    - Keep the change scoped to the requested behavior, bug, or review adjustment.
+   - Treat the requested behavior, approved artifact, review comment, or changed-file scope as the boundary for edits; do not modify unrelated files just because they are nearby.
+   - Inside files that must be edited, touch only the lines required for the requested behavior, tests, imports, or directly necessary integration; do not reformat, clean up, reorder, or rewrite unchanged lines opportunistically.
    - Ask the human when missing information would materially change behavior, data handling, migration needs, security posture, or the intended files to touch.
    - Record smaller uncertainties as assumptions in the final summary instead of blocking on them.
 3. Inspect the codebase and conventions.
-   - Read relevant source, tests, configuration, dependency manifests, generated artifacts, and nearby patterns before editing.
+   - Read relevant source, tests, configuration, dependency manifests, generated artifacts, and directly applicable patterns before editing.
+   - Use nearby files and unchanged lines in touched files only when they are needed to understand the requested change or local convention; do not review, critique, or opportunistically clean up unrelated nearby code.
    - Check `git status` before modifying files so unrelated user changes are preserved.
    - Work with existing user changes when they affect the task; do not revert changes you did not make.
 4. Follow TDD whenever feasible.
    - Add or adjust a focused failing test for the requested behavior before implementation when the project has a practical test harness.
    - If a failing test cannot be written first because the project has no suitable test setup, the change is documentation-only, or the cost is disproportionate, state that reason in the final summary.
-   - Keep tests focused on meaningful behavior and regression risk rather than implementation details.
+   - Keep tests targeted to meaningful behavior and regression risk; add tests only where they provide real confidence rather than broad coverage churn.
 5. Implement the smallest correct change.
    - Prefer existing helpers, patterns, frameworks, naming, layering, and file organization.
-   - Apply KISS and YAGNI.
-   - Avoid unrelated refactors, broad formatting churn, dependency additions, generated file updates, or public API changes unless required by the source context.
+   - Keep the change set small and focused: make the minimal clean change that fully solves the specific problem.
+   - Apply KISS and YAGNI; avoid speculative abstractions, broad refactors, new dependencies, architecture changes, generated file updates, or public API changes unless clearly required by the source context.
+   - Prefer early returns and guard clauses over avoidable nested branches when they make the changed code clearer.
+   - Do not introduce nested ternary expressions; use named variables, guard clauses, `if`/`else`, or small helpers instead.
+   - Avoid unrelated refactors, broad formatting churn, or cleanup that does not directly contribute to the requested fix.
    - Handle validation, errors, authorization, privacy, logging, and secrets consistently with the local stack.
 6. Verify the change with a full quality gate.
    - Run the focused test or check that covers the edited behavior.

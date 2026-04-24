@@ -14,8 +14,8 @@ Status: pending-approval
 ## Scope
 
 - Review target: local diff or GitHub PR link.
-- Changed files, commits, PR metadata, checks, comments, and related artifacts reviewed.
-- Related plan, diagnosis, PRD, or code-review document used as context, if any.
+- Review boundary: changed hunks/lines, new files, commits, PR metadata, checks, comments, and relevant untracked files reviewed.
+- Context-only files or related plan, diagnosis, PRD, or code-review document used to understand the reviewed change, if any.
 
 ## Findings
 
@@ -45,7 +45,8 @@ Write `None` when there are no material notes.
 ## Project Convention Notes
 
 - Alignment or mismatch with local naming, layering, file organization, templates, manifests, generated documents, tests, and existing project patterns.
-- Evidence from nearby files when a convention drives a recommendation.
+- Evidence from directly related context files when a convention drives a recommendation.
+- Unrelated nearby files and unchanged lines in touched files are not review targets.
 
 Write `None` when there are no material notes.
 

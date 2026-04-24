@@ -48,7 +48,7 @@ Check whether the document:
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, security, or user intent.
 - Leaves enough context for a future implementer or reviewer to act without re-discovering the same facts.
 
-For code-review documents, additionally check whether findings are specific, severity-ordered, evidence-backed, and tied to changed code or the reviewed PR.
+For code-review documents, additionally check whether findings are specific, severity-ordered, evidence-backed, and tied to changed hunks/lines, new files, or the reviewed PR. Findings should not target unrelated files or unchanged lines in touched files unless the changed code directly depends on them or newly exposes them.
 
 For diagnosis documents, additionally check whether the probable root cause is supported by investigation evidence and whether solution options are separated from confirmed facts.
 
