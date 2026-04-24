@@ -57,28 +57,27 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Prefer evidence from the repository over speculation.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
-6. Run reviewer agents on the generated `plan.md`.
-7. Run specialist reviewer agents on the generated `plan.md`.
+6. Run specialist reviewer agents on the generated `plan.md`.
    - Run `plan-future-maintainer` for future context, ambiguous decisions, aging assumptions, and concise additions.
    - Run `plan-security-reviewer` for security, privacy, compliance, authorization, validation, secrets, logging, retention, and abuse-case gaps.
    - Run `plan-staff-engineer` for stack-specific architecture risks, production bugs, compatibility concerns, observability gaps, and simpler implementation options.
    - Run these independent reviewers in parallel when the current Claude Code environment supports it.
    - Pass each reviewer the plan path, source context summary, and any relevant PRD or Jira context.
    - Do not write separate review files.
-8. Merge reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
+7. Merge reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
    - Apply blocking findings before finalizing.
    - Treat security/privacy questions, blocking findings, and human questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-9. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
+8. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
    - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, and approval readiness.
    - Merge any approval-readiness fixes before asking the human.
-10. Resolve all approval blockers before presenting the plan for approval.
-    - Ask the human follow-up questions as many times as necessary.
-    - Update `plan.md` after each answer.
-    - Rerun the affected specialist reviewers and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
-    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the plan not ready for approval.
-11. Tell the human the plan path and that it is pending approval.
+9. Resolve all approval blockers before presenting the plan for approval.
+   - Ask the human follow-up questions as many times as necessary.
+   - Update `plan.md` after each answer.
+   - Rerun the affected specialist reviewers and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
+   - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the plan not ready for approval.
+10. Tell the human the plan path and that it is pending approval.
 
 - Ask them to review it and explicitly approve or request changes.
 

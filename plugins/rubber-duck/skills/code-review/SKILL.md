@@ -82,15 +82,12 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Treat its blocking issues and missing questions as approval blockers unless the human explicitly defers them as non-blocking.
    - Preserve `document-reviewer` missing questions and approval recommendation in the Approval section when they affect human review.
 10. Resolve all approval blockers before presenting the review for approval.
-
-- Ask the human follow-up questions as many times as necessary.
-- Update `code-review.md` after each answer.
-- Rerun the affected reviewers and `document-reviewer` when an answer materially changes review scope, finding severity, security risk, test coverage, plan alignment, or approval readiness.
-- Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the review not ready for approval.
-
+   - Ask the human follow-up questions as many times as necessary.
+   - Update `code-review.md` after each answer.
+   - Rerun the affected reviewers and `document-reviewer` when an answer materially changes review scope, finding severity, security risk, test coverage, plan alignment, or approval readiness.
+   - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the review not ready for approval.
 11. Tell the human the review path and that it is pending approval.
-
-- Ask them to review it and explicitly approve or request changes.
+   - Ask them to review it and explicitly approve or request changes.
 
 ## Document Requirements
 
