@@ -46,7 +46,7 @@ Note: the local Codex `plugin-creator` skill uses `.codex-plugin`, which is not 
    - Manifest version: `0.0.1` if Claude Code validation requires SemVer without a leading `v`
 4. The technical planning skill is named `plan`.
 5. Jira links rely only on authenticated tools already available in the user's Claude Code session. Rubber Duck will not bundle Jira MCP configuration in the MVP.
-6. Automated agent reviews update the respective document instead of writing separate review files.
+6. Automated agent reviews return findings. The invoking skill owns the artifact and merges accepted findings into the document; reviewer agents must not edit files or write separate review files.
 7. Document status uses YAML frontmatter plus a visible status line.
 8. `commit-push` asks for a final explicit "yes, commit and push" after proposing commit scope and splits.
 9. Protected branches are exactly `main`, `master`, `production`, and `staging`.
@@ -54,45 +54,48 @@ Note: the local Codex `plugin-creator` skill uses `.codex-plugin`, which is not 
 11. Reviewer agents return blocking findings and non-blocking suggestions, except `document-reviewer`, which focuses only on blocking issues, missing questions, and approval recommendation.
 12. Stack-specialist agents infer the stack from repository files only.
 
-## Remaining Validation Question
+## Validated Repository Layout
 
-Session 1 must verify whether Claude Code accepts a single-plugin marketplace repo where the marketplace entry points to the repository root with `"source": "."` and the root `.claude-plugin/` directory contains both `marketplace.json` and `plugin.json`.
+Session 1 validated that the root-level single-plugin layout with `"source": "."` should not be used for this repository. Rubber Duck uses a root marketplace file that points to the nested plugin at `"source": "./plugins/rubber-duck"`, and the plugin manifest lives at `plugins/rubber-duck/.claude-plugin/plugin.json`.
 
-If validation fails, fall back to the nested `plugins/rubber-duck/` layout. If validation passes, keep the flatter root-level layout below.
+Future sessions should keep the nested layout below unless the human explicitly approves a layout migration.
 
 ## Target Repository Layout
 
-Recommended single-plugin marketplace layout:
+Chosen marketplace plus nested plugin layout:
 
 ```text
 rubber-duck/
 +-- README.md
 +-- .claude-plugin/
 |   +-- marketplace.json
-|   +-- plugin.json
-+-- skills/
-|   +-- prd/
-|   |   +-- SKILL.md
-|   +-- plan/
-|   |   +-- SKILL.md
-|   +-- implement/
-|   |   +-- SKILL.md
-|   +-- diagnosis/
-|   |   +-- SKILL.md
-|   +-- code-review/
-|   |   +-- SKILL.md
-|   +-- commit-push/
-|       +-- SKILL.md
-+-- agents/
-|   +-- document-reviewer.md
-|   +-- plan-future-maintainer.md
-|   +-- plan-security-reviewer.md
-|   +-- plan-staff-engineer.md
-|   +-- code-staff-engineer-reviewer.md
-|   +-- project-patterns-reviewer.md
-|   +-- implementation-plan-matcher.md
-|   +-- code-security-reviewer.md
-|   +-- test-reviewer.md
++-- plugins/
+|   +-- rubber-duck/
+|       +-- .claude-plugin/
+|       |   +-- plugin.json
+|       +-- skills/
+|       |   +-- prd/
+|       |   |   +-- SKILL.md
+|       |   +-- plan/
+|       |   |   +-- SKILL.md
+|       |   +-- implement/
+|       |   |   +-- SKILL.md
+|       |   +-- diagnosis/
+|       |   |   +-- SKILL.md
+|       |   +-- code-review/
+|       |   |   +-- SKILL.md
+|       |   +-- commit-push/
+|       |       +-- SKILL.md
+|       +-- agents/
+|           +-- document-reviewer.md
+|           +-- plan-future-maintainer.md
+|           +-- plan-security-reviewer.md
+|           +-- plan-staff-engineer.md
+|           +-- code-staff-engineer-reviewer.md
+|           +-- project-patterns-reviewer.md
+|           +-- implementation-plan-matcher.md
+|           +-- code-security-reviewer.md
+|           +-- test-reviewer.md
 +-- docs/
     +-- 2026-04-23-rubber-duck-build-plan/
         +-- plan.md
@@ -122,6 +125,11 @@ status: pending-approval
 - Keep documents concise, useful as LLM context, and free of filler.
 - Prefer evidence over speculation. If uncertain, write the uncertainty and ask.
 - Run their configured reviewer agents before finalizing when those agents exist, then merge findings into the generated document.
+- Before presenting any `prd`, `plan`, `diagnosis`, or `code-review` document for approval, ask the human follow-up questions as many times as necessary to resolve all material ambiguity, reviewer missing questions, and agent doubts.
+- Do not ask for approval while approval-relevant uncertainty remains unresolved. If a question is intentionally left open, label it as deferred and non-blocking, explain why approval can still proceed, and record that the human explicitly accepted the deferral.
+- Treat reviewer blocking issues, security/privacy questions, and "Questions For The Human" as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
+- If the human answers a blocking question or requests changes, update the document, rerun the required reviewer agents when the answer materially changes the artifact, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests changes, or stops the workflow.
+- When multiple reviewer agents run, use a fan-out/fan-in flow: run independent reviewers in parallel when supported, wait for all available reviewers, merge findings by severity and evidence, preserve reviewer conflicts as human questions, and only then ask the human.
 
 ## Document Standards
 
@@ -139,6 +147,8 @@ source: prompt | jira | github-pr | local-diff
 ```
 
 Documents should include only sections that help the work move forward. "Straight to the point" is a requirement, not a style preference.
+
+Question sections should not hide approval blockers. If a question affects approval readiness, scope, behavior, security, review confidence, or implementation safety, put it under Blocking Questions or ask the human before presenting the artifact for approval. Use Deferred Non-Blocking Questions only for questions the human has explicitly accepted as safe to defer.
 
 ## Skill Specifications
 
@@ -162,7 +172,8 @@ Required workflow:
 3. Write a concise PRD.
 4. Invoke `document-reviewer`.
 5. Apply reviewer feedback only if it improves correctness or clarity.
-6. Tell the human the file is pending approval and ask them to review it.
+6. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
+7. Tell the human the file is pending approval and ask them to review it.
 
 Suggested PRD sections:
 - Summary
@@ -174,7 +185,8 @@ Suggested PRD sections:
 - Acceptance criteria
 - Success signals
 - Risks / dependencies
-- Open questions
+- Blocking questions
+- Deferred non-blocking questions
 - Approval
 
 ### plan
@@ -198,9 +210,11 @@ Required workflow:
 3. If multiple PRDs match, ask which one to use.
 4. Inspect the codebase enough to propose the smallest correct implementation.
 5. Write the implementation plan.
-6. Invoke `document-reviewer`, `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer`.
+6. Invoke `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` in parallel when supported.
 7. Apply reviewer feedback that improves correctness, security, maintainability, or future readability.
-8. Tell the human the file is pending approval and ask them to review it.
+8. Invoke `document-reviewer` on the merged plan as the final approval-readiness pass.
+9. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
+10. Tell the human the file is pending approval and ask them to review it.
 
 Suggested plan sections:
 - Summary
@@ -213,7 +227,8 @@ Suggested plan sections:
 - Test plan
 - Security / privacy / compliance
 - Rollout / rollback
-- Open questions
+- Blocking questions
+- Deferred non-blocking questions
 - Approval
 
 ### implement
@@ -264,7 +279,8 @@ Required workflow:
 4. Never modify source code, tests, configuration, or other project files.
 5. Write the diagnosis document.
 6. Invoke `document-reviewer`.
-7. Tell the human the file is pending approval and ask them to review it.
+7. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
+8. Tell the human the file is pending approval and ask them to review it.
 
 Suggested diagnosis sections:
 - Summary
@@ -277,7 +293,8 @@ Suggested diagnosis sections:
 - Solution options
 - Recommended next step
 - Verification plan
-- Open questions
+- Blocking questions
+- Deferred non-blocking questions
 - Approval
 
 ### code-review
@@ -299,11 +316,13 @@ Required workflow:
    - If a PR link is provided, fetch PR metadata, diff, comments, and checks through available authenticated tools.
    - Otherwise inspect `git status`, staged diff, unstaged diff, and relevant untracked files.
 2. Prefer findings over commentary. No filler.
-3. Invoke `code-staff-engineer-reviewer`, `project-patterns-reviewer`, `code-security-reviewer`, `test-reviewer`, and `document-reviewer`.
-4. Invoke `implementation-plan-matcher` if a related plan can be found.
-5. Merge duplicate findings and order by severity.
-6. Write the review document.
-7. Tell the human the file is pending approval and ask them to review it.
+3. Write the initial review document.
+4. Invoke `code-staff-engineer-reviewer`, `project-patterns-reviewer`, `code-security-reviewer`, and `test-reviewer` in parallel when supported.
+5. Invoke `implementation-plan-matcher` if a related plan can be found.
+6. Merge duplicate findings and order by severity.
+7. Invoke `document-reviewer` on the merged `code-review.md` as the final approval-readiness pass.
+8. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
+9. Tell the human the file is pending approval and ask them to review it.
 
 Suggested code-review sections:
 - Scope
@@ -312,7 +331,8 @@ Suggested code-review sections:
 - Test coverage notes
 - Project convention notes
 - Plan alignment
-- Open questions
+- Blocking questions
+- Deferred non-blocking questions
 - Approval
 
 ### commit-push
@@ -359,6 +379,9 @@ All agents should:
 - Prefer `tools: Read, Grep, Glob, Bash` for code and git inspection.
 - Return concise blocking findings and non-blocking suggestions with severity, evidence, and exact file references where applicable.
 - Flag uncertainty instead of inventing project facts.
+- When human input is needed, return the exact question for the invoking skill to ask; do not ask the human directly unless invoked directly by the human.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not treat an artifact as approval-ready while blocking issues or blocking questions remain.
 - Avoid broad restatement of the prompt.
 
 ### document-reviewer
@@ -688,6 +711,6 @@ Every session should finish with:
 - No dependency-heavy scripts unless a repeated workflow proves deterministic scripting is needed.
 - No slash commands under `commands/`; use `skills/` for new Claude Code plugin skills.
 
-## Ready For Session 1
+## Current Build State
 
-The product, packaging, and workflow decisions needed for Session 1 are resolved. Session 1 should scaffold the root-level single-plugin marketplace layout, then validate whether that flatter layout is accepted by Claude Code.
+The original Session 1 validation has been resolved. The repository should continue using the root marketplace plus nested `plugins/rubber-duck/` plugin layout unless the human explicitly approves a future layout migration.

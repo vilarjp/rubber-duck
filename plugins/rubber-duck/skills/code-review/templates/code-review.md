@@ -57,9 +57,15 @@ Write `None` when there are no material notes.
 
 Write `No related plan found` when no applicable plan is available.
 
-## Open Questions
+## Blocking Questions
 
-- Questions that need human, product, security, or implementation follow-up before approval or before fixes are made.
+- Questions that must be answered before approval because they affect review scope, finding severity, required fixes, security risk, test coverage, plan alignment, or approval readiness.
+- Write `None` when there are no blocking questions.
+
+## Deferred Non-Blocking Questions
+
+- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Write `None` when there are no deferred questions.
 
 ## Approval
 

@@ -38,8 +38,9 @@ The diagnosis document is the only file this skill may create or modify. Its sta
    - If `$ARGUMENTS` is a prompt, use it as the source of truth.
 2. Gather the minimum bug context needed for diagnosis.
    - Capture reproduction steps, expected behavior, observed behavior, frequency, environment, affected users or flows, error messages, logs, screenshots, recent changes, and suspected entry points when available.
-   - Ask the human for missing facts only when they would materially change the investigation path, root-cause confidence, risk, or recommended next step.
-   - Do not ask for facts that can safely remain open questions in the diagnosis.
+   - Ask the human for missing facts when they would materially change the investigation path, root-cause confidence, risk, recommended next step, or approval readiness.
+   - Ask as many times as necessary until approval-relevant bug context and root-cause uncertainty are resolved.
+   - Do not ask for facts that the human explicitly accepts as deferred and non-blocking.
 3. Inspect the codebase and evidence without changing project files.
    - Read relevant source, tests, configuration, logs, documentation, git history, and local diffs.
    - Run read-only searches and diagnostics where useful.
@@ -60,8 +61,14 @@ The diagnosis document is the only file this skill may create or modify. Its sta
    - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, approval readiness, and whether the root cause is evidence-backed.
    - Do not write a separate review file.
 8. Apply reviewer feedback only by updating `diagnosis.md`, and only when it improves correctness, evidence quality, clarity, or approval readiness.
+   - Treat blocking issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-9. Tell the human the diagnosis path and that it is pending approval.
+9. Resolve all approval blockers before presenting the diagnosis for approval.
+   - Ask the human follow-up questions as many times as necessary.
+   - Update `diagnosis.md` after each answer.
+   - Rerun `document-reviewer` when an answer materially changes reproduction, expected behavior, observed behavior, root-cause confidence, risk, recommended next step, or approval readiness.
+   - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the diagnosis not ready for approval.
+10. Tell the human the diagnosis path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
 
 ## Document Requirements
@@ -97,8 +104,13 @@ Use these sections when useful:
 - Solution Options
 - Recommended Next Step
 - Verification Plan
-- Open Questions
+- Blocking Questions
+- Deferred Non-Blocking Questions
 - Approval
+
+## Approval Loop
+
+If the human requests changes or answers a blocking question, update `diagnosis.md`, rerun `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 ## Approval Updates
 

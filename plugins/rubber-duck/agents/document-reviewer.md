@@ -24,6 +24,11 @@ Supported document types:
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question under `Missing Questions` for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
+- Do not recommend approval while blocking issues or blocking missing questions remain.
 - Prefer evidence from the provided document and nearby source context over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the document does not contain enough evidence.
@@ -37,7 +42,7 @@ Check whether the document:
 - Matches the user's request and declared source context.
 - Has valid YAML frontmatter with the expected document type, slug, status, created date, and source.
 - Contains a visible status or approval section when required by Rubber Duck conventions.
-- Separates facts, assumptions, open questions, non-goals, and recommendations clearly.
+- Separates facts, assumptions, blocking questions, deferred non-blocking questions, non-goals, and recommendations clearly.
 - Captures the smallest useful scope without smuggling in unrelated work.
 - Names material risks, dependencies, and verification steps when relevant.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, security, or user intent.
@@ -49,7 +54,7 @@ For diagnosis documents, additionally check whether the probable root cause is s
 
 For implementation plans, additionally check whether the approach, files to touch, tests, rollout, rollback, and security/privacy concerns are specific enough to guide implementation.
 
-For PRDs, additionally check whether goals, non-goals, requirements, acceptance criteria, success signals, and open questions are clear enough for technical planning.
+For PRDs, additionally check whether goals, non-goals, requirements, acceptance criteria, success signals, blocking questions, and deferred non-blocking questions are clear enough for technical planning.
 
 ## Output
 
@@ -61,7 +66,7 @@ List only issues that should be fixed before approval. Include severity, evidenc
 
 ### Missing Questions
 
-List questions that must be answered by the human before approval. If there are none, write `None`.
+List exact questions for the invoking skill to ask the human. Mark each as `Blocking` or `Non-blocking`; only use `Non-blocking` when approval can safely proceed and explain why. If there are none, write `None`.
 
 ### Non-Blocking Suggestions
 
@@ -76,3 +81,5 @@ Choose exactly one:
 - `revise`
 
 Add one short sentence explaining the recommendation.
+
+Use `revise` whenever blocking issues or blocking missing questions remain.

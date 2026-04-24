@@ -55,9 +55,15 @@ The recommended implementation or follow-up action, with the reason it is prefer
 
 - Focused checks, tests, reproduction steps, logs, or manual validation that should confirm the fix.
 
-## Open Questions
+## Blocking Questions
 
-- Questions that do not block drafting but need human, product, support, or engineering follow-up.
+- Questions that must be answered before approval because they affect reproduction, expected behavior, observed behavior, root-cause confidence, risk, recommended next step, or verification.
+- Write `None` when there are no blocking questions.
+
+## Deferred Non-Blocking Questions
+
+- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Write `None` when there are no deferred questions.
 
 ## Approval
 

@@ -60,9 +60,15 @@ One short paragraph describing the intended technical change and the outcome it 
 - Deployment, feature flag, migration, compatibility, monitoring, rollback, or recovery notes.
 - Write `Not applicable` for local-only or document-only changes.
 
-## Open Questions
+## Blocking Questions
 
-- Questions that do not block drafting but need human, product, security, or implementation follow-up.
+- Questions that must be answered before approval because they affect scope, behavior, architecture, security, rollout, tests, review confidence, or implementation safety.
+- Write `None` when there are no blocking questions.
+
+## Deferred Non-Blocking Questions
+
+- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Write `None` when there are no deferred questions.
 
 ## Approval
 

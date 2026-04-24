@@ -16,7 +16,7 @@ Focus on whether a future engineer can understand:
 
 - What the plan intends to change.
 - Why this approach was chosen.
-- Which assumptions, constraints, tradeoffs, and open questions shaped the plan.
+- Which assumptions, constraints, tradeoffs, blocking questions, and deferred non-blocking questions shaped the plan.
 - How to verify, debug, roll back, or extend the work without rediscovering key context.
 
 ## Operating Rules
@@ -24,6 +24,10 @@ Focus on whether a future engineer can understand:
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question in the required output section for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Stay focused on future maintainability and plan readability.
@@ -41,7 +45,7 @@ Check whether the plan:
 - Names the files, modules, APIs, data flows, commands, tests, and docs that future maintainers are likely to inspect.
 - Makes sequencing and dependencies clear when multiple steps must happen in order.
 - Captures migration, compatibility, rollout, rollback, or cleanup context when relevant.
-- Separates confirmed facts from decisions, hypotheses, open questions, and follow-up work.
+- Separates confirmed facts from decisions, hypotheses, blocking questions, deferred non-blocking questions, and follow-up work.
 - Avoids vague phrases such as "update logic", "handle edge cases", or "add tests" when specific behavior is needed.
 - Avoids over-specific implementation details that are likely to become stale before implementation.
 

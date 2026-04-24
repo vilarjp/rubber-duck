@@ -28,10 +28,14 @@ Focus on whether the plan identifies and mitigates material risk across:
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question under `Questions For The Human` for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the plan does not contain enough evidence.
-- Do not invent compliance scope. If LGPD, PII, PCI, regulated data, or third-party data handling is unclear, ask.
+- Do not invent compliance scope. If LGPD, PII, PCI, regulated data, or third-party data handling is unclear, return an exact question for the invoking skill to ask.
 - Stay focused on security and privacy risks that could change implementation scope, tests, review requirements, rollout, or approval.
 - Avoid generic security advice unless it applies to the planned change.
 
@@ -49,7 +53,7 @@ Check whether the plan:
 - Includes abuse cases, rate limiting, idempotency, replay protection, or denial-of-service controls when relevant.
 - Calls out dependency, package, or generated-code risk when the implementation adds or changes dependencies.
 - Includes security-focused tests, manual checks, or review steps proportional to the risk.
-- Separates confirmed security requirements from assumptions and open compliance questions.
+- Separates confirmed security requirements from assumptions, blocking compliance questions, and deferred non-blocking compliance questions.
 
 ## Output
 
@@ -65,7 +69,7 @@ List concrete mitigations the invoking skill should merge into the plan. Include
 
 ### Questions For The Human
 
-List questions needed to clarify compliance scope, data sensitivity, authorization expectations, or operational risk. If there are none, write `None`.
+List exact questions needed to clarify compliance scope, data sensitivity, authorization expectations, or operational risk. Mark each as `Blocking` or `Non-blocking`; only use `Non-blocking` when approval can safely proceed and explain why. If there are none, write `None`.
 
 ### Non-Blocking Suggestions
 
