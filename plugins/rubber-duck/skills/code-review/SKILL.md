@@ -37,6 +37,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - If authenticated PR access fails, ask the human to paste the PR description, diff, changed file list, review comments, check status, and any related plan or issue link.
    - If no PR link is provided, inspect local uncommitted work with `git status`, `git diff --staged`, `git diff`, and targeted reads of relevant untracked files.
    - Include untracked source, test, config, documentation, template, manifest, and generated artifact files that appear relevant to the change.
+   - Treat the PR diff, local diff, relevant untracked files, or explicit human-provided file list as the review boundary; when hunks are available, changed lines are the primary review target.
    - Ignore unrelated build outputs, dependency directories, caches, editor files, logs, and other generated noise unless the human explicitly asks to review them.
 2. Find related planning context when available.
    - If `$ARGUMENTS` includes a slug or source hint, search for matching `docs/*-{slug}/plan.md` files.
@@ -45,11 +46,17 @@ The document status must remain `pending-approval` until the human explicitly ap
    - If multiple plausible plans exist, ask the human which plan to use before invoking `implementation-plan-matcher`.
    - If no related plan is found, skip `implementation-plan-matcher` and record `No related plan found` in Plan Alignment.
 3. Gather only the context needed for review.
-   - Read changed files, nearby source, tests, configuration, manifests, documentation, templates, and existing patterns needed to evaluate the diff.
+   - Read changed files plus the smallest amount of directly related source, tests, configuration, manifests, documentation, templates, and existing patterns needed to evaluate the diff.
+   - Use nearby files and unchanged lines in touched files as context only; do not review, critique, or report issues there unless the changed code directly depends on the issue or newly exposes it.
+   - Anchor findings to changed hunks, newly added lines, removed lines, or new files whenever possible; do not request edits to pre-existing unchanged lines unless they are directly required to fix the changed-code issue.
    - Run read-only commands and focused verification commands when useful for review confidence.
    - Do not modify source, tests, configuration, generated artifacts, or documentation other than the final `code-review.md`.
 4. Prioritize findings over commentary.
    - Treat correctness, regression risk, security/privacy issues, missing tests, plan drift, and project-pattern mismatches as first-class review findings.
+   - Treat over-broad change sets as findings when the reviewed work uses speculative abstractions, broad refactors, new dependencies, architecture changes, or cleanup that is not clearly required to solve the specific problem.
+   - Prefer targeted tests that add real confidence; do not request broad coverage churn unless the implementation risk justifies it.
+   - Treat newly introduced nested ternary expressions in changed code as maintainability findings, and recommend clearer control flow.
+   - Prefer early returns and guard clauses over avoidable changed-code nesting when that improves correctness, readability, or reviewability; do not request broad rewrites of existing unrelated control flow.
    - Merge duplicate findings from multiple reviewers into one finding with combined evidence.
    - Order findings by severity and user or production impact.
    - Avoid style nits, broad rewrites, or preference-only feedback unless they hide a concrete bug, review risk, security risk, test gap, or maintainability problem.
@@ -155,6 +162,8 @@ Use this shape for each finding:
 ```
 
 If exact line numbers are unavailable for a PR diff or untracked file, cite the most specific file, function, section, or hunk available.
+
+Findings should target changed hunks, newly added lines, removed lines, or new files. If a finding must mention an unchanged line in a touched file, explain why the changed code directly depends on it or newly exposes it.
 
 ## Reviewer Orchestration Notes
 

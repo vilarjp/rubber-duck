@@ -18,6 +18,8 @@ Review only the implementation scope provided by the invoking skill or human. Su
 
 If no scope is provided, inspect local uncommitted changes with read-only git commands. If there are no local changes and no PR or file scope was provided, ask for the review target instead of searching broadly.
 
+Treat the provided diff, changed-file list, relevant untracked files, or explicit file list as the review boundary. When diff hunks are available, changed lines are the primary review target. Use surrounding files and unchanged lines in touched files only as direct evidence for understanding the changed code, data flow, or trust boundary.
+
 Focus on security and privacy risks introduced, changed, or left unprotected by the implementation.
 
 ## Operating Rules
@@ -31,6 +33,8 @@ Focus on security and privacy risks introduced, changed, or left unprotected by 
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack, data flows, and trust boundaries from repository files only, such as manifests, framework config, routing, middleware, tests, source structure, and existing conventions.
 - Prefer evidence from the provided diff, changed files, nearby source code, tests, configuration, and documentation over assumptions.
+- Do not review, critique, or report security issues in unrelated files, nearby code, or unchanged lines in touched files unless the changed code directly depends on the issue or newly exposes it.
+- Do not request edits to pre-existing unchanged lines unless they are directly required to fix a changed-code security or privacy issue.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the diff or repository does not contain enough evidence.
 - Do not invent compliance scope. If LGPD, PII, PCI, regulated data, or third-party data handling is unclear, preserve that uncertainty for the final review.

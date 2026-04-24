@@ -18,6 +18,8 @@ Review only the implementation scope provided by the invoking skill or human. Su
 
 If no scope is provided, inspect local uncommitted changes with read-only git commands. If there are no local changes and no PR or file scope was provided, ask for the review target instead of searching broadly.
 
+Treat the provided diff, changed-file list, relevant untracked files, or explicit file list as the review boundary. When diff hunks are available, changed lines are the primary review target. Use surrounding files and unchanged lines in touched files only as direct evidence for understanding changed behavior and local test conventions.
+
 Focus on whether tests prove the behavior created or modified by the implementation and protect the highest-value regression risks.
 
 ## Operating Rules
@@ -31,6 +33,8 @@ Focus on whether tests prove the behavior created or modified by the implementat
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack, test framework, fixture style, and assertion conventions from repository files only, such as manifests, lockfiles, test directories, nearby tests, framework config, and CI configuration.
 - Prefer evidence from the provided diff, changed files, nearby tests, test utilities, fixtures, snapshots, CI configuration, and documentation over assumptions.
+- Do not review, critique, or report test issues for unrelated files, nearby behavior, or unchanged lines in touched files unless the changed code directly depends on that coverage gap or newly exposes it.
+- Do not request edits to pre-existing unchanged tests unless they are directly required to prove or fix the changed behavior.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the diff, tests, or repository do not contain enough evidence.
 - Prioritize missing coverage, weak assertions, untested edge cases, regression risks, brittle tests, and redundant tests that obscure review confidence.
