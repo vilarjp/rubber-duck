@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.5" src="https://img.shields.io/badge/version-0.0.5-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.0.7" src="https://img.shields.io/badge/version-0.0.7-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -120,7 +120,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure. |
 | `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.      |
 
-Reviewer agents return findings and exact human questions to the invoking skill. Claude Code installs the Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Skills must invoke these reviewers by exact pre-built agent name and use the launch prompt only for run-specific context such as document paths, diffs, source summaries, and verification results. They should not create generic runtime subagents with compressed prompts that replace the full agent definition. The invoking skill owns document edits, merges accepted findings, and asks the human for clarification when needed. For `plan` and `code-review`, `document-reviewer` runs last on the merged document as the approval-readiness check.
+Reviewer agents return findings and exact human questions to the invoking skill. Claude Code installs the Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Skills must invoke these reviewers by exact pre-built agent name, omit full-history forks for Codex named agents, and use the launch prompt only for run-specific context such as document paths, diffs, source summaries, and verification results. They should not create generic runtime subagents with compressed prompts that replace the full agent definition. The invoking skill owns document edits, merges accepted findings, and asks the human for clarification when needed. For `plan` and `code-review`, `document-reviewer` runs last on the merged document as the approval-readiness check.
 
 ## Duck Trail
 

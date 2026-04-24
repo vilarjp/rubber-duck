@@ -84,7 +84,9 @@ The diagnosis document is the only file this skill may create or modify. Its sta
 
 - Invoke reviewer roles by exact pre-built agent name, such as `document-reviewer`.
 - In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: document-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
-- Use the launch prompt only for run-specific context: document path, source summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
+- In Codex, omit `fork_context` or set `fork_context: false` for named reviewer agents. Do not try a full-history/context fork first; named custom agents must receive a self-contained launch prompt.
+- Start each launch prompt with the selected reviewer name for auditability, for example: `You are the already-selected Rubber Duck document-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Use the rest of the launch prompt only for run-specific context: document path, source summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
 - Do not replace the reviewer with a compressed prompt such as `Please review for completeness...`. A short launch prompt is acceptable only after the named pre-built reviewer has been selected, and it must not restate, narrow, or override the agent definition.
 - Let the selected reviewer follow its own scope, operating rules, checklist, and output format from `agents/<agent-name>.md` or the generated Codex TOML.
 - If the runtime cannot invoke the named reviewer, read the full matching agent definition from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform the same review inline or through the closest available delegation mechanism. Treat this as a fallback and make the unavailability explicit.
