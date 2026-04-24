@@ -58,9 +58,10 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
 6. Run specialist reviewer agents on the generated `plan.md`.
-   - Run `plan-future-maintainer` for future context, ambiguous decisions, aging assumptions, and concise additions.
-   - Run `plan-security-reviewer` for security, privacy, compliance, authorization, validation, secrets, logging, retention, and abuse-case gaps.
-   - Run `plan-staff-engineer` for stack-specific architecture risks, production bugs, compatibility concerns, observability gaps, and simpler implementation options.
+   - Follow the Reviewer Invocation Contract below.
+   - Invoke the exact pre-built `plan-future-maintainer` agent.
+   - Invoke the exact pre-built `plan-security-reviewer` agent.
+   - Invoke the exact pre-built `plan-staff-engineer` agent.
    - Run these independent reviewers in parallel when the current assistant environment supports it.
    - Pass each reviewer the plan path, source context summary, and any relevant PRD or Jira context.
    - Do not write separate review files.
@@ -70,7 +71,8 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
 8. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
-   - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, and approval readiness.
+   - Follow the Reviewer Invocation Contract below.
+   - Invoke the exact pre-built `document-reviewer` agent.
    - Merge any approval-readiness fixes before asking the human.
 9. Resolve all approval blockers before presenting the plan for approval.
    - Ask the human follow-up questions as many times as necessary.
@@ -83,10 +85,19 @@ The document status must remain `pending-approval` until the human explicitly ap
 
 ## Runtime Compatibility
 
-- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory.
-- In Codex, prefer the generated custom agents installed by `setup-codex-agents`.
+- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory and their full Markdown definitions.
+- In Codex, prefer the exact named generated custom agents installed by `setup-codex-agents`.
 - If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
 - Do not skip a configured reviewer solely because the current runtime exposes reviewer prompts as files instead of native agents.
+
+## Reviewer Invocation Contract
+
+- Invoke reviewer roles by exact pre-built agent name, such as `plan-future-maintainer` or `document-reviewer`.
+- In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: plan-future-maintainer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- Use the launch prompt only for run-specific context: document path, source summary, relevant PRD or Jira details, and any material constraints from the current session.
+- Do not replace the reviewer with a compressed prompt such as `Please review for future maintainability...`. A short launch prompt is acceptable only after the named pre-built reviewer has been selected, and it must not restate, narrow, or override the agent definition.
+- Let the selected reviewer follow its own scope, operating rules, checklist, and output format from `agents/<agent-name>.md` or the generated Codex TOML.
+- If the runtime cannot invoke the named reviewer, read the full matching agent definition from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform the same review inline or through the closest available delegation mechanism. Treat this as a fallback and make the unavailability explicit.
 
 ## Document Requirements
 
@@ -127,7 +138,7 @@ Use these sections when useful:
 
 ## Reviewer Orchestration Notes
 
-- Run `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` before asking for human approval when the agents are available.
+- Run the exact pre-built `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` agents before asking for human approval when the agents are available.
 - Prefer running independent specialist reviewer agents in parallel when the current assistant environment supports it.
 - Wait for all available specialist reviewers, merge their findings, then run `document-reviewer` last on the merged plan.
 - Use blocking findings, security/privacy questions, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
