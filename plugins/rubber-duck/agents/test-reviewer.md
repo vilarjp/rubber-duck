@@ -25,6 +25,10 @@ Focus on whether tests prove the behavior created or modified by the implementat
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question in the required output section for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack, test framework, fixture style, and assertion conventions from repository files only, such as manifests, lockfiles, test directories, nearby tests, framework config, and CI configuration.
 - Prefer evidence from the provided diff, changed files, nearby tests, test utilities, fixtures, snapshots, CI configuration, and documentation over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.

@@ -25,6 +25,10 @@ Focus on whether the changed code follows the repository's existing conventions 
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question in the required output section for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Infer project conventions from repository files only, such as nearby source, tests, manifests, framework config, generated artifacts, documentation, and existing naming or folder patterns.
 - Prefer evidence from the provided diff, changed files, nearby source code, tests, and configuration over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.

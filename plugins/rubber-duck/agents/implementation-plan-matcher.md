@@ -27,6 +27,10 @@ Focus on whether the implementation matches the approved plan, not whether the p
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question in `Required Questions Or Fixes` for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the approved plan, provided diff, changed files, nearby source code, tests, and configuration over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Verify the plan status when a full plan document is available. If the plan is not marked `approved`, flag that as review uncertainty instead of treating it as approved scope.
@@ -67,7 +71,7 @@ List implementation changes that are not supported by the approved plan or that 
 
 ### Required Questions Or Fixes
 
-List the minimum questions, clarifications, or fixes needed before the implementation should be treated as plan-aligned. If none are required, write `None`.
+List the minimum questions, clarifications, or fixes needed before the implementation should be treated as plan-aligned. Mark human questions as `Blocking` or `Non-blocking`; only use `Non-blocking` when approval can safely proceed and explain why. If none are required, write `None`.
 
 ### Residual Uncertainty
 

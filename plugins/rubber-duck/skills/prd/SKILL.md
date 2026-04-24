@@ -39,8 +39,9 @@ The document status must remain `pending-approval` until the human explicitly ap
 2. Gather only the context needed to write the PRD.
    - Prefer the human prompt, Jira content, existing README files, nearby docs, and relevant product context.
    - Do not inspect private or unrelated project areas unless the request requires it.
-3. Ask the human for missing product facts only when they would materially change scope, user value, requirements, acceptance criteria, or approval.
-   - Do not ask about details that can safely remain open questions in the PRD.
+3. Ask the human for missing product facts when they would materially change scope, user value, requirements, acceptance criteria, or approval.
+   - Ask as many times as necessary until approval-relevant product ambiguity is resolved.
+   - Do not ask about details that the human explicitly accepts as deferred and non-blocking.
 4. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
    - Use a human-provided slug when available.
@@ -48,15 +49,21 @@ The document status must remain `pending-approval` until the human explicitly ap
 5. Draft a concise PRD.
    - Use `templates/prd.md` from this skill folder as the default structure.
    - Include only sections that help the work move forward.
-   - Keep facts, assumptions, non-goals, risks, and open questions distinct.
+   - Keep facts, assumptions, non-goals, risks, blocking questions, and deferred non-blocking questions distinct.
    - Prefer evidence over speculation.
    - Use clear acceptance criteria that a future plan or implementation can verify.
 6. Run the `document-reviewer` agent on the generated `prd.md`.
    - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, and approval readiness.
    - Do not write a separate review file.
 7. Apply reviewer feedback only when it improves correctness, clarity, scope control, or approval readiness.
+   - Treat blocking issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-8. Tell the human the PRD path and that it is pending approval.
+8. Resolve all approval blockers before presenting the PRD for approval.
+   - Ask the human follow-up questions as many times as necessary.
+   - Update `prd.md` after each answer.
+   - Rerun `document-reviewer` when an answer materially changes requirements, scope, acceptance criteria, risks, or approval readiness.
+   - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the PRD not ready for approval.
+9. Tell the human the PRD path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
 
 ## Document Requirements
@@ -91,8 +98,13 @@ Use these sections when useful:
 - Acceptance criteria
 - Success signals
 - Risks / dependencies
-- Open questions
+- Blocking Questions
+- Deferred Non-Blocking Questions
 - Approval
+
+## Approval Loop
+
+If the human requests changes or answers a blocking question, update `prd.md`, rerun `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 ## Approval Updates
 

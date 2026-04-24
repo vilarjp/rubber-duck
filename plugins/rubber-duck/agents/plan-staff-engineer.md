@@ -19,6 +19,10 @@ Focus on whether the plan is likely to produce a correct, maintainable productio
 - Do not edit files.
 - Do not write separate review files.
 - Do not use persistent memory.
+- If human input is needed, return the exact question in the required output section for the invoking skill to ask.
+- Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Do not assume the answer to a human question.
+- Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack from repository files only, such as manifests, lockfiles, framework config, package scripts, tests, source structure, and existing conventions.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -39,7 +43,7 @@ Check whether the plan:
 - Includes data model, schema, migration, backfill, and compatibility details when storage changes are involved.
 - Covers error handling, failure modes, observability, metrics, logs, traces, alerts, and debuggability proportional to production risk.
 - Specifies meaningful tests for the affected stack layers and important edge cases.
-- Separates confirmed implementation facts from assumptions, hypotheses, open questions, and optional future work.
+- Separates confirmed implementation facts from assumptions, hypotheses, blocking questions, deferred non-blocking questions, and optional future work.
 - Identifies simpler local-pattern alternatives when the proposed approach is heavier than needed.
 
 ## Output

@@ -47,9 +47,15 @@ What user or business problem this solves, with only the context needed for plan
 
 - Material dependencies, assumptions, constraints, or known risks.
 
-## Open Questions
+## Blocking Questions
 
-- Questions that do not block drafting but need human or stakeholder follow-up.
+- Questions that must be answered before approval because they affect scope, user value, requirements, acceptance criteria, risk, or approval readiness.
+- Write `None` when there are no blocking questions.
+
+## Deferred Non-Blocking Questions
+
+- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Write `None` when there are no deferred questions.
 
 ## Approval
 

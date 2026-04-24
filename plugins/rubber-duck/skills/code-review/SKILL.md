@@ -62,21 +62,31 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Include only sections that help the human decide whether to approve, request changes, or ask follow-up questions.
    - If there are no findings in a section, write `None`.
    - Preserve uncertainty when evidence is unavailable instead of inventing intent, production behavior, compliance scope, or test results.
-7. Run reviewer agents on the generated `code-review.md` and reviewed scope.
+7. Run code-focused reviewer agents on the generated `code-review.md` and reviewed scope.
    - Run `code-staff-engineer-reviewer` for correctness, maintainability, stack best practices, production risk, and simpler fixes.
    - Run `project-patterns-reviewer` for local conventions, naming, layering, testing style, abstractions, and file organization.
    - Run `code-security-reviewer` for security, privacy, compliance, authorization, validation, secrets, logging, dependency risk, and data exposure.
    - Run `test-reviewer` for meaningful test coverage, important scenarios, edge cases, regression risks, weak assertions, and redundant tests.
    - Run `implementation-plan-matcher` only when a related plan can be identified.
-   - Run `document-reviewer` after merging the code-focused reviewer feedback into `code-review.md`.
+   - Run independent code-focused reviewers in parallel when the current Claude Code environment supports it, then wait for all available reviewers before merging findings.
    - Pass reviewers the document path, source summary, diff or changed-file scope, test/check results, and related plan path when applicable.
    - Do not write separate review files.
 8. Merge reviewer feedback into `code-review.md`.
    - Apply blocking findings and important review gaps before finalizing.
    - Deduplicate overlapping findings and keep the strongest evidence.
+   - Treat security/privacy questions, required fixes, plan drift, and missing tests as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
+   - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking suggestions only when they improve approval confidence, future implementation clarity, or review usefulness.
+9. Run `document-reviewer` on the merged `code-review.md` as the final approval-readiness pass.
+   - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, and approval readiness.
+   - Treat its blocking issues and missing questions as approval blockers unless the human explicitly defers them as non-blocking.
    - Preserve `document-reviewer` missing questions and approval recommendation in the Approval section when they affect human review.
-9. Tell the human the review path and that it is pending approval.
+10. Resolve all approval blockers before presenting the review for approval.
+   - Ask the human follow-up questions as many times as necessary.
+   - Update `code-review.md` after each answer.
+   - Rerun the affected reviewers and `document-reviewer` when an answer materially changes review scope, finding severity, security risk, test coverage, plan alignment, or approval readiness.
+   - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the review not ready for approval.
+11. Tell the human the review path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
 
 ## Document Requirements
@@ -108,7 +118,8 @@ Use these sections when useful:
 - Test Coverage Notes
 - Project Convention Notes
 - Plan Alignment
-- Open Questions
+- Blocking Questions
+- Deferred Non-Blocking Questions
 - Approval
 
 ## Finding Format
@@ -128,10 +139,16 @@ If exact line numbers are unavailable for a PR diff or untracked file, cite the 
 ## Reviewer Orchestration Notes
 
 - Run independent reviewer agents in parallel when the current Claude Code environment supports it.
+- Wait for all available code-focused reviewers, merge their findings, then run `document-reviewer` last on the merged review document.
+- Use blocking findings, required questions or fixes, security/privacy questions, plan drift, missing tests, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
 - The invoking skill owns the final review document. Reviewer agents return findings only; they do not edit the document.
 - If an expected reviewer agent is unavailable, note that gap in the final response and in the review document's Approval section when it affects confidence.
 - Do not approve the code changes on behalf of the human.
 - Do not make code fixes from this skill unless the human explicitly changes the request from review to implementation.
+
+## Approval Loop
+
+If the human requests changes or answers a blocking question, update `code-review.md`, rerun affected reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 ## Approval Updates
 
