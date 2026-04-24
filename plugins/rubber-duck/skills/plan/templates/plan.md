@@ -47,7 +47,8 @@ One short paragraph describing the intended technical change and the outcome it 
 ## Test Plan
 
 - Focused tests to add or update.
-- Broader validation commands or manual checks proportional to risk.
+- Full quality gate to run before completion: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
+- Manual checks only for behavior that cannot be covered by the automated gate.
 
 ## Security / Privacy / Compliance
 

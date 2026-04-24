@@ -253,9 +253,9 @@ Required workflow:
 4. Inspect the existing codebase and conventions.
 5. Follow TDD whenever feasible: write or adjust a focused failing test first, then implement the smallest code change to pass.
 6. Keep changes scoped to the current goal. Apply KISS and YAGNI. Do not refactor unrelated code.
-7. Run focused tests, then broader tests when blast radius warrants it.
+7. Run focused tests, then the full quality gate when available: formatting checks, linting, type checks, builds or compilation, and the full automated test suite.
 8. Do not invoke reviewer agents. Reviewer agents are invoked by the future `code-review` skill.
-9. Summarize changed files, tests run, and remaining risks.
+9. Summarize changed files, focused tests, full quality gate commands, unavailable verification categories, and remaining risks.
 
 ### diagnosis
 

@@ -50,7 +50,8 @@ Check whether the implementation:
 - Avoids brittle or flaky patterns such as sleeps, order-dependent assertions, real network calls, uncontrolled time, shared mutable state, or environment-dependent behavior.
 - Avoids redundant tests that repeat the same assertions without increasing confidence.
 - Leaves clear manual verification steps when automated tests are not feasible for the reviewed change.
-- Runs or recommends the smallest useful focused test commands before broader test commands when blast radius warrants it.
+- Runs or recommends the smallest useful focused test commands before the full quality gate.
+- Includes the full quality gate results when available: formatting checks, linting, type checks, builds or compilation, and the full automated test suite. Flag missing, stale, failed, or unavailable categories as residual uncertainty or a finding when they affect approval confidence.
 
 ## Output
 

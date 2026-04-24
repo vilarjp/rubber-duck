@@ -8,7 +8,7 @@
   <img alt="Claude Code plugin marketplace" src="https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-5B7FFF?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.3" src="https://img.shields.io/badge/version-0.0.3-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.0.4" src="https://img.shields.io/badge/version-0.0.4-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a Claude Code plugin marketplace for turning fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -55,14 +55,14 @@ Invoke skills with the plugin namespace:
 
 ## Skill Menu
 
-| Invoke                      | Use it when                                                         | Inputs                                                                         | Output                                                             |
-| --------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `/rubber-duck:prd`          | You need the what and why before implementation.                    | Free-form prompt or Jira link.                                                 | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                  |
-| `/rubber-duck:plan`         | You need the technical how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval.                 |
-| `/rubber-duck:diagnosis`    | You need to understand a bug before fixing it.                      | Bug report, Jira link, logs, reproduction notes, or source hint.               | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.            |
-| `/rubber-duck:implement`    | You are ready to make a scoped code change.                         | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug. | Code and tests changed in the target project.                      |
-| `/rubber-duck:code-review`  | You want a structured review of a local diff or GitHub PR.          | Empty input for local changes, GitHub PR link, or plan/source hint.            | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.          |
-| `/rubber-duck:commit-push`  | You want to ship local work deliberately.                           | Optional branch or commit-intent hint.                                         | One or more conventional commits pushed to a non-protected branch. |
+| Invoke                     | Use it when                                                         | Inputs                                                                         | Output                                                             |
+| -------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `/rubber-duck:prd`         | You need the what and why before implementation.                    | Free-form prompt or Jira link.                                                 | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                  |
+| `/rubber-duck:plan`        | You need the technical how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval.                 |
+| `/rubber-duck:diagnosis`   | You need to understand a bug before fixing it.                      | Bug report, Jira link, logs, reproduction notes, or source hint.               | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.            |
+| `/rubber-duck:implement`   | You are ready to make a scoped code change.                         | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug. | Code and tests changed in the target project.                      |
+| `/rubber-duck:code-review` | You want a structured review of a local diff or GitHub PR.          | Empty input for local changes, GitHub PR link, or plan/source hint.            | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.          |
+| `/rubber-duck:commit-push` | You want to ship local work deliberately.                           | Optional branch or commit-intent hint.                                         | One or more conventional commits pushed to a non-protected branch. |
 
 ## Review Crew
 
@@ -101,6 +101,8 @@ Approval is intentionally a loop. Rubber Duck should ask follow-up questions as 
 ## Safety Rails
 
 - `implement` follows TDD whenever feasible and explains when it cannot.
+- `implement` runs a full quality gate before completion: format checks, linting, type checks, builds, and the full automated test suite when those commands exist.
+- `commit-push` runs the same final verification gate before commit and push confirmation, and stops when required checks fail or cannot run without explicit human risk acceptance.
 - `commit-push` refuses `main`, `master`, `production`, and `staging`.
 - `commit-push` requires the exact final confirmation: `yes, commit and push`.
 - Skills keep work scoped and avoid unrelated refactors.

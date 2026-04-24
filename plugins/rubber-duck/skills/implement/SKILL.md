@@ -53,10 +53,14 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - Apply KISS and YAGNI.
    - Avoid unrelated refactors, broad formatting churn, dependency additions, generated file updates, or public API changes unless required by the source context.
    - Handle validation, errors, authorization, privacy, logging, and secrets consistently with the local stack.
-6. Verify the change.
+6. Verify the change with a full quality gate.
    - Run the focused test or check that covers the edited behavior.
-   - Run broader tests, type checks, linting, or build commands when the blast radius warrants it and they are available.
-   - If an important verification command is unavailable, too expensive, or blocked, say so clearly in the final summary.
+   - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
+   - Before the final summary, run every available non-mutating command that checks formatting, linting, type checking, builds or compilation, and the full automated test suite.
+   - For JavaScript or TypeScript projects, this includes Prettier in check mode, ESLint, `tsc` or the repo's typecheck script, and all existing test scripts when those tools are present.
+   - Prefer a single repo-native `check`, `verify`, `ci`, or equivalent command only when the repository evidence shows that it covers the relevant formatting, linting, type checking, build, and test categories; otherwise run the individual commands.
+   - Do not run formatters, linters, generators, snapshots, or other tools in write/fix/update mode unless the requested implementation requires it or the human explicitly asks for it.
+   - If an important verification command is unavailable, too expensive, blocked, or cannot be inferred safely, say so clearly in the final summary and do not imply that category passed.
 7. Do not invoke reviewer agents.
    - Reviewer agents are invoked by the `code-review` skill, not by `implement`.
    - Do not create a separate implementation report unless the human explicitly asks for one.
@@ -74,7 +78,7 @@ Use this default loop when practical:
 3. Make the smallest implementation change.
 4. Run the focused test until it passes.
 5. Add edge-case coverage only when it protects important behavior or a known regression path.
-6. Run broader verification when shared contracts, public APIs, migrations, or cross-module flows changed.
+6. Run the full quality gate: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
 
 ## Artifact Handling
 
@@ -91,5 +95,5 @@ The final response must include:
 
 - What changed.
 - Which files changed.
-- Which tests or checks ran.
+- Which focused tests ran, which full quality gate commands ran, and any verification categories that were unavailable or skipped.
 - Any remaining risks, assumptions, or unavailable verification.

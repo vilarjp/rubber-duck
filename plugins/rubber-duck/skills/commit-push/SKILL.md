@@ -82,27 +82,35 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Do not include unrelated changes.
    - If unrelated changes are already staged, do not accidentally commit them. Ask before changing the index when needed.
    - If the intended scope is unclear, ask the human which paths belong in the commit.
-7. Propose the commit plan.
+7. Run the final verification gate.
+   - Run this gate after identifying the intended commit scope and before asking for final commit/push confirmation.
+   - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
+   - Run every available non-mutating command that checks formatting, linting, type checking, builds or compilation, and the full automated test suite.
+   - For JavaScript or TypeScript projects, this includes Prettier in check mode, ESLint, `tsc` or the repo's typecheck script, and all existing test scripts when those tools are present.
+   - Prefer a single repo-native `check`, `verify`, `ci`, or equivalent command only when repository evidence shows that it covers the relevant formatting, linting, type checking, build, and test categories; otherwise run the individual commands.
+   - Do not run formatters, linters, generators, snapshots, or other tools in write/fix/update mode unless the human explicitly asks for it.
+   - If any important verification command fails, is unavailable, too expensive, blocked, or cannot be inferred safely, stop before staging, committing, or pushing. Report the exact command or category and ask whether to fix the issue, change the scope, or proceed with explicit known risk.
+8. Propose the commit plan.
    - Split commits only when there are clear logical units that can be understood and reverted independently.
    - Prefer a single commit when the work is one coherent change.
    - For each proposed commit, list the conventional commit message and included paths.
    - List excluded local changes when they exist.
-   - Mention whether tests or checks appear to have been run, are available, or should be run before committing.
-8. Ask for final confirmation.
+   - List the final verification gate commands and results, including unavailable categories.
+9. Ask for final confirmation.
    - Use the required phrase `yes, commit and push`.
    - Do not commit or push until the human responds with that exact confirmation.
-9. Create commits after confirmation.
+10. Create commits after confirmation.
    - Stage only the files for the current commit.
    - Preserve unrelated working tree and index changes.
    - Use conventional commit messages.
    - If a commit command fails, stop and report the failure instead of trying broad recovery commands.
-10. Push after successful commits.
+11. Push after successful commits.
     - Push the selected branch to the configured remote.
     - Use upstream setup for new branches, usually `git push -u origin <branch>`.
     - Do not force push unless explicitly approved and non-protected.
-11. Summarize the result.
+12. Summarize the result.
     - Include the branch, commit SHA or SHAs, commit messages, pushed remote, and any excluded local changes.
-    - Include tests or checks run, or state that none were run.
+    - Include the final verification gate commands and results, including unavailable categories.
     - Mention any remaining local uncommitted changes.
 
 ## Conventional Commit Rules
@@ -153,7 +161,7 @@ After pushing, the final response must include:
 - Target branch.
 - Remote pushed to.
 - Commit SHA or SHAs and messages.
-- Tests or checks run.
+- Final verification gate commands and results, including unavailable categories.
 - Remaining local changes, if any.
 
 If the workflow stops before committing or pushing, explain the blocker and the safest next action.

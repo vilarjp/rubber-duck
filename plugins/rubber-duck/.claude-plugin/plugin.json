@@ -1,6 +1,6 @@
 {
   "name": "rubber-duck",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Spec-driven Claude Code workflows for planning, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",

@@ -37,6 +37,7 @@ Write `None` when there are no material notes.
 ## Test Coverage Notes
 
 - Focused tests present, missing, weak, redundant, or not run.
+- Full quality gate status: formatting checks, linting, type checks, builds or compilation, and full automated test suite results when available.
 - Important scenarios, edge cases, regression paths, and recommended test additions.
 
 Write `None` when there are no material notes.
