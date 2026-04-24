@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implement"
+  short_description: "Make scoped code and test changes from a prompt or approved artifact."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck implement to make this scoped change."
+policy:
+  allow_implicit_invocation: false

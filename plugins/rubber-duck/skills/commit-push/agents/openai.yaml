@@ -1,0 +1,7 @@
+interface:
+  display_name: "Commit Push"
+  short_description: "Propose safe commit splits and push only after explicit confirmation."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck commit-push to prepare this work for commit."
+policy:
+  allow_implicit_invocation: false

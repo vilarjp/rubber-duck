@@ -1,0 +1,40 @@
+{
+  "name": "rubber-duck",
+  "version": "0.0.5",
+  "description": "Spec-driven agent workflows for planning, implementation, review, and safe shipping.",
+  "author": {
+    "name": "João Vilar",
+    "email": "vilarjp93@gmail.com",
+    "url": "https://github.com/vilarjp"
+  },
+  "homepage": "https://github.com/vilarjp/rubber-duck/blob/main/README.md",
+  "repository": "https://github.com/vilarjp/rubber-duck",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven",
+    "planning",
+    "implementation",
+    "code-review",
+    "safe-shipping"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Rubber Duck",
+    "shortDescription": "Spec-driven planning, implementation, review, and commit workflows.",
+    "longDescription": "Turn fuzzy software work into concise PRDs, reviewed implementation plans, evidence-backed diagnoses, focused implementation passes, structured code reviews, and deliberate commit/push flows.",
+    "developerName": "João Vilar",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/vilarjp/rubber-duck",
+    "defaultPrompt": [
+      "Use Rubber Duck to write a PRD for this feature.",
+      "Use Rubber Duck to plan this implementation.",
+      "Use Rubber Duck to review my local diff.",
+      "Use Rubber Duck setup-codex-agents to install reviewer agents."
+    ],
+    "brandColor": "#F8C84E"
+  }
+}

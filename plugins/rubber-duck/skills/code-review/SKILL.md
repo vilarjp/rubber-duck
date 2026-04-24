@@ -32,7 +32,7 @@ The document status must remain `pending-approval` until the human explicitly ap
 ## Workflow
 
 1. Determine the review scope.
-   - If `$ARGUMENTS` includes a GitHub PR link, fetch PR metadata, description, branch details, diff, changed files, comments, and checks through authenticated tools already available in the current Claude Code session.
+   - If `$ARGUMENTS` includes a GitHub PR link, fetch PR metadata, description, branch details, diff, changed files, comments, and checks through authenticated tools already available in the current assistant session.
    - Do not configure or bundle GitHub credentials, tokens, apps, or MCP servers.
    - If authenticated PR access fails, ask the human to paste the PR description, diff, changed file list, review comments, check status, and any related plan or issue link.
    - If no PR link is provided, inspect local uncommitted work with `git status`, `git diff --staged`, `git diff`, and targeted reads of relevant untracked files.
@@ -68,7 +68,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Run `code-security-reviewer` for security, privacy, compliance, authorization, validation, secrets, logging, dependency risk, and data exposure.
    - Run `test-reviewer` for meaningful test coverage, important scenarios, edge cases, regression risks, weak assertions, and redundant tests.
    - Run `implementation-plan-matcher` only when a related plan can be identified.
-   - Run independent code-focused reviewers in parallel when the current Claude Code environment supports it, then wait for all available reviewers before merging findings.
+   - Run independent code-focused reviewers in parallel when the current assistant environment supports it, then wait for all available reviewers before merging findings.
    - Pass reviewers the document path, source summary, diff or changed-file scope, focused test results, full quality gate results, and related plan path when applicable.
    - Do not write separate review files.
 8. Merge reviewer feedback into `code-review.md`.
@@ -88,6 +88,13 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the review not ready for approval.
 11. Tell the human the review path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
+
+## Runtime Compatibility
+
+- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory.
+- In Codex, prefer the generated custom agents installed by `setup-codex-agents`.
+- If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
+- Do not skip a configured reviewer solely because the current runtime exposes reviewer prompts as files instead of native agents.
 
 ## Document Requirements
 
@@ -138,7 +145,7 @@ If exact line numbers are unavailable for a PR diff or untracked file, cite the 
 
 ## Reviewer Orchestration Notes
 
-- Run independent reviewer agents in parallel when the current Claude Code environment supports it.
+- Run independent reviewer agents in parallel when the current assistant environment supports it.
 - Wait for all available code-focused reviewers, merge their findings, then run `document-reviewer` last on the merged review document.
 - Use blocking findings, required questions or fixes, security/privacy questions, plan drift, missing tests, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
 - The invoking skill owns the final review document. Reviewer agents return findings only; they do not edit the document.

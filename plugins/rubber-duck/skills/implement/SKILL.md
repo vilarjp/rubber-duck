@@ -28,7 +28,7 @@ If implementation reveals a material gap or contradiction in an approved plan, d
 ## Workflow
 
 1. Determine the source context.
-   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current Claude Code session.
+   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
    - If Jira access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, reproduction steps, logs, and relevant links.
    - If `$ARGUMENTS` looks like a slug, search for matching `docs/*-{slug}/plan.md`, `docs/*-{slug}/diagnosis.md`, and `docs/*-{slug}/code-review.md` files.
