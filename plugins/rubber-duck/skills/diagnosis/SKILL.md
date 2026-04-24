@@ -58,7 +58,9 @@ The diagnosis document is the only file this skill may create or modify. Its sta
    - Include only sections that help decide the next implementation or product action.
    - Do not implement fixes, edit tests, update configuration, or change source code.
 7. Run the `document-reviewer` agent on the generated `diagnosis.md`.
-   - Ask it to review for completeness, correctness, clarity, unresolved uncertainty, request alignment, missing questions, approval readiness, and whether the root cause is evidence-backed.
+   - Follow the Reviewer Invocation Contract below.
+   - Invoke the exact pre-built `document-reviewer` agent.
+   - Pass the diagnosis path, source context summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
    - Do not write a separate review file.
 8. Apply reviewer feedback only by updating `diagnosis.md`, and only when it improves correctness, evidence quality, clarity, or approval readiness.
    - Treat blocking issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
@@ -73,10 +75,19 @@ The diagnosis document is the only file this skill may create or modify. Its sta
 
 ## Runtime Compatibility
 
-- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory.
-- In Codex, prefer the generated custom agents installed by `setup-codex-agents`.
+- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory and their full Markdown definitions.
+- In Codex, prefer the exact named generated custom agents installed by `setup-codex-agents`.
 - If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
 - Do not skip `document-reviewer` solely because the current runtime exposes reviewer prompts as files instead of native agents.
+
+## Reviewer Invocation Contract
+
+- Invoke reviewer roles by exact pre-built agent name, such as `document-reviewer`.
+- In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: document-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- Use the launch prompt only for run-specific context: document path, source summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
+- Do not replace the reviewer with a compressed prompt such as `Please review for completeness...`. A short launch prompt is acceptable only after the named pre-built reviewer has been selected, and it must not restate, narrow, or override the agent definition.
+- Let the selected reviewer follow its own scope, operating rules, checklist, and output format from `agents/<agent-name>.md` or the generated Codex TOML.
+- If the runtime cannot invoke the named reviewer, read the full matching agent definition from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform the same review inline or through the closest available delegation mechanism. Treat this as a fallback and make the unavailability explicit.
 
 ## Document Requirements
 

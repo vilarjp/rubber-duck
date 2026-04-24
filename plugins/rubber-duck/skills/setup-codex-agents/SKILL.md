@@ -11,6 +11,8 @@ Use this skill after installing Rubber Duck in Codex to generate Codex-native cu
 
 Claude Code loads the Markdown files in the plugin root `agents/` directory directly. Codex custom agents use TOML files under `.codex/agents/` for a project or `~/.codex/agents/` globally. This skill bridges that packaging difference.
 
+The generated agents are the source of truth for reviewer behavior in Codex. Rubber Duck skills should invoke them by exact custom-agent name and use the launch prompt only for document paths, diffs, source summaries, and other run-specific context.
+
 ## Inputs
 
 Accept `$ARGUMENTS` as optional flags for the bundled script:
