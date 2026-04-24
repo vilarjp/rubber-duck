@@ -32,7 +32,7 @@ The document status must remain `pending-approval` until the human explicitly ap
 ## Workflow
 
 1. Determine the source context.
-   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current Claude Code session.
+   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
    - If Jira access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, and relevant links.
    - If `$ARGUMENTS` looks like a slug, search for matching `docs/*-{slug}/prd.md` files.
@@ -61,7 +61,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Run `plan-future-maintainer` for future context, ambiguous decisions, aging assumptions, and concise additions.
    - Run `plan-security-reviewer` for security, privacy, compliance, authorization, validation, secrets, logging, retention, and abuse-case gaps.
    - Run `plan-staff-engineer` for stack-specific architecture risks, production bugs, compatibility concerns, observability gaps, and simpler implementation options.
-   - Run these independent reviewers in parallel when the current Claude Code environment supports it.
+   - Run these independent reviewers in parallel when the current assistant environment supports it.
    - Pass each reviewer the plan path, source context summary, and any relevant PRD or Jira context.
    - Do not write separate review files.
 7. Merge reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
@@ -80,6 +80,13 @@ The document status must remain `pending-approval` until the human explicitly ap
 10. Tell the human the plan path and that it is pending approval.
 
 - Ask them to review it and explicitly approve or request changes.
+
+## Runtime Compatibility
+
+- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory.
+- In Codex, prefer the generated custom agents installed by `setup-codex-agents`.
+- If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
+- Do not skip a configured reviewer solely because the current runtime exposes reviewer prompts as files instead of native agents.
 
 ## Document Requirements
 
@@ -121,7 +128,7 @@ Use these sections when useful:
 ## Reviewer Orchestration Notes
 
 - Run `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` before asking for human approval when the agents are available.
-- Prefer running independent specialist reviewer agents in parallel when the current Claude Code environment supports it.
+- Prefer running independent specialist reviewer agents in parallel when the current assistant environment supports it.
 - Wait for all available specialist reviewers, merge their findings, then run `document-reviewer` last on the merged plan.
 - Use blocking findings, security/privacy questions, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
 - If an expected reviewer agent is unavailable, note that gap in the final response and add it to the plan's Blocking Questions, Deferred Non-Blocking Questions, or Approval notes when it affects approval confidence.

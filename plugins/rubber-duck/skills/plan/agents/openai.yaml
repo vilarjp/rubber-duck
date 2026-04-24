@@ -1,0 +1,7 @@
+interface:
+  display_name: "Plan"
+  short_description: "Write and review a concise technical implementation plan."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck plan to plan this implementation."
+policy:
+  allow_implicit_invocation: false

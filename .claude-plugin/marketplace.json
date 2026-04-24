@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
   "metadata": {
-    "description": "Spec-driven Claude Code workflows for planning, implementation, review, and safe shipping."
+    "description": "Spec-driven agent workflows for planning, implementation, review, and safe shipping."
   },
   "owner": {
     "name": "João Vilar",
@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "rubber-duck",
-      "description": "Claude Code plugin for lightweight spec-driven feature development, bug diagnosis, implementation, review, and commit/push workflows.",
+      "description": "Marketplace-ready plugin for lightweight spec-driven feature development, bug diagnosis, implementation, review, and commit/push workflows.",
       "source": "./plugins/rubber-duck"
     }
   ]

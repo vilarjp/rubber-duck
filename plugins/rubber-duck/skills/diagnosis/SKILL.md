@@ -32,7 +32,7 @@ The diagnosis document is the only file this skill may create or modify. Its sta
 ## Workflow
 
 1. Determine the source context.
-   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current Claude Code session.
+   - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
    - If Jira access fails, ask the human to paste the Jira title, description, reproduction steps, expected behavior, observed behavior, comments, logs, screenshots, and relevant links.
    - If `$ARGUMENTS` is a prompt, use it as the source of truth.
@@ -70,6 +70,13 @@ The diagnosis document is the only file this skill may create or modify. Its sta
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the diagnosis not ready for approval.
 10. Tell the human the diagnosis path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
+
+## Runtime Compatibility
+
+- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory.
+- In Codex, prefer the generated custom agents installed by `setup-codex-agents`.
+- If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
+- Do not skip `document-reviewer` solely because the current runtime exposes reviewer prompts as files instead of native agents.
 
 ## Document Requirements
 

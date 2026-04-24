@@ -15,26 +15,26 @@ source: clean-room user brief
 
 ## Purpose
 
-Build `rubber-duck` from absolute scratch as a Claude Code plugin marketplace focused on spec-driven feature development, bug diagnosis, implementation, review, and commit/push workflows.
+Build `rubber-duck` from absolute scratch as a cross-host plugin marketplace focused on spec-driven feature development, bug diagnosis, implementation, review, and commit/push workflows.
 
 This plan intentionally does not reuse previous repository state, previous implementation memories, or assumed product decisions. Product and packaging decisions are captured below so future sessions can proceed without re-asking them.
 
-## Official References Verified On 2026-04-23
+## Packaging Notes Verified On 2026-04-23, Updated 2026-04-24
 
-- [Claude Code skills](https://code.claude.com/docs/en/skills): skills use `SKILL.md`, can be invoked directly, support frontmatter such as `disable-model-invocation`, `argument-hint`, `allowed-tools`, `context`, and `agent`, and should keep supporting material in skill folders.
-- [Claude Code plugins](https://code.claude.com/docs/en/plugins): plugins are the right packaging model for reusable marketplace distribution; plugin skills are namespaced as `/plugin-name:skill-name`; plugin components live at plugin root, not inside `.claude-plugin/`.
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces): marketplace repos expose `.claude-plugin/marketplace.json`; GitHub marketplaces can be added with `/plugin marketplace add owner/repo`.
-- [Claude Code plugins reference](https://code.claude.com/docs/en/plugins-reference): plugin manifests use `.claude-plugin/plugin.json`; skills live in `skills/`, agents in `agents/`, hooks in `hooks/hooks.json`, and `claude plugin validate` validates plugin and marketplace structure.
-- [Claude Code subagents](https://code.claude.com/docs/en/subagents): subagents are Markdown files with YAML frontmatter, should be focused, can set `model: sonnet`, and should limit tools to the minimum necessary.
-- [Claude Code hooks reference](https://code.claude.com/docs/en/hooks): agent hooks exist but are experimental; do not rely on them for the MVP unless explicitly approved.
-
-Note: the local Codex `plugin-creator` skill uses `.codex-plugin`, which is not the Claude Code plugin format. Rubber Duck should follow Claude Code's `.claude-plugin` structure.
+- Skills use `SKILL.md`, can be invoked directly, and should keep supporting material in skill folders.
+- Slash-command plugin hosts use `.claude-plugin/marketplace.json` at the repository root and `.claude-plugin/plugin.json` inside the plugin.
+- Plugin UI hosts use `.agents/plugins/marketplace.json` at the repository root and `.codex-plugin/plugin.json` inside the plugin.
+- Plugin components live at plugin root. Shared skills remain in the plugin root `skills/` directory.
+- Native plugin agents are Markdown files with YAML frontmatter, should be focused, and should limit tools to the minimum necessary.
+- Claude Code consumes the plugin root `agents/*.md` files directly; those Markdown agents set `model: sonnet`.
+- Codex custom agents use TOML files under `.codex/agents/` or `~/.codex/agents/`. Rubber Duck ships a setup skill that converts the Markdown reviewer agents to Codex TOML with `model = "gpt-5.5"` and `model_reasoning_effort = "medium"`.
+- Agent hooks exist in some hosts but are not required for the MVP.
 
 ## Resolved Decisions
 
-1. Marketplace install flow:
-   - `/plugin marketplace add vilarjp/rubber-duck`
-   - `/plugin install rubber-duck@rubber-duck`
+1. Marketplace install flows:
+   - Slash-command host: add `vilarjp/rubber-duck` as a plugin marketplace, then install `rubber-duck@rubber-duck`.
+   - Plugin UI host: add `vilarjp/rubber-duck` as a plugin marketplace, then install Rubber Duck from the plugin UI.
 2. GitHub repository: `vilarjp/rubber-duck`.
 3. Plugin metadata:
    - Author: `João Vilar`
@@ -43,9 +43,9 @@ Note: the local Codex `plugin-creator` skill uses `.codex-plugin`, which is not 
    - Homepage: `https://github.com/vilarjp/rubber-duck/blob/main/README.md`
    - License: `MIT`
    - Initial release tag: `v0.0.1`
-   - Manifest version: `0.0.1` if Claude Code validation requires SemVer without a leading `v`
+   - Manifest versions stay in sync across `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`
 4. The technical planning skill is named `plan`.
-5. Jira links rely only on authenticated tools already available in the user's Claude Code session. Rubber Duck will not bundle Jira MCP configuration in the MVP.
+5. Jira links rely only on authenticated tools already available in the user's current assistant session. Rubber Duck will not bundle Jira MCP configuration in the MVP.
 6. Automated agent reviews return findings. The invoking skill owns the artifact and merges accepted findings into the document; reviewer agents must not edit files or write separate review files.
 7. Document status uses YAML frontmatter plus a visible status line.
 8. `commit-push` asks for a final explicit "yes, commit and push" after proposing commit scope and splits.
@@ -53,10 +53,11 @@ Note: the local Codex `plugin-creator` skill uses `.codex-plugin`, which is not 
 10. Reviewer agents avoid persistent memory. They return findings, and the invoking skill merges those findings into the document.
 11. Reviewer agents return blocking findings and non-blocking suggestions, except `document-reviewer`, which focuses only on blocking issues, missing questions, and approval recommendation.
 12. Stack-specialist agents infer the stack from repository files only.
+13. Codex reviewer agents are installed by `setup-codex-agents`, because Codex marketplace installs expose skills while Codex custom agents live outside the plugin skill bundle.
 
 ## Validated Repository Layout
 
-Session 1 validated that the root-level single-plugin layout with `"source": "."` should not be used for this repository. Rubber Duck uses a root marketplace file that points to the nested plugin at `"source": "./plugins/rubber-duck"`, and the plugin manifest lives at `plugins/rubber-duck/.claude-plugin/plugin.json`.
+Session 1 validated that the root-level single-plugin layout with `"source": "."` should not be used for this repository. Rubber Duck uses root marketplace files that point to the nested plugin at `./plugins/rubber-duck`. The slash-command host manifest lives at `plugins/rubber-duck/.claude-plugin/plugin.json`; the plugin UI host manifest lives at `plugins/rubber-duck/.codex-plugin/plugin.json`.
 
 Future sessions should keep the nested layout below unless the human explicitly approves a layout migration.
 
@@ -69,23 +70,48 @@ rubber-duck/
 +-- README.md
 +-- .claude-plugin/
 |   +-- marketplace.json
++-- .agents/
+|   +-- plugins/
+|       +-- marketplace.json
 +-- plugins/
 |   +-- rubber-duck/
 |       +-- .claude-plugin/
 |       |   +-- plugin.json
+|       +-- .codex-plugin/
+|       |   +-- plugin.json
 |       +-- skills/
 |       |   +-- prd/
 |       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
 |       |   +-- plan/
 |       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
 |       |   +-- implement/
 |       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
 |       |   +-- diagnosis/
 |       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
 |       |   +-- code-review/
 |       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
 |       |   +-- commit-push/
+|       |   |   +-- SKILL.md
+|       |   |   +-- agents/
+|       |   |       +-- openai.yaml
+|       |   +-- setup-codex-agents/
 |       |       +-- SKILL.md
+|       |       +-- agents/
+|       |       |   +-- openai.yaml
+|       |       +-- scripts/
+|       |       |   +-- install-codex-agents.mjs
+|       |       +-- source-agents/
+|       |           +-- *.md
 |       +-- agents/
 |           +-- document-reviewer.md
 |           +-- plan-future-maintainer.md
@@ -107,6 +133,7 @@ All initial skills should:
 
 - Be standalone: no skill invokes or requires another skill.
 - Be manual by default with `disable-model-invocation: true`, because they write files, edit code, inspect private data, or run git operations.
+- For plugin UI hosts, set `policy.allow_implicit_invocation: false` in each skill's `agents/openai.yaml` for the same manual-invocation safety.
 - Accept `$ARGUMENTS` as either a free-form prompt, a Jira link, a GitHub PR link where applicable, or a slug/source hint.
 - Ask the human when the input is ambiguous enough that choosing would risk a wrong artifact or wrong code change.
 - If given a Jira link, attempt to read it only through available authenticated tools. If access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, and relevant links.
@@ -373,7 +400,8 @@ Conventional commit examples:
 All agents should:
 
 - Live in `agents/`.
-- Set `model: sonnet`.
+- Set `model: sonnet` in Markdown frontmatter for Claude Code.
+- Be convertible to Codex TOML with `model = "gpt-5.5"` and `model_reasoning_effort = "medium"`.
 - Be read-only unless a future requirement explicitly needs edits.
 - Avoid persistent memory.
 - Prefer `tools: Read, Grep, Glob, Bash` for code and git inspection.
@@ -503,12 +531,14 @@ Output:
 
 MVP strategy:
 
-- Skills stay inline in the main Claude Code session.
-- Skills are meant to be explicitly invoked by the human with slash commands, not inferred automatically.
+- Skills stay inline in the main assistant session.
+- Skills are meant to be explicitly invoked by the human with slash commands, plugin mentions, or skill mentions, not inferred automatically.
 - Each review-producing skill includes explicit instructions to invoke the required plugin agents before finalizing.
-- Agents use `model: sonnet`.
+- If the current runtime is Codex, run `setup-codex-agents` once after plugin installation to generate Codex custom agents.
+- If no compatible native or generated agent is available, the skill reads the corresponding reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and performs the same reviewer pass inline or through the closest available delegation mechanism.
+- Claude Code reviewer agents use Sonnet. Generated Codex reviewer agents use GPT-5.5 with medium reasoning by default.
 - Do not use skill `context: fork` for multi-reviewer workflows, because `context: fork` sends the whole skill to one subagent rather than orchestrating a reviewer group.
-- Do not rely on agent teams for MVP, because Claude Code starts teams only when requested or confirmed by the user.
+- Do not rely on agent teams for MVP, because some hosts start teams only when requested or confirmed by the user.
 - Do not rely on agent hooks for MVP, because official docs mark agent hooks experimental.
 - Do not require runtime smoke tests during MVP construction. Use explicit skill instructions and plugin validation first.
 
@@ -517,18 +547,19 @@ MVP strategy:
 The root `README.md` should eventually include:
 
 - What Rubber Duck is.
-- Motivation: lightweight spec-driven development for Claude Code, aimed at features, bugs, implementation, review, and safe shipping.
+- Motivation: lightweight spec-driven development for agentic coding sessions, aimed at features, bugs, implementation, review, and safe shipping.
 - Clean-room note: no previous Rubber Duck implementation assumed.
 - Install from marketplace:
-  - Add marketplace with `/plugin marketplace add vilarjp/rubber-duck`.
-  - Install with `/plugin install rubber-duck@rubber-duck`.
-  - Validate with `/plugin`, `/help`, and `/agents`.
+  - Add `vilarjp/rubber-duck` as a plugin marketplace.
+  - Install the `rubber-duck` plugin.
+  - Validate with the host's plugin, help, and agent views when available.
 - Local development:
-  - `claude --plugin-dir .`
-  - `/reload-plugins`
-  - `claude plugin validate .`
+  - Reload plugins after local file changes.
+  - Run the relevant host validator from the repository root when available.
+  - Restart the host after marketplace or plugin file changes when required.
 - Skill table: name, purpose, inputs, outputs.
 - Agent table: name, used by, purpose.
+- Codex setup step for generating `.codex/agents/*.toml` reviewer agents.
 - Document status lifecycle.
 - Example workflows:
   - PRD -> plan -> implement -> code-review -> commit-push.
@@ -555,7 +586,7 @@ Deliverables:
 - README install/dev skeleton.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 2: Create `prd` Skill
 
@@ -565,7 +596,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 3: Create `plan-future-maintainer` Agent
 
@@ -574,7 +605,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 4: Create `plan-security-reviewer` Agent
 
@@ -583,7 +614,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 5: Create `plan-staff-engineer` Agent
 
@@ -592,7 +623,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 6: Create `plan` Skill
 
@@ -603,7 +634,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 7: Create `diagnosis` Skill
 
@@ -613,7 +644,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 8: Create `code-staff-engineer-reviewer` Agent
 
@@ -622,7 +653,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 9: Create `project-patterns-reviewer` Agent
 
@@ -631,7 +662,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 10: Create `implementation-plan-matcher` Agent
 
@@ -640,7 +671,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 11: Create `code-security-reviewer` Agent
 
@@ -649,7 +680,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 12: Create `test-reviewer` Agent
 
@@ -658,7 +689,7 @@ Deliverables:
 - README agent table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 13: Create `implement` Skill
 
@@ -668,7 +699,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 14: Create `code-review` Skill
 
@@ -679,7 +710,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ### Session 15: Create `commit-push` Skill
 
@@ -690,7 +721,7 @@ Deliverables:
 - README skill table update.
 
 Validation:
-- `claude plugin validate .`
+- Run the host validator from the repository root when available.
 
 ## Session Definition Of Done
 
@@ -698,7 +729,7 @@ Every session should finish with:
 
 - Exactly one new skill or subagent added.
 - Any README table or usage text updated for that component.
-- `claude plugin validate .` run, or a clear note if unavailable.
+- Host validator run, or a clear note if unavailable.
 - No unrelated file changes.
 - No previous Rubber Duck implementation reused.
 
@@ -709,8 +740,8 @@ Every session should finish with:
 - No agent teams until the user explicitly asks for them.
 - No experimental agent hooks for required reviewer flow.
 - No dependency-heavy scripts unless a repeated workflow proves deterministic scripting is needed.
-- No slash commands under `commands/`; use `skills/` for new Claude Code plugin skills.
+- No slash commands under `commands/`; use `skills/` for new plugin skills.
 
 ## Current Build State
 
-The original Session 1 validation has been resolved. The repository should continue using the root marketplace plus nested `plugins/rubber-duck/` plugin layout unless the human explicitly approves a future layout migration.
+The original Session 1 validation has been resolved. The repository should continue using the dual root marketplace files plus nested `plugins/rubber-duck/` plugin layout unless the human explicitly approves a future layout migration.

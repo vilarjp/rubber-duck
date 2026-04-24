@@ -1,0 +1,7 @@
+interface:
+  display_name: "Setup Codex Agents"
+  short_description: "Generate Codex custom agents from Rubber Duck reviewer agents."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck setup-codex-agents to install the reviewer agents for Codex."
+policy:
+  allow_implicit_invocation: false

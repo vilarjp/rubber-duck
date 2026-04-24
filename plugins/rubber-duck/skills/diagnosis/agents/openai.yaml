@@ -1,0 +1,7 @@
+interface:
+  display_name: "Diagnosis"
+  short_description: "Investigate a bug and write an evidence-backed diagnosis."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck diagnosis to investigate this bug."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review a local diff or GitHub PR with focused reviewer passes."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck code-review to review my local diff."
+policy:
+  allow_implicit_invocation: false
