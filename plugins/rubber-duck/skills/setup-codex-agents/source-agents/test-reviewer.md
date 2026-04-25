@@ -50,7 +50,12 @@ Check whether the implementation:
 - Preserves existing test conventions for file placement, naming, fixtures, helpers, snapshots, mocks, setup, teardown, and assertion style.
 - Covers success paths, failure paths, empty states, invalid input, boundary values, permission or authorization cases, compatibility behavior, and regression cases when relevant.
 - Verifies observable behavior rather than only implementation details, mocks, snapshots, logs, or incidental structure.
+- Prefers public behavior, contract-level outputs, and observable state over interaction counts, private helpers, internal branches, or implementation-only structure.
 - Includes meaningful assertions that would fail if the changed behavior regressed.
+- Keeps tests readable and specific enough to diagnose failures; prefer clear DAMP tests (descriptive and meaningful) over shared helpers or abstractions that hide the scenario under review.
+- Uses real implementations when practical, then purpose-built fakes or stubs, and mocks only when the real dependency is impractical, slow, nondeterministic, unsafe, or outside the test boundary.
+- Avoids incomplete mocks, over-mocking, or mocks that hide important side effects, integration behavior, serialization, permissions, timing, retries, or error handling.
+- Does not add or endorse test-only production methods, flags, exported internals, or public APIs unless they are clearly justified by product behavior or existing project convention.
 - Updates fixtures, snapshots, golden files, generated examples, or documentation tests intentionally when expected outputs change.
 - Avoids brittle or flaky patterns such as sleeps, order-dependent assertions, real network calls, uncontrolled time, shared mutable state, or environment-dependent behavior.
 - Avoids redundant tests that repeat the same assertions without increasing confidence.

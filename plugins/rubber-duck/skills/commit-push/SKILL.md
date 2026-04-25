@@ -82,7 +82,14 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Do not include unrelated changes.
    - If unrelated changes are already staged, do not accidentally commit them. Ask before changing the index when needed.
    - If the intended scope is unclear, ask the human which paths belong in the commit.
-7. Run the final verification gate.
+7. Run pre-commit scope and hygiene checks.
+   - Run these checks after identifying the intended commit scope and before asking for final commit/push confirmation.
+   - Inspect the intended diff for likely secrets, credentials, tokens, private keys, connection strings, or copied environment values. If any are plausible, stop before staging and ask whether to remove, rotate, or intentionally include them.
+   - Inspect the intended diff for debug artifacts such as temporary logs, print statements, focused-only test flags, skipped tests, scratch files, local paths, generated noise, or commented-out experiments.
+   - Confirm code changes include relevant focused coverage, or record the explicit reason coverage was not added.
+   - Confirm the intended diff matches the stated scope and does not silently include nearby cleanup, formatting churn, or unrelated files.
+   - Treat this as a lightweight shipping-safety check, not a broad QA workflow or full security audit.
+8. Run the final verification gate.
    - Run this gate after identifying the intended commit scope and before asking for final commit/push confirmation.
    - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
    - Run every available non-mutating command that checks formatting, linting, type checking, builds or compilation, and the full automated test suite.
@@ -90,26 +97,28 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Prefer a single repo-native `check`, `verify`, `ci`, or equivalent command only when repository evidence shows that it covers the relevant formatting, linting, type checking, build, and test categories; otherwise run the individual commands.
    - Do not run formatters, linters, generators, snapshots, or other tools in write/fix/update mode unless the human explicitly asks for it.
    - If any important verification command fails, is unavailable, too expensive, blocked, or cannot be inferred safely, stop before staging, committing, or pushing. Report the exact command or category and ask whether to fix the issue, change the scope, or proceed with explicit known risk.
-8. Propose the commit plan.
+9. Propose the commit plan.
    - Split commits only when there are clear logical units that can be understood and reverted independently.
    - Prefer a single commit when the work is one coherent change.
    - For each proposed commit, list the conventional commit message and included paths.
    - List excluded local changes when they exist.
+   - List any pre-commit scope or hygiene concerns found, including relevant coverage gaps or the explicit reason coverage was not added.
    - List the final verification gate commands and results, including unavailable categories.
-9. Ask for final confirmation.
+10. Ask for final confirmation.
    - Use the required phrase `yes, commit and push`.
    - Do not commit or push until the human responds with that exact confirmation.
-10. Create commits after confirmation.
+11. Create commits after confirmation.
    - Stage only the files for the current commit.
    - Preserve unrelated working tree and index changes.
    - Use conventional commit messages.
    - If a commit command fails, stop and report the failure instead of trying broad recovery commands.
-11. Push after successful commits.
+12. Push after successful commits.
     - Push the selected branch to the configured remote.
     - Use upstream setup for new branches, usually `git push -u origin <branch>`.
     - Do not force push unless explicitly approved and non-protected.
-12. Summarize the result.
+13. Summarize the result.
     - Include the branch, commit SHA or SHAs, commit messages, pushed remote, and any excluded local changes.
+    - Include pre-commit scope and hygiene check results.
     - Include the final verification gate commands and results, including unavailable categories.
     - Mention any remaining local uncommitted changes.
 
@@ -161,6 +170,7 @@ After pushing, the final response must include:
 - Target branch.
 - Remote pushed to.
 - Commit SHA or SHAs and messages.
+- Pre-commit scope and hygiene check results.
 - Final verification gate commands and results, including unavailable categories.
 - Remaining local changes, if any.
 

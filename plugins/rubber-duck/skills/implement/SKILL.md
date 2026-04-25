@@ -66,12 +66,16 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - Check `git status` before modifying files so unrelated user changes are preserved.
    - Work with existing user changes when they affect the task; do not revert changes you did not make.
 4. Follow TDD whenever feasible.
+   - When practical, run an existing nearby test before adding a new failing test so the local harness and dependencies are known to work.
    - Add or adjust a focused failing test for the requested behavior before implementation when the project has a practical test harness.
+   - Confirm the focused failing test fails for the expected reason, not because of setup, imports, mocks, environment, or unrelated breakage.
    - If a failing test cannot be written first because the project has no suitable test setup, the change is documentation-only, or the cost is disproportionate, state that reason in the final summary.
+   - For non-behavior changes where a focused failing test would be artificial, use Verification Mode: identify the smallest meaningful checks for the changed artifact, run them when available, and state why TDD was not applicable.
    - Keep tests targeted to meaningful behavior and regression risk; add tests only where they provide real confidence rather than broad coverage churn.
 5. Implement the smallest correct change.
    - Prefer existing helpers, patterns, frameworks, naming, layering, and file organization.
    - Keep the change set small and focused: make the minimal clean change that fully solves the specific problem.
+   - Make sure each changed line traces to the request, approved artifact, review comment, or directly required test and integration work.
    - Apply KISS and YAGNI; avoid speculative abstractions, broad refactors, new dependencies, architecture changes, generated file updates, or public API changes unless clearly required by the source context.
    - Prefer early returns and guard clauses over avoidable nested branches when they make the changed code clearer.
    - Do not introduce nested ternary expressions; use named variables, guard clauses, `if`/`else`, or small helpers instead.
@@ -101,18 +105,22 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - List completed planned subtasks and progress documents created or updated.
    - Identify the next planned subtask or state that the plan implementation appears complete.
    - List tests and checks run.
-   - Call out skipped TDD, skipped verification, assumptions, risks, or follow-up work.
+   - Call out skipped TDD, Verification Mode use, skipped verification, assumptions, risks, or follow-up work.
+   - When adjacent issues were noticed but intentionally left out of scope, add a concise `Noticed but not touching` note.
 
 ## TDD Guidance
 
 Use this default loop when practical:
 
-1. Reproduce or encode the current failure with the narrowest useful test.
-2. Run the focused test and confirm it fails for the expected reason.
-3. Make the smallest implementation change.
-4. Run the focused test until it passes.
-5. Add edge-case coverage only when it protects important behavior or a known regression path.
-6. Run the full quality gate: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
+1. Run an existing nearby test first when practical, to prove the relevant test harness is healthy.
+2. Reproduce or encode the current failure with the narrowest useful test.
+3. Run the focused test and confirm it fails for the expected reason.
+4. Make the smallest implementation change.
+5. Run the focused test until it passes.
+6. Add edge-case coverage only when it protects important behavior or a known regression path.
+7. Run the full quality gate: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
+
+Use Verification Mode instead of forcing artificial TDD for non-behavior changes such as documentation, prompts, metadata, comments, or purely mechanical updates. In Verification Mode, identify the smallest meaningful checks for the changed artifact, run available non-mutating validation commands, and report any unavailable verification clearly.
 
 ## Artifact Handling
 
