@@ -38,6 +38,10 @@ Check whether the plan:
 - Fits the repository's detected language, framework, runtime, build tooling, test framework, and deployment assumptions.
 - Names the right files, modules, ownership boundaries, APIs, data flows, and integration points for the planned change.
 - Chooses an implementation approach that is proportionate to the requested behavior and avoids unnecessary abstractions.
+- Breaks medium-to-complex work into implementation subtasks with clear dependencies, ownership/files, acceptance checks, and progress document names.
+- Recommends a safe execution strategy: single focused pass, incremental task-by-task, or parallel implementation subagents.
+- Only recommends parallel implementation when subtasks have disjoint write sets, stable interfaces, clear merge boundaries, and no unresolved blockers.
+- Evaluates whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
 - Preserves existing public contracts, compatibility, migrations, feature flags, rollout paths, and rollback paths when relevant.
 - Accounts for concurrency, idempotency, ordering, caching, retries, pagination, async jobs, or race conditions when relevant.
 - Includes data model, schema, migration, backfill, and compatibility details when storage changes are involved.
@@ -45,6 +49,7 @@ Check whether the plan:
 - Specifies meaningful tests for the affected stack layers and important edge cases.
 - Separates confirmed implementation facts from assumptions, hypotheses, blocking questions, deferred non-blocking questions, and optional future work.
 - Identifies simpler local-pattern alternatives when the proposed approach is heavier than needed.
+- Preserves answered blocking questions with the human answer and document impact when those answers change technical scope or sequencing.
 
 ## Output
 
@@ -65,3 +70,7 @@ List missing migration, compatibility, rollout, rollback, monitoring, logging, a
 ### Simpler Implementation Options
 
 List simpler approaches that would reduce risk or scope while preserving the requested outcome. If there are none, write `None`.
+
+### Execution Strategy Concerns
+
+List subtask breakdown, sequencing, parallelization, ownership, merge-risk, or orchestration-skill concerns that should be fixed before approval. If there are none, write `None`.

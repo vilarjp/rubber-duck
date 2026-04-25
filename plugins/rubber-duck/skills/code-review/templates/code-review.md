@@ -4,6 +4,7 @@ slug: short-slug
 type: code-review
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: local-diff
 ---
 
@@ -56,18 +57,41 @@ Write `None` when there are no material notes.
 - Matched plan items.
 - Missing plan items.
 - Extra implementation scope.
+- Planned subtask or subtasks represented by the reviewed changes.
+- Related `task_N.md` progress documents and whether completed subtasks have corresponding docs.
+- Sequential or parallel orchestration constraints from the plan and whether the reviewed work respected them.
 
 Write `No related plan found` when no applicable plan is available.
 
+## Workflow Compliance
+
+- Generated-document metadata: whether touched Rubber Duck documents include `created`, `updated`, and accurate status fields.
+- Answered blocking questions: whether original questions were preserved with the human answer and document impact.
+- Document changelog: whether material human answers, requested changes, reviewer-driven updates, approvals, and requested-changes decisions were recorded.
+- Subtask orchestration: whether medium-to-complex plans include subtasks, execution strategy, and per-subtask progress documents.
+
+Write `None` when there are no material workflow notes.
+
 ## Blocking Questions
 
-- Questions that must be answered before approval because they affect review scope, finding severity, required fixes, security risk, test coverage, plan alignment, or approval readiness.
-- Write `None` when there are no blocking questions.
+- Keep every blocking question that was raised, including questions the human has answered.
+- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
+- Use this shape:
+  - Status: open | answered
+    Question: Original question text.
+    Answer: Human answered on yyyy-mm-dd: answer text.
+    Document impact: What changed in this document because of the answer.
+- Write `None` only when no blocking questions have ever been raised.
 
 ## Deferred Non-Blocking Questions
 
 - Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
 - Write `None` when there are no deferred questions.
+
+## Document Changelog
+
+- yyyy-mm-dd: Created from local diff or GitHub PR context.
+- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
 
 ## Approval
 

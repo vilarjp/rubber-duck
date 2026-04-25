@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.8" src="https://img.shields.io/badge/version-0.0.8-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.0.9" src="https://img.shields.io/badge/version-0.0.9-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -42,6 +42,7 @@ Start a new session or reload plugins, then invoke Rubber Duck with the plugin n
 /rubber-duck:prd
 /rubber-duck:plan
 /rubber-duck:diagnosis
+/rubber-duck:orchestrate-implementation
 /rubber-duck:implement
 /rubber-duck:code-review
 /rubber-duck:commit-push
@@ -78,6 +79,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 /rubber-duck:prd
 /rubber-duck:plan
 /rubber-duck:diagnosis
+/rubber-duck:orchestrate-implementation
 /rubber-duck:implement
 /rubber-duck:code-review
 /rubber-duck:commit-push
@@ -88,9 +90,10 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Moment             | Rubber Duck helps with                                                                                             |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | Product idea       | Turns rough prompts or Jira context into a concise PRD.                                                            |
-| Technical planning | Builds an implementation plan and sends it through maintainer, security, and staff-engineer review.                |
+| Technical planning | Builds an implementation plan with execution strategy, subtasks when useful, and maintainer/security/staff review. |
 | Bug investigation  | Produces an evidence-backed diagnosis before anyone starts changing code.                                          |
-| Implementation     | Guides scoped, test-first changes against an approved artifact or direct request.                                  |
+| Orchestration      | Coordinates approved plan subtasks sequentially or with parallel-safe implementation subagents.                    |
+| Implementation     | Guides scoped, test-first changes against an approved artifact or direct request, including planned task progress. |
 | Code review        | Reviews local diffs or PRs with specialist agents for correctness, security, tests, patterns, and plan alignment.  |
 | Commit and push    | Proposes conventional commit splits, blocks protected branches, asks for explicit confirmation, and pushes safely. |
 
@@ -99,9 +102,10 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Invoke                     | Use it when                                                         | Inputs                                                                         | Output                                                             |
 | -------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | `/rubber-duck:prd`         | You need the what and why before implementation.                    | Free-form prompt or Jira link.                                                 | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                  |
-| `/rubber-duck:plan`        | You need the technical how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval.                 |
+| `/rubber-duck:plan`        | You need the technical how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval, with subtasks for medium-to-complex work. |
 | `/rubber-duck:diagnosis`   | You need to understand a bug before fixing it.                      | Bug report, Jira link, logs, reproduction notes, or source hint.               | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.            |
-| `/rubber-duck:implement`   | You are ready to make a scoped code change.                         | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug. | Code and tests changed in the target project.                      |
+| `/rubber-duck:orchestrate-implementation` | You need to coordinate an approved plan's subtasks. | Approved plan slug/path, optional task IDs, and optional sequential/parallel hint. | Code/tests changed; completed planned subtasks emit `task_N.md` progress docs. |
+| `/rubber-duck:implement`   | You are ready to make a scoped code change.                         | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug. | Code/tests changed; planned subtasks emit `task_N.md` progress docs. |
 | `/rubber-duck:code-review` | You want a structured review of a local diff or GitHub PR.          | Empty input for local changes, GitHub PR link, or plan/source hint.            | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.          |
 | `/rubber-duck:commit-push` | You want to ship local work deliberately.                           | Optional branch or commit-intent hint.                                         | One or more conventional commits pushed to a non-protected branch. |
 | `/rubber-duck:setup-codex-agents` | You installed Rubber Duck in Codex and want reviewer agents available. | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.           | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`. |
@@ -110,13 +114,13 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 
 | Agent                          | Used by                                   | Checks                                                                                                 |
 | ------------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `document-reviewer`            | `prd`, `plan`, `diagnosis`, `code-review` | Document completeness, correctness, missing questions, and approval readiness.                         |
+| `document-reviewer`            | `prd`, `plan`, `diagnosis`, `code-review` | Document completeness, metadata, answered questions, changelog, subtasks, missing questions, and approval readiness. |
 | `plan-future-maintainer`       | `plan`                                    | Whether a future maintainer can understand intent, constraints, decisions, and rollback context.       |
 | `plan-security-reviewer`       | `plan`                                    | LGPD, PII, PCI, authorization, validation, secrets, logging, retention, and abuse-case gaps.           |
 | `plan-staff-engineer`          | `plan`                                    | Architecture risk, stack fit, production bugs, compatibility, observability, and simpler options.      |
 | `code-staff-engineer-reviewer` | `code-review`                             | Correctness, maintainability, stack best practices, production risk, and required fixes.               |
 | `project-patterns-reviewer`    | `code-review`                             | Local conventions, naming, layering, testing style, file organization, and companion docs.             |
-| `implementation-plan-matcher`  | `code-review`                             | Whether the implementation matches the approved plan without missing work or extra scope.              |
+| `implementation-plan-matcher`  | `code-review`                             | Whether the implementation matches the approved plan, subtasks, task docs, and scope.                  |
 | `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure. |
 | `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.      |
 
@@ -125,25 +129,38 @@ Reviewer agents return findings and exact human questions to the invoking skill.
 ## Duck Trail
 
 ```text
-/rubber-duck:prd -> /rubber-duck:plan -> /rubber-duck:implement -> /rubber-duck:code-review -> /rubber-duck:commit-push
-/rubber-duck:diagnosis -> /rubber-duck:implement -> /rubber-duck:code-review -> /rubber-duck:commit-push
+/rubber-duck:prd -> /rubber-duck:plan -> /rubber-duck:orchestrate-implementation -> /rubber-duck:code-review -> /rubber-duck:commit-push
+/rubber-duck:diagnosis -> /rubber-duck:plan -> /rubber-duck:orchestrate-implementation -> /rubber-duck:code-review -> /rubber-duck:commit-push
+/rubber-duck:implement -> /rubber-duck:code-review -> /rubber-duck:commit-push
 GitHub PR link -> /rubber-duck:code-review
 ```
 
-Generated PRD, plan, diagnosis, and code-review documents live in the target project under:
+Generated PRD, plan, diagnosis, code-review, and planned-task progress documents live in the target project under:
 
 ```text
 docs/yyyy-mm-dd-{slug}/
 ```
 
-Documents start as `pending-approval` in YAML frontmatter. Human confirmation updates them to `approved` or `requested-changes` with a decision date and short note.
+Approval-gated documents start as `pending-approval` in YAML frontmatter and include both `created` and `updated` dates. Human confirmation updates them to `approved` or `requested-changes` with a decision date, short note, updated date, and changelog entry. Planned-task progress documents use `type: implementation-task` and record completion status for their specific subtask.
 
-Approval is intentionally a loop. Rubber Duck should ask follow-up questions as many times as necessary until approval-relevant ambiguity is resolved, explicitly deferred by the human as non-blocking, or the workflow stops. Generated documents separate `Blocking Questions` from `Deferred Non-Blocking Questions` so unresolved approval blockers do not get hidden in ordinary notes.
+Approval is intentionally a loop. Rubber Duck should ask follow-up questions as many times as necessary until approval-relevant ambiguity is resolved, explicitly deferred by the human as non-blocking, or the workflow stops. Generated documents separate `Blocking Questions` from `Deferred Non-Blocking Questions` so unresolved approval blockers do not get hidden in ordinary notes. When the human answers a blocking question, the original question stays in the document as an answered entry with the human answer, answer date, and document impact.
+
+Material document updates are tracked in `Document Changelog`, including human answers, requested changes, reviewer-driven updates, approvals, and requested-changes decisions.
+
+Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. The strategy recommends `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Completed planned subtasks create colocated progress documents such as:
+
+```text
+docs/yyyy-mm-dd-{slug}/task_1.md
+docs/yyyy-mm-dd-{slug}/task_2.md
+```
 
 ## Safety Rails
 
 - `implement` follows TDD whenever feasible and explains when it cannot.
+- `orchestrate-implementation` owns multi-subtask coordination and only runs parallel workers when tasks are explicitly parallel-safe.
+- `implement` reads planned subtasks and existing `task_N.md` documents before choosing the next task.
 - `implement` runs a full quality gate before completion: format checks, linting, type checks, builds, and the full automated test suite when those commands exist.
+- `implement` writes one progress document per completed planned subtask so later runs can see what is done and what should run next.
 - `commit-push` runs the same final verification gate before commit and push confirmation, and stops when required checks fail or cannot run without explicit human risk acceptance.
 - `commit-push` refuses `main`, `master`, `production`, and `staging`.
 - `commit-push` requires the exact final confirmation: `yes, commit and push`.

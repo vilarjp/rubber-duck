@@ -57,6 +57,12 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Prefer evidence from the repository over speculation.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
+   - Classify implementation complexity as `simple`, `medium`, or `complex`.
+   - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
+   - For simple work, either include one task or explicitly write that a single focused pass is recommended.
+   - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`.
+   - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether current runtime worker subagents can safely handle independent tasks.
+   - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
 6. Run specialist reviewer agents on the generated `plan.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `plan-future-maintainer` agent.
@@ -77,6 +83,9 @@ The document status must remain `pending-approval` until the human explicitly ap
 9. Resolve all approval blockers before presenting the plan for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `plan.md` after each answer.
+   - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
+   - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
+   - Update the frontmatter `updated` field to the local date whenever the document changes.
    - Rerun the affected specialist reviewers and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the plan not ready for approval.
 10. Tell the human the plan path and that it is pending approval.
@@ -112,6 +121,7 @@ slug: short-slug
 type: plan
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: prompt | jira | prd
 ---
 ```
@@ -128,6 +138,8 @@ Use these sections when useful:
 - Source Context
 - Current System Notes
 - Proposed Approach
+- Implementation Strategy
+- Implementation Subtasks
 - Files / Modules To Touch
 - Data Model / Migrations
 - API / UI Behavior
@@ -136,7 +148,20 @@ Use these sections when useful:
 - Rollout / Rollback
 - Blocking Questions
 - Deferred Non-Blocking Questions
+- Document Changelog
 - Approval
+
+## Implementation Strategy And Subtasks
+
+Plans must explicitly guide execution:
+
+- `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
+- `medium` and `complex` plans must include implementation subtasks.
+- Each subtask must include task number, short title, status, execution mode, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
+- Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.
+- The strategy must recommend incremental task-by-task execution or parallel execution across multiple implementation subagents, with rationale.
+- The strategy must recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
+- Parallel implementation must only be recommended when tasks can be assigned disjoint write sets and merged without cross-task ordering risk.
 
 ## Reviewer Orchestration Notes
 
@@ -150,7 +175,9 @@ Use these sections when useful:
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `plan.md`, rerun affected specialist reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `plan.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun affected specialist reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+
+Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 
 ## Approval Updates
 
@@ -158,6 +185,7 @@ If the human later explicitly approves the plan, update the frontmatter:
 
 ```yaml
 status: approved
+updated: yyyy-mm-dd
 approved: yyyy-mm-dd
 approval_note: Short note
 ```
@@ -166,8 +194,9 @@ If the human requests changes, update the frontmatter:
 
 ```yaml
 status: requested-changes
+updated: yyyy-mm-dd
 decision_date: yyyy-mm-dd
 decision_note: Short note
 ```
 
-Keep the visible status line in sync with frontmatter.
+Keep the visible status line in sync with frontmatter and add a matching `Document Changelog` entry.

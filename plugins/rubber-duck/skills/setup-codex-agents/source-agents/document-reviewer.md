@@ -18,6 +18,7 @@ Supported document types:
 - technical implementation plan
 - bug diagnosis
 - code review
+- implementation task progress document
 
 ## Operating Rules
 
@@ -40,21 +41,26 @@ Supported document types:
 Check whether the document:
 
 - Matches the user's request and declared source context.
-- Has valid YAML frontmatter with the expected document type, slug, status, created date, and source.
+- Has valid YAML frontmatter with the expected document type, slug, status, created date, updated date, and source.
 - Contains a visible status or approval section when required by Rubber Duck conventions.
-- Separates facts, assumptions, blocking questions, deferred non-blocking questions, non-goals, and recommendations clearly.
+- Separates facts, assumptions, open blocking questions, answered blocking questions, deferred non-blocking questions, non-goals, and recommendations clearly.
+- Preserves every answered blocking question with the original question text, the human's answer, answer date, and document impact instead of deleting it.
+- Includes a `Document Changelog` when the document has been updated after creation, and records human answers, requested changes, reviewer-driven material updates, approval decisions, and requested-changes decisions with what changed and why.
+- Keeps `updated` aligned with the latest material document change and not earlier than `created`.
 - Captures the smallest useful scope without smuggling in unrelated work.
 - Names material risks, dependencies, and verification steps when relevant.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, security, or user intent.
 - Leaves enough context for a future implementer or reviewer to act without re-discovering the same facts.
 
-For code-review documents, additionally check whether findings are specific, severity-ordered, evidence-backed, and tied to changed hunks/lines, new files, or the reviewed PR. Findings should not target unrelated files or unchanged lines in touched files unless the changed code directly depends on them or newly exposes them.
+For code-review documents, additionally check whether findings are specific, severity-ordered, evidence-backed, and tied to changed hunks/lines, new files, or the reviewed PR. Findings should not target unrelated files or unchanged lines in touched files unless the changed code directly depends on them or newly exposes them. When the review covers Rubber Duck workflow changes, check whether it validates `updated` metadata, answered blocking-question preservation, changelog entries, plan subtasks, execution strategy, and `task_N.md` progress documents.
 
 For diagnosis documents, additionally check whether the probable root cause is supported by investigation evidence and whether solution options are separated from confirmed facts.
 
-For implementation plans, additionally check whether the approach, files to touch, tests, rollout, rollback, and security/privacy concerns are specific enough to guide implementation.
+For implementation plans, additionally check whether the approach, files to touch, tests, rollout, rollback, and security/privacy concerns are specific enough to guide implementation. For medium-to-complex plans, check that `Implementation Strategy` recommends single-pass, incremental task-by-task, or parallel implementation subagents; explains why; recommends `/rubber-duck:orchestrate-implementation` when coordination is needed; and breaks the work into subtasks with execution mode, dependencies, ownership/files, acceptance checks, and expected `task_N.md` progress documents.
 
 For PRDs, additionally check whether goals, non-goals, requirements, acceptance criteria, success signals, blocking questions, and deferred non-blocking questions are clear enough for technical planning.
+
+For implementation task progress documents, additionally check whether the document references the source plan and task number, records completed scope, changed files, tests and verification, deviations from the plan, open or answered blocking questions, changelog entries, and the next task recommendation.
 
 ## Output
 

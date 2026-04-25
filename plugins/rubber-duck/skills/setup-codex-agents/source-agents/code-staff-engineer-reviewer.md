@@ -49,6 +49,7 @@ Focus on whether the changed code is likely to be correct, maintainable, and saf
 Check whether the implementation:
 
 - Correctly satisfies the stated request, PR summary, approved plan, diagnosis, or code-review adjustment without extra unrelated scope.
+- When the change implements planned subtasks, completes the intended subtask scope, records completed subtasks in `task_N.md`, and does not skip sequential dependencies or collide with parallel tasks.
 - Preserves existing public contracts, API shapes, data formats, CLI behavior, file paths, plugin manifests, and backwards compatibility when relevant.
 - Handles important edge cases, invalid input, empty states, errors, retries, async ordering, idempotency, concurrency, and failure modes.
 - Fits the detected language, framework, runtime, build system, package manager, testing style, and local abstractions.
@@ -56,6 +57,7 @@ Check whether the implementation:
 - Keeps the change set small and focused, using the minimal clean change that fully solves the specific problem.
 - Avoids speculative abstractions, broad refactors, new dependencies, architecture changes, global state, or coupling unless clearly required.
 - Maintains clear ownership boundaries between modules, layers, commands, documents, generated artifacts, and runtime plugin components.
+- Preserves generated-document contracts when those documents are changed: `created`, `updated`, answered blocking questions, document changelog, implementation strategy, subtasks, and task progress docs.
 - Avoids performance or resource regressions from avoidable repeated work, unbounded loops, large reads, blocking operations, or unnecessary network calls.
 - Keeps observability and debuggability intact when behavior changes production flows.
 - Updates configuration, documentation, generated files, examples, or migration notes only when the behavior requires it.

@@ -49,11 +49,13 @@ Check whether the implementation:
 
 - Places files in the same directories and ownership boundaries used by comparable features, commands, agents, skills, docs, templates, or tests.
 - Uses naming, frontmatter fields, descriptions, statuses, command names, slugs, file names, and section names consistently with nearby project artifacts.
+- Uses Rubber Duck generated-document conventions consistently, including `updated` metadata, `Document Changelog`, answered blocking-question entries, `Implementation Strategy`, `Implementation Subtasks`, and `task_N.md` progress document naming.
 - Follows local layering and dependency direction instead of crossing boundaries or introducing new coupling.
 - Reuses established helpers, templates, abstractions, fixtures, scripts, configuration, and documentation patterns before adding new ones.
 - Keeps changed control flow aligned with local style, avoiding nested ternaries and using early returns or guard clauses where they make the path clearer.
 - Matches existing error handling, validation, prompts, human-confirmation language, status transitions, and refusal behavior when relevant.
 - Preserves established generated-document formats, Markdown structure, YAML frontmatter conventions, and table organization.
+- Keeps task progress documents colocated with their source plan and named according to the planned progress document, such as `task_1.md`.
 - Keeps tests in the local test style, naming pattern, fixture layout, and assertion style used by similar behavior.
 - Updates companion documentation, examples, manifests, indexes, or tables when the repository pattern requires it.
 - Avoids introducing inconsistent tooling, formatting, dependencies, scripts, or runtime assumptions without a clear local precedent.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Orchestrate Implementation"
+  short_description: "Coordinate approved plan subtasks sequentially or with parallel-safe implementation subagents."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck orchestrate-implementation to coordinate this approved plan."
+policy:
+  allow_implicit_invocation: false

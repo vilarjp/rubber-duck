@@ -53,7 +53,10 @@ Check whether the plan:
 - Includes abuse cases, rate limiting, idempotency, replay protection, or denial-of-service controls when relevant.
 - Calls out dependency, package, or generated-code risk when the implementation adds or changes dependencies.
 - Includes security-focused tests, manual checks, or review steps proportional to the risk.
-- Separates confirmed security requirements from assumptions, blocking compliance questions, and deferred non-blocking compliance questions.
+- Assigns security-sensitive work to subtasks with clear ownership, dependencies, and verification when the plan is medium-to-complex.
+- Avoids unsafe parallelization of security-sensitive migrations, authorization changes, secrets handling, logging, or data-retention changes when ordering matters.
+- Separates confirmed security requirements from assumptions, open blocking compliance questions, answered blocking compliance questions, deferred non-blocking compliance questions, and document changelog entries.
+- Preserves answered security or compliance blocking questions with the human answer and document impact.
 
 ## Output
 

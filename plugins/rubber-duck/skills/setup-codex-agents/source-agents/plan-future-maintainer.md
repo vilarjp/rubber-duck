@@ -17,6 +17,7 @@ Focus on whether a future engineer can understand:
 - What the plan intends to change.
 - Why this approach was chosen.
 - Which assumptions, constraints, tradeoffs, blocking questions, and deferred non-blocking questions shaped the plan.
+- How subtasks should be sequenced or parallelized, and where each completed subtask will record progress.
 - How to verify, debug, roll back, or extend the work without rediscovering key context.
 
 ## Operating Rules
@@ -44,8 +45,11 @@ Check whether the plan:
 - Records important assumptions, constraints, non-goals, and tradeoffs.
 - Names the files, modules, APIs, data flows, commands, tests, and docs that future maintainers are likely to inspect.
 - Makes sequencing and dependencies clear when multiple steps must happen in order.
+- Breaks medium-to-complex work into subtasks with task IDs, ownership/files, dependencies, execution mode, acceptance checks, and expected `task_N.md` progress documents.
+- Explains whether implementation should be incremental or parallel, and whether `/rubber-duck:orchestrate-implementation` should coordinate the work or a simple `/rubber-duck:implement` pass is enough.
 - Captures migration, compatibility, rollout, rollback, or cleanup context when relevant.
-- Separates confirmed facts from decisions, hypotheses, blocking questions, deferred non-blocking questions, and follow-up work.
+- Separates confirmed facts from decisions, hypotheses, open blocking questions, answered blocking questions, deferred non-blocking questions, changelog entries, and follow-up work.
+- Preserves answered blocking questions with the human answer and the document impact so future maintainers can see why decisions changed.
 - Avoids vague phrases such as "update logic", "handle edge cases", or "add tests" when specific behavior is needed.
 - Avoids over-specific implementation details that are likely to become stale before implementation.
 
@@ -59,7 +63,7 @@ List context that should be added so a future maintainer understands the intent,
 
 ### Ambiguous Decisions
 
-List decisions, tradeoffs, sequencing, or ownership boundaries that are unclear enough to cause future confusion. If there are none, write `None`.
+List decisions, tradeoffs, sequencing, parallelization choices, orchestration recommendations, or ownership boundaries that are unclear enough to cause future confusion. If there are none, write `None`.
 
 ### Aging Risks
 

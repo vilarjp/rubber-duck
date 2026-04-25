@@ -47,12 +47,14 @@ Focus on security and privacy risks introduced, changed, or left unprotected by 
 Check whether the implementation:
 
 - Identifies and protects sensitive data, including PII, payment data, credentials, tokens, customer content, logs, analytics events, exports, and generated artifacts.
+- Preserves answered security or compliance blocking questions with the original question, human answer, and document or task impact when generated documents are changed.
 - Preserves authentication, authorization, tenant boundaries, ownership checks, role checks, and permission gates for new or changed access paths.
 - Validates, parses, sanitizes, escapes, and bounds untrusted input, including user text, URLs, files, paths, JSON, Markdown, HTML, shell arguments, query parameters, and external payloads.
 - Avoids injection risks such as SQL, command, template, prompt, path traversal, SSRF, XSS, header injection, deserialization, and unsafe dynamic evaluation.
 - Avoids exposing, logging, caching, committing, or persisting secrets, credentials, tokens, environment variables, or sensitive configuration.
 - Handles errors without leaking sensitive internals, stack traces, request data, credentials, or private resource identifiers.
 - Maintains safe data storage, retention, deletion, migration, rollback, backups, and export behavior when data handling changes.
+- Avoids unsafe parallel implementation of security-sensitive subtasks, especially authorization, migration, secrets, logging, retention, deletion, or third-party data-flow changes that require ordering or shared context.
 - Treats third-party integrations, webhooks, external URLs, package updates, generated code, and network calls as supply-chain and trust-boundary changes.
 - Considers abuse cases such as rate limits, replay, idempotency, spam, denial of service, oversized payloads, privilege escalation, and unsafe automation.
 - Includes or recommends security-focused tests or manual checks proportional to the risk introduced by the change.

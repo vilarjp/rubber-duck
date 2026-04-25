@@ -18,6 +18,8 @@ Review only the implementation plan and implementation scope provided by the inv
 
 The plan input should be an approved `plan.md` path, a plan document excerpt, or a clearly identified docs folder containing the related plan. If no plan is provided, ask for the approved plan path or plan content instead of guessing. If a docs folder or slug is provided, inspect only matching `plan.md` candidates and ask the invoking skill or human to choose when there is more than one match.
 
+When the plan contains `Implementation Subtasks`, inspect provided or colocated `task_N.md` progress documents as completion history. Treat those task documents as evidence for which subtasks were completed, which task the current implementation claims to satisfy, and whether sequencing or parallelization constraints were followed.
+
 If no implementation scope is provided, inspect local uncommitted changes with read-only git commands. If there are no local changes and no PR or file scope was provided, ask for the implementation scope instead of searching broadly.
 
 Treat the provided diff, changed-file list, relevant untracked files, or explicit file list as the implementation boundary. When diff hunks are available, changed lines are the primary comparison target. Use surrounding files and unchanged lines in touched files only as direct evidence for understanding the changed code or plan alignment.
@@ -39,6 +41,7 @@ Focus on whether the implementation matches the approved plan, not whether the p
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Verify the plan status when a full plan document is available. If the plan is not marked `approved`, flag that as review uncertainty instead of treating it as approved scope.
 - Treat explicit plan requirements, acceptance criteria, test plan items, security notes, rollout notes, and non-goals as comparison anchors.
+- Treat implementation subtask IDs, execution modes, dependencies, ownership/files, acceptance checks, and progress document names as comparison anchors when present.
 - Distinguish missing planned work from intentionally deferred work when the implementation, PR description, or human context says it was deferred.
 - Treat unrelated behavior changes, extra files, unexpected dependencies, broad refactors, or changed public contracts as extra scope when the approved plan does not call for them.
 - Do not duplicate staff-engineering, project-pattern, security, or test-only review unless the issue is specifically about plan alignment.
@@ -49,11 +52,15 @@ Focus on whether the implementation matches the approved plan, not whether the p
 Check whether the implementation:
 
 - Completes each explicit planned deliverable, file/module change, API/UI behavior, data change, migration, rollout step, and documentation update.
+- Completes the specific planned subtask or subtasks claimed by the implementation, without skipping incomplete sequential dependencies.
+- Provides a `task_N.md` progress document for each completed planned subtask, with source plan reference, completed scope, changed files, tests/verification, deviations, changelog, and next task.
+- Respects plan execution strategy: sequential tasks are completed in order, parallel tasks stay within disjoint ownership, and shared-file or migration work is not implemented concurrently unless the plan explicitly allowed it.
 - Preserves planned non-goals and does not include unrelated product behavior, infrastructure changes, dependency changes, refactors, or cleanup.
 - Implements planned edge cases, error handling, validation, permission checks, data-handling constraints, and compatibility requirements.
 - Includes the planned tests or an equivalent focused verification path for the same behavior and regression risks.
 - Updates the same companion artifacts named in the plan, such as manifests, README tables, templates, examples, generated docs, migrations, or configuration.
 - Leaves a clear reason when a planned item is missing, deferred, changed, or replaced by an equivalent implementation.
+- Preserves answered blocking questions and their human answers when those answers shaped the implementation scope or subtask sequencing.
 - Avoids changing public contracts, file paths, statuses, command names, document formats, or workflows beyond what the plan approved.
 - Keeps the implementation scope small enough that code review can evaluate it against the approved plan without re-planning the work.
 
@@ -67,11 +74,15 @@ List the plan items that the implementation satisfies. Include the plan section 
 
 ### Missing Plan Items
 
-List approved plan items that are absent, incomplete, or only partially implemented. Include the expected plan requirement, implementation evidence, and concrete user-facing or review impact. If there are no missing items, write `None`.
+List approved plan items or required subtask progress documents that are absent, incomplete, out of order, or only partially implemented. Include the expected plan requirement, implementation evidence, and concrete user-facing or review impact. If there are no missing items, write `None`.
 
 ### Extra Implementation Scope
 
 List implementation changes that are not supported by the approved plan or that violate stated non-goals. Include the changed files, the unsupported behavior, and why it matters. If there is no extra scope, write `None`.
+
+### Subtask Orchestration
+
+List whether completed subtasks, `task_N.md` documents, sequential dependencies, and parallel-execution constraints match the plan. If the plan has no subtasks, write `Not applicable`.
 
 ### Required Questions Or Fixes
 
