@@ -57,6 +57,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Prefer evidence from the repository over speculation.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
+   - When known, name the focused verification command and expected result for important behavior or regression coverage.
    - Classify implementation complexity as `simple`, `medium`, or `complex`.
    - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
@@ -158,6 +159,7 @@ Plans must explicitly guide execution:
 - `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
 - `medium` and `complex` plans must include implementation subtasks.
 - Each subtask must include task number, short title, status, execution mode, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
+- When a focused command is known, acceptance checks should include the command and the expected result instead of only saying "add tests" or "verify behavior".
 - Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.
 - The strategy must recommend incremental task-by-task execution or parallel execution across multiple implementation subagents, with rationale.
 - The strategy must recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.

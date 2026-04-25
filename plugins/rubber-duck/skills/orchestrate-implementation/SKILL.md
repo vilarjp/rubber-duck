@@ -59,13 +59,16 @@ Do not create a separate orchestration report unless the human explicitly asks f
    - If parallel execution was requested but unsafe, explain the specific dependency or conflict and run the next ready task sequentially unless the human asks to stop.
 5. Execute selected tasks.
    - For sequential execution, implement one selected task at a time with scoped edits, TDD when feasible, focused tests, full quality gate, and `task_N.md` progress documentation.
+   - In sequential execution, follow the same TDD discipline as `implement`: run an existing nearby test first when practical, add or adjust the narrowest useful failing test, confirm it fails for the expected reason, make the smallest correct change, and use Verification Mode for non-behavior changes where artificial TDD would add no confidence.
    - For parallel execution, launch one implementation subagent per selected task when the runtime supports it.
    - Give each subagent a self-contained prompt with:
      - Approved plan path and relevant plan excerpts.
      - Exact task ID and task text.
      - Ownership/files and explicit write boundaries.
      - Dependencies and already completed `task_N.md` docs.
-     - Required focused tests and full quality gate expectations.
+     - Required focused tests, including any known focused command and expected result.
+     - TDD expectations: run an existing nearby test first when practical, confirm the new focused test fails for the expected reason before implementation, and use Verification Mode for non-behavior changes instead of forcing artificial tests.
+     - Full quality gate expectations.
      - Required progress document path.
      - Instruction that other agents may be editing disjoint tasks, and it must not revert or rewrite others' work.
    - Do not assign two workers to the same file or task.
@@ -78,7 +81,7 @@ Do not create a separate orchestration report unless the human explicitly asks f
    - If any task reveals a material plan gap, stop and ask before changing the approved plan or continuing with a different scope.
 7. Verify the run.
    - Ensure each completed selected task has a completed `task_N.md` progress document.
-   - Ensure each task document includes source plan task, implementation summary, changed files, tests/verification, deviations/follow-ups, blocking questions, deferred non-blocking questions, `Document Changelog`, and next task.
+   - Ensure each task document includes source plan task, implementation summary, changed files, tests/verification, TDD or Verification Mode notes, deviations/follow-ups, blocking questions, deferred non-blocking questions, `Document Changelog`, and next task.
    - Run focused tests for each completed task.
    - Run the full quality gate before final summary unless the plan or human explicitly scoped the run to discovery only.
    - If a full quality gate category is unavailable, blocked, too expensive, or cannot be inferred safely, state that plainly in the final summary.
@@ -89,7 +92,8 @@ Do not create a separate orchestration report unless the human explicitly asks f
    - List changed files.
    - List focused tests and full quality gate commands/results.
    - Identify the next ready task, remaining blocked tasks, or state that plan implementation appears complete.
-   - Call out skipped TDD, skipped verification, assumptions, risks, worker conflicts, or required plan updates.
+   - Call out skipped TDD, Verification Mode use, skipped verification, assumptions, risks, worker conflicts, or required plan updates.
+   - When adjacent issues were noticed but intentionally left out of scope, add a concise `Noticed but not touching` note.
 
 ## Parallel Safety Rules
 
@@ -100,7 +104,7 @@ Parallel execution is allowed only when all of these are true:
 - No selected task depends on another selected task's unfinished output.
 - Selected tasks do not share migrations, data model changes, generated files, snapshots, package manifests, release steps, or public contracts.
 - Security-sensitive tasks do not require ordering or a shared threat-model decision.
-- Each task has a clear `task_N.md` output path and acceptance checks.
+- Each task has a clear `task_N.md` output path and acceptance checks, including focused verification commands and expected results when known.
 - The current runtime can run implementation workers with write access and clear ownership boundaries.
 
 If any condition is false, run sequentially.
@@ -109,7 +113,7 @@ If any condition is false, run sequentially.
 
 - Use `orchestrate-implementation` when the approved plan has subtasks or parallelization decisions.
 - Use `implement` for a direct prompt, a single planned subtask, a bug fix, a code-review adjustment, or a small approved plan that does not need coordination.
-- Orchestration may delegate implementation work, but this skill owns the run end to end. The implementation rules remain the same: focused scope, TDD when feasible, minimal change, verification, and one `task_N.md` per completed planned subtask.
+- Orchestration may delegate implementation work, but this skill owns the run end to end. The implementation rules remain the same: focused scope, changed lines trace to the plan or directly required tests/integration work, TDD when feasible, Verification Mode for non-behavior changes, minimal change, verification, and one `task_N.md` per completed planned subtask.
 
 ## Final Response Requirements
 
@@ -121,4 +125,5 @@ The final response must include:
 - Changed files.
 - Focused tests and full quality gate commands/results.
 - Next ready task or remaining blocked tasks.
+- Skipped TDD, Verification Mode use, and any `Noticed but not touching` items.
 - Remaining risks, assumptions, unavailable verification, or plan-update needs.
