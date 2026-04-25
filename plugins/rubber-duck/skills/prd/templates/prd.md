@@ -4,6 +4,7 @@ slug: short-slug
 type: prd
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: prompt
 ---
 
@@ -49,13 +50,24 @@ What user or business problem this solves, with only the context needed for plan
 
 ## Blocking Questions
 
-- Questions that must be answered before approval because they affect scope, user value, requirements, acceptance criteria, risk, or approval readiness.
-- Write `None` when there are no blocking questions.
+- Keep every blocking question that was raised, including questions the human has answered.
+- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
+- Use this shape:
+  - Status: open | answered
+    Question: Original question text.
+    Answer: Human answered on yyyy-mm-dd: answer text.
+    Document impact: What changed in this document because of the answer.
+- Write `None` only when no blocking questions have ever been raised.
 
 ## Deferred Non-Blocking Questions
 
 - Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
 - Write `None` when there are no deferred questions.
+
+## Document Changelog
+
+- yyyy-mm-dd: Created from prompt or Jira context.
+- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
 
 ## Approval
 

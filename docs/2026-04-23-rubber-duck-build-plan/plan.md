@@ -4,6 +4,7 @@ slug: rubber-duck-build-plan
 type: project-plan
 status: approved
 created: 2026-04-23
+updated: 2026-04-25
 approved: 2026-04-23
 approval_note: Approved by the human to guide incremental Rubber Duck development.
 source: clean-room user brief
@@ -12,6 +13,10 @@ source: clean-room user brief
 # Rubber Duck Build Plan
 
 **Status:** approved
+
+## Document Changelog
+
+- 2026-04-25: Updated Rubber Duck workflow standards to require `updated` metadata, preserve answered blocking questions with human answers, record material document changes, plan medium-to-complex work as subtasks, add first-class implementation orchestration, and create per-subtask implementation progress documents.
 
 ## Purpose
 
@@ -144,18 +149,18 @@ All initial skills should:
 - Put document status in frontmatter:
 
 ```yaml
-status: pending-approval
+status: pending-approval | completed
 ```
 
 - Leave `prd`, `plan`, `diagnosis`, and `code-review` documents as `pending-approval` until explicit human confirmation.
-- On later human confirmation, update status to `approved` or `requested-changes` and record the decision date and short note.
+- On later human confirmation, update status to `approved` or `requested-changes`, set `updated` to the local date, record the decision date and short note, and add a changelog entry.
 - Keep documents concise, useful as LLM context, and free of filler.
 - Prefer evidence over speculation. If uncertain, write the uncertainty and ask.
 - Run their configured reviewer agents before finalizing when those agents exist, then merge findings into the generated document.
 - Before presenting any `prd`, `plan`, `diagnosis`, or `code-review` document for approval, ask the human follow-up questions as many times as necessary to resolve all material ambiguity, reviewer missing questions, and agent doubts.
 - Do not ask for approval while approval-relevant uncertainty remains unresolved. If a question is intentionally left open, label it as deferred and non-blocking, explain why approval can still proceed, and record that the human explicitly accepted the deferral.
 - Treat reviewer blocking issues, security/privacy questions, and "Questions For The Human" as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
-- If the human answers a blocking question or requests changes, update the document, rerun the required reviewer agents when the answer materially changes the artifact, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests changes, or stops the workflow.
+- If the human answers a blocking question or requests changes, update the document, set `updated` to the local date, keep the original blocking question as an answered entry with the human answer and document impact, add a changelog entry, rerun the required reviewer agents when the answer materially changes the artifact, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests changes, or stops the workflow.
 - When multiple reviewer agents run, use a fan-out/fan-in flow: run independent reviewers in parallel when supported, wait for all available reviewers, merge findings by severity and evidence, preserve reviewer conflicts as human questions, and only then ask the human.
 
 ## Document Standards
@@ -166,16 +171,19 @@ Every generated document should start with:
 ---
 title: Short Human Title
 slug: short-slug
-type: prd | plan | diagnosis | code-review
+type: prd | plan | diagnosis | code-review | implementation-task
 status: pending-approval
 created: yyyy-mm-dd
-source: prompt | jira | github-pr | local-diff
+updated: yyyy-mm-dd
+source: prompt | jira | github-pr | local-diff | plan
 ---
 ```
 
 Documents should include only sections that help the work move forward. "Straight to the point" is a requirement, not a style preference.
 
-Question sections should not hide approval blockers. If a question affects approval readiness, scope, behavior, security, review confidence, or implementation safety, put it under Blocking Questions or ask the human before presenting the artifact for approval. Use Deferred Non-Blocking Questions only for questions the human has explicitly accepted as safe to defer.
+Question sections should not hide approval blockers. If a question affects approval readiness, scope, behavior, security, review confidence, or implementation safety, put it under Blocking Questions or ask the human before presenting the artifact for approval. Use Deferred Non-Blocking Questions only for questions the human has explicitly accepted as safe to defer. Answered blocking questions stay in Blocking Questions with the original question, human answer, answer date, and document impact.
+
+Documents should include `Document Changelog` when they are updated after creation. Record human answers, requested changes, reviewer-driven material updates, approvals, requested-changes decisions, implementation progress updates, and why the document changed.
 
 ## Skill Specifications
 
@@ -214,6 +222,7 @@ Suggested PRD sections:
 - Risks / dependencies
 - Blocking questions
 - Deferred non-blocking questions
+- Document changelog
 - Approval
 
 ### plan
@@ -237,6 +246,10 @@ Required workflow:
 3. If multiple PRDs match, ask which one to use.
 4. Inspect the codebase enough to propose the smallest correct implementation.
 5. Write the implementation plan.
+   - Classify implementation complexity as simple, medium, or complex.
+   - For medium-to-complex work, include implementation subtasks with task IDs, execution mode, dependencies, ownership/files, acceptance checks, and planned `task_N.md` progress documents.
+   - Recommend `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`.
+   - Recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
 6. Invoke `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` in parallel when supported.
 7. Apply reviewer feedback that improves correctness, security, maintainability, or future readability.
 8. Invoke `document-reviewer` on the merged plan as the final approval-readiness pass.
@@ -248,6 +261,8 @@ Suggested plan sections:
 - Source context
 - Current system notes
 - Proposed approach
+- Implementation strategy
+- Implementation subtasks
 - Files / modules to touch
 - Data model / migrations
 - API / UI behavior
@@ -256,7 +271,33 @@ Suggested plan sections:
 - Rollout / rollback
 - Blocking questions
 - Deferred non-blocking questions
+- Document changelog
 - Approval
+
+### orchestrate-implementation
+
+Path: `skills/orchestrate-implementation/SKILL.md`
+
+Purpose: Coordinate approved plan subtasks sequentially or with parallel-safe implementation subagents.
+
+Inputs:
+- Approved plan slug or `plan.md` path.
+- Optional task IDs.
+- Optional sequential, parallel, next, or all-ready execution hint.
+
+Output:
+- Code and tests changed in the target project.
+- One `task_N.md` progress document per completed planned subtask.
+
+Required workflow:
+1. Resolve the approved plan and require `status: approved` before orchestration unless the human explicitly accepts risk.
+2. Read `Implementation Strategy`, `Implementation Subtasks`, dependencies, blocking questions, test plan, and existing `task_*.md` documents.
+3. Build the task queue from named tasks, next ready sequential task, or ready parallel-safe group.
+4. Select execution mode: sequential by default, parallel only when the plan marks tasks parallel-safe and ownership/files are disjoint.
+5. Execute selected tasks locally or by launching one implementation subagent per selected parallel-safe task.
+6. Fan in worker results, preserve disjoint ownership boundaries, and stop before overwriting conflicting worker changes.
+7. Verify each completed task has a matching `task_N.md` document, focused tests, and full quality gate results when available.
+8. Summarize execution mode, completed tasks, progress documents, changed files, verification, next ready task, and remaining risks.
 
 ### implement
 
@@ -271,18 +312,21 @@ Inputs:
 
 Output:
 - Code and tests changed in the target project.
-- No required document unless the implementation reveals a material plan gap, in which case the skill should ask before changing the approved document.
+- When implementing planned subtasks, one progress document per completed subtask, such as `docs/yyyy-mm-dd-{slug}/task_1.md`.
+- No required document for direct prompts or artifacts without planned subtasks unless the implementation reveals a material plan gap, in which case the skill should ask before changing the approved document.
 
 Required workflow:
 1. Gather prompt or Jira context.
 2. If a slug is present, look for related `plan.md`, `diagnosis.md`, or `code-review.md`.
 3. If relevant context exists, use it. If multiple candidates exist, ask.
+   - When an approved plan contains implementation subtasks, inspect existing `task_*.md` documents to determine completed tasks and the next ready task.
 4. Inspect the existing codebase and conventions.
 5. Follow TDD whenever feasible: write or adjust a focused failing test first, then implement the smallest code change to pass.
 6. Keep changes scoped to the current goal. Apply KISS and YAGNI. Do not refactor unrelated code.
 7. Run focused tests, then the full quality gate when available: formatting checks, linting, type checks, builds or compilation, and the full automated test suite.
 8. Do not invoke reviewer agents. Reviewer agents are invoked by the future `code-review` skill.
-9. Summarize changed files, focused tests, full quality gate commands, unavailable verification categories, and remaining risks.
+9. For completed planned subtasks, write or update the matching `task_N.md` progress document with the source plan task, implementation summary, changed files, tests, deviations, blocking questions, changelog, and next task.
+10. Summarize changed files, completed subtasks, progress documents, focused tests, full quality gate commands, unavailable verification categories, and remaining risks.
 
 ### diagnosis
 
@@ -322,6 +366,7 @@ Suggested diagnosis sections:
 - Verification plan
 - Blocking questions
 - Deferred non-blocking questions
+- Document changelog
 - Approval
 
 ### code-review
@@ -346,10 +391,12 @@ Required workflow:
 3. Write the initial review document.
 4. Invoke `code-staff-engineer-reviewer`, `project-patterns-reviewer`, `code-security-reviewer`, and `test-reviewer` in parallel when supported.
 5. Invoke `implementation-plan-matcher` if a related plan can be found.
+   - Include related `task_N.md` progress documents when a plan has implementation subtasks.
 6. Merge duplicate findings and order by severity.
-7. Invoke `document-reviewer` on the merged `code-review.md` as the final approval-readiness pass.
-8. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
-9. Tell the human the file is pending approval and ask them to review it.
+7. Validate workflow compliance when relevant: `updated` metadata, answered blocking questions, changelog entries, implementation subtasks, execution strategy, and per-subtask progress documents.
+8. Invoke `document-reviewer` on the merged `code-review.md` as the final approval-readiness pass.
+9. Resolve all reviewer blocking issues and missing questions before asking for approval, unless the human explicitly marks a question as deferred and non-blocking.
+10. Tell the human the file is pending approval and ask them to review it.
 
 Suggested code-review sections:
 - Scope
@@ -358,8 +405,10 @@ Suggested code-review sections:
 - Test coverage notes
 - Project convention notes
 - Plan alignment
+- Workflow compliance
 - Blocking questions
 - Deferred non-blocking questions
+- Document changelog
 - Approval
 
 ### commit-push

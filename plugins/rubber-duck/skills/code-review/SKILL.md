@@ -42,9 +42,11 @@ The document status must remain `pending-approval` until the human explicitly ap
 2. Find related planning context when available.
    - If `$ARGUMENTS` includes a slug or source hint, search for matching `docs/*-{slug}/plan.md` files.
    - If the PR description, branch name, commit messages, or local changed files mention a docs folder or plan slug, inspect the matching `plan.md`.
+   - When a related plan folder exists, inspect matching `task_*.md` implementation progress documents in that folder.
    - Prefer `status: approved` plans as the plan-alignment contract.
    - If multiple plausible plans exist, ask the human which plan to use before invoking `implementation-plan-matcher`.
    - If no related plan is found, skip `implementation-plan-matcher` and record `No related plan found` in Plan Alignment.
+   - If a related plan contains `Implementation Subtasks`, use those subtasks and any `task_N.md` documents as review context for scope, sequencing, completed work, and missing progress documents.
 3. Gather only the context needed for review.
    - Read changed files plus the smallest amount of directly related source, tests, configuration, manifests, documentation, templates, and existing patterns needed to evaluate the diff.
    - Use nearby files and unchanged lines in touched files as context only; do not review, critique, or report issues there unless the changed code directly depends on the issue or newly exposes it.
@@ -69,6 +71,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Include only sections that help the human decide whether to approve, request changes, or ask follow-up questions.
    - If there are no findings in a section, write `None`.
    - Preserve uncertainty when evidence is unavailable instead of inventing intent, production behavior, compliance scope, or test results.
+   - Include workflow compliance notes when generated documents, answered blocking questions, changelogs, plan subtasks, execution strategy, or `task_N.md` progress documents are part of the reviewed change.
 7. Run code-focused reviewer agents on the generated `code-review.md` and reviewed scope.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `code-staff-engineer-reviewer` agent.
@@ -77,7 +80,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Invoke the exact pre-built `test-reviewer` agent.
    - Invoke the exact pre-built `implementation-plan-matcher` agent only when a related plan can be identified.
    - Run independent code-focused reviewers in parallel when the current assistant environment supports it, then wait for all available reviewers before merging findings.
-   - Pass reviewers the document path, source summary, diff or changed-file scope, focused test results, full quality gate results, and related plan path when applicable.
+   - Pass reviewers the document path, source summary, diff or changed-file scope, focused test results, full quality gate results, related plan path when applicable, and related `task_N.md` progress documents when available.
    - Do not write separate review files.
 8. Merge reviewer feedback into `code-review.md`.
    - Apply blocking findings and important review gaps before finalizing.
@@ -93,6 +96,9 @@ The document status must remain `pending-approval` until the human explicitly ap
 10. Resolve all approval blockers before presenting the review for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `code-review.md` after each answer.
+   - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
+   - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
+   - Update the frontmatter `updated` field to the local date whenever the document changes.
    - Rerun the affected reviewers and `document-reviewer` when an answer materially changes review scope, finding severity, security risk, test coverage, plan alignment, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the review not ready for approval.
 11. Tell the human the review path and that it is pending approval.
@@ -127,6 +133,7 @@ slug: short-slug
 type: code-review
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: local-diff | github-pr
 ---
 ```
@@ -145,8 +152,10 @@ Use these sections when useful:
 - Test Coverage Notes
 - Project Convention Notes
 - Plan Alignment
+- Workflow Compliance
 - Blocking Questions
 - Deferred Non-Blocking Questions
+- Document Changelog
 - Approval
 
 ## Finding Format
@@ -170,6 +179,7 @@ Findings should target changed hunks, newly added lines, removed lines, or new f
 - Run independent exact pre-built reviewer agents in parallel when the current assistant environment supports it.
 - Wait for all available code-focused reviewers, merge their findings, then run `document-reviewer` last on the merged review document.
 - Use blocking findings, required questions or fixes, security/privacy questions, plan drift, missing tests, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
+- Validate Rubber Duck workflow compliance when relevant: generated documents must include `created` and `updated`, answered blocking questions must preserve the original question and human answer, changelogs must explain material updates, medium-to-complex plans must include subtasks and execution strategy, and completed planned subtasks must have `task_N.md` progress documents.
 - The invoking skill owns the final review document. Reviewer agents return findings only; they do not edit the document.
 - If an expected reviewer agent is unavailable, note that gap in the final response and in the review document's Approval section when it affects confidence.
 - Do not approve the code changes on behalf of the human.
@@ -177,7 +187,9 @@ Findings should target changed hunks, newly added lines, removed lines, or new f
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `code-review.md`, rerun affected reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `code-review.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun affected reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+
+Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 
 ## Approval Updates
 
@@ -185,6 +197,7 @@ If the human later explicitly approves the review, update the frontmatter:
 
 ```yaml
 status: approved
+updated: yyyy-mm-dd
 approved: yyyy-mm-dd
 approval_note: Short note
 ```
@@ -193,8 +206,9 @@ If the human requests changes, update the frontmatter:
 
 ```yaml
 status: requested-changes
+updated: yyyy-mm-dd
 decision_date: yyyy-mm-dd
 decision_note: Short note
 ```
 
-Keep the visible status line in sync with frontmatter.
+Keep the visible status line in sync with frontmatter and add a matching `Document Changelog` entry.

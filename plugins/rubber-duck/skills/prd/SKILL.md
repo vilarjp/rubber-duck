@@ -63,6 +63,9 @@ The document status must remain `pending-approval` until the human explicitly ap
 8. Resolve all approval blockers before presenting the PRD for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `prd.md` after each answer.
+   - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
+   - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
+   - Update the frontmatter `updated` field to the local date whenever the document changes.
    - Rerun `document-reviewer` when an answer materially changes requirements, scope, acceptance criteria, risks, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the PRD not ready for approval.
 9. Tell the human the PRD path and that it is pending approval.
@@ -97,6 +100,7 @@ slug: short-slug
 type: prd
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: prompt | jira
 ---
 ```
@@ -120,11 +124,14 @@ Use these sections when useful:
 - Risks / dependencies
 - Blocking Questions
 - Deferred Non-Blocking Questions
+- Document Changelog
 - Approval
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `prd.md`, rerun `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `prd.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+
+Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 
 ## Approval Updates
 
@@ -132,6 +139,7 @@ If the human later explicitly approves the PRD, update the frontmatter:
 
 ```yaml
 status: approved
+updated: yyyy-mm-dd
 approved: yyyy-mm-dd
 approval_note: Short note
 ```
@@ -140,8 +148,9 @@ If the human requests changes, update the frontmatter:
 
 ```yaml
 status: requested-changes
+updated: yyyy-mm-dd
 decision_date: yyyy-mm-dd
 decision_note: Short note
 ```
 
-Keep the visible status line in sync with frontmatter.
+Keep the visible status line in sync with frontmatter and add a matching `Document Changelog` entry.

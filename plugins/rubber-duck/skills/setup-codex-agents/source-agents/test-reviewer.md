@@ -46,6 +46,7 @@ Focus on whether tests prove the behavior created or modified by the implementat
 Check whether the implementation:
 
 - Adds or updates focused tests for new behavior, bug fixes, changed public contracts, plugin workflows, generated artifacts, data transformations, and important user-visible outcomes.
+- When planned subtasks are implemented, records focused tests and verification in each completed subtask's `task_N.md` progress document.
 - Preserves existing test conventions for file placement, naming, fixtures, helpers, snapshots, mocks, setup, teardown, and assertion style.
 - Covers success paths, failure paths, empty states, invalid input, boundary values, permission or authorization cases, compatibility behavior, and regression cases when relevant.
 - Verifies observable behavior rather than only implementation details, mocks, snapshots, logs, or incidental structure.
@@ -56,6 +57,7 @@ Check whether the implementation:
 - Leaves clear manual verification steps when automated tests are not feasible for the reviewed change.
 - Runs or recommends the smallest useful focused test commands before the full quality gate.
 - Includes the full quality gate results when available: formatting checks, linting, type checks, builds or compilation, and the full automated test suite. Flag missing, stale, failed, or unavailable categories as residual uncertainty or a finding when they affect approval confidence.
+- Verifies workflow-document changes that affect generated documents: `updated` metadata, answered blocking questions, changelog entries, subtask strategy, and per-subtask progress docs.
 
 ## Output
 

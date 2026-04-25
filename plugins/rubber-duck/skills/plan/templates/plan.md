@@ -4,6 +4,7 @@ slug: short-slug
 type: plan
 status: pending-approval
 created: yyyy-mm-dd
+updated: yyyy-mm-dd
 source: prompt
 ---
 
@@ -29,6 +30,25 @@ One short paragraph describing the intended technical change and the outcome it 
 
 - Smallest correct implementation sequence.
 - Important decisions, tradeoffs, dependencies, and rejected heavier alternatives.
+
+## Implementation Strategy
+
+- Complexity: simple | medium | complex.
+- Recommended execution: single focused pass | incremental task-by-task | parallel implementation subagents.
+- Rationale: why this mode is safer or faster for this work.
+- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether runtime worker subagents can safely implement independent subtasks.
+- Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
+
+## Implementation Subtasks
+
+- Task 1: Short task title.
+  Status: planned
+  Execution: sequential first | sequential after Task N | parallel group A | independent
+  Ownership / files: `path/to/file`, `path/to/other`
+  Dependencies: Task IDs, human answers, migrations, feature flags, or `None`
+  Acceptance: Observable completion criteria and focused tests/checks.
+  Progress document: `task_1.md`
+- For simple work that does not need breakdown, write `Not applicable: single focused pass is recommended`.
 
 ## Files / Modules To Touch
 
@@ -63,13 +83,24 @@ One short paragraph describing the intended technical change and the outcome it 
 
 ## Blocking Questions
 
-- Questions that must be answered before approval because they affect scope, behavior, architecture, security, rollout, tests, review confidence, or implementation safety.
-- Write `None` when there are no blocking questions.
+- Keep every blocking question that was raised, including questions the human has answered.
+- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
+- Use this shape:
+  - Status: open | answered
+    Question: Original question text.
+    Answer: Human answered on yyyy-mm-dd: answer text.
+    Document impact: What changed in this document because of the answer.
+- Write `None` only when no blocking questions have ever been raised.
 
 ## Deferred Non-Blocking Questions
 
 - Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
 - Write `None` when there are no deferred questions.
+
+## Document Changelog
+
+- yyyy-mm-dd: Created from prompt, Jira, or PRD context.
+- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
 
 ## Approval
 
