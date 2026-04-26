@@ -1,6 +1,6 @@
 {
   "name": "rubber-duck",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Spec-driven agent workflows for planning, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",
@@ -24,10 +24,7 @@
     "longDescription": "Turn fuzzy software work into concise PRDs, reviewed implementation plans, evidence-backed diagnoses, orchestrated implementation passes, structured code reviews, and deliberate commit/push flows.",
     "developerName": "João Vilar",
     "category": "Productivity",
-    "capabilities": [
-      "Read",
-      "Write"
-    ],
+    "capabilities": ["Read", "Write"],
     "websiteURL": "https://github.com/vilarjp/rubber-duck",
     "defaultPrompt": [
       "Use Rubber Duck to write a PRD for this feature.",

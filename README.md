@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.9" src="https://img.shields.io/badge/version-0.0.9-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.0.10" src="https://img.shields.io/badge/version-0.0.10-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -99,30 +99,30 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 
 ## Skill Menu
 
-| Invoke                     | Use it when                                                         | Inputs                                                                         | Output                                                             |
-| -------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `/rubber-duck:prd`         | You need the what and why before implementation.                    | Free-form prompt or Jira link.                                                 | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                  |
-| `/rubber-duck:plan`        | You need the technical how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval, with subtasks for medium-to-complex work. |
-| `/rubber-duck:diagnosis`   | You need to understand a bug before fixing it.                      | Bug report, Jira link, logs, reproduction notes, or source hint.               | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.            |
-| `/rubber-duck:orchestrate-implementation` | You need to coordinate an approved plan's subtasks. | Approved plan slug/path, optional task IDs, and optional sequential/parallel hint. | Code/tests changed; completed planned subtasks emit `task_N.md` progress docs. |
-| `/rubber-duck:implement`   | You are ready to make a scoped code change.                         | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug. | Code/tests changed; planned subtasks emit `task_N.md` progress docs. |
-| `/rubber-duck:code-review` | You want a structured review of a local diff or GitHub PR.          | Empty input for local changes, GitHub PR link, or plan/source hint.            | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.          |
-| `/rubber-duck:commit-push` | You want to ship local work deliberately.                           | Optional branch or commit-intent hint.                                         | One or more conventional commits pushed to a non-protected branch. |
-| `/rubber-duck:setup-codex-agents` | You installed Rubber Duck in Codex and want reviewer agents available. | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.           | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`. |
+| Invoke                                    | Use it when                                                            | Inputs                                                                             | Output                                                                                       |
+| ----------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `/rubber-duck:prd`                        | You need the what and why before implementation.                       | Free-form prompt or Jira link.                                                     | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                                            |
+| `/rubber-duck:plan`                       | You need the technical how for a feature, bug fix, or approved PRD.    | Prompt, Jira link, or PRD slug.                                                    | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval, with subtasks for medium-to-complex work. |
+| `/rubber-duck:diagnosis`                  | You need to understand a bug before fixing it.                         | Bug report, Jira link, logs, reproduction notes, or source hint.                   | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.                                      |
+| `/rubber-duck:orchestrate-implementation` | You need to coordinate an approved plan's subtasks.                    | Approved plan slug/path, optional task IDs, and optional sequential/parallel hint. | Code/tests changed; completed planned subtasks emit `task_N.md` progress docs.               |
+| `/rubber-duck:implement`                  | You are ready to make a scoped code change.                            | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug.     | Code/tests changed; planned subtasks emit `task_N.md` progress docs.                         |
+| `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
+| `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
+| `/rubber-duck:setup-codex-agents`         | You installed Rubber Duck in Codex and want reviewer agents available. | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.               | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`.                     |
 
 ## Review Crew
 
-| Agent                          | Used by                                   | Checks                                                                                                 |
-| ------------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Agent                          | Used by                                   | Checks                                                                                                               |
+| ------------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `document-reviewer`            | `prd`, `plan`, `diagnosis`, `code-review` | Document completeness, metadata, answered questions, changelog, subtasks, missing questions, and approval readiness. |
-| `plan-future-maintainer`       | `plan`                                    | Whether a future maintainer can understand intent, constraints, decisions, and rollback context.       |
-| `plan-security-reviewer`       | `plan`                                    | LGPD, PII, PCI, authorization, validation, secrets, logging, retention, and abuse-case gaps.           |
-| `plan-staff-engineer`          | `plan`                                    | Architecture risk, stack fit, production bugs, compatibility, observability, and simpler options.      |
-| `code-staff-engineer-reviewer` | `code-review`                             | Correctness, maintainability, stack best practices, production risk, and required fixes.               |
-| `project-patterns-reviewer`    | `code-review`                             | Local conventions, naming, layering, testing style, file organization, and companion docs.             |
-| `implementation-plan-matcher`  | `code-review`                             | Whether the implementation matches the approved plan, subtasks, task docs, and scope.                  |
-| `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure. |
-| `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.      |
+| `plan-future-maintainer`       | `plan`                                    | Whether a future maintainer can understand intent, constraints, decisions, and rollback context.                     |
+| `plan-security-reviewer`       | `plan`                                    | LGPD, PII, PCI, authorization, validation, secrets, logging, retention, and abuse-case gaps.                         |
+| `plan-staff-engineer`          | `plan`                                    | Architecture risk, stack fit, production bugs, compatibility, observability, and simpler options.                    |
+| `code-staff-engineer-reviewer` | `code-review`                             | Correctness, maintainability, stack best practices, production risk, and required fixes.                             |
+| `project-patterns-reviewer`    | `code-review`                             | Local conventions, naming, layering, testing style, file organization, and companion docs.                           |
+| `implementation-plan-matcher`  | `code-review`                             | Whether the implementation matches the approved plan, subtasks, task docs, and scope.                                |
+| `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure.               |
+| `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.                    |
 
 Reviewer agents return findings and exact human questions to the invoking skill. Claude Code installs the Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Skills must invoke these reviewers by exact pre-built agent name, omit full-history forks for Codex named agents, and use the launch prompt only for run-specific context such as document paths, diffs, source summaries, and verification results. They should not create generic runtime subagents with compressed prompts that replace the full agent definition. The invoking skill owns document edits, merges accepted findings, and asks the human for clarification when needed. For `plan` and `code-review`, `document-reviewer` runs last on the merged document as the approval-readiness check.
 

@@ -1,6 +1,6 @@
 {
   "name": "rubber-duck",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Spec-driven agent workflows for planning, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",
