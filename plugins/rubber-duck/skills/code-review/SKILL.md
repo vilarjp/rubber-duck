@@ -29,6 +29,15 @@ docs/yyyy-mm-dd-{slug}/code-review.md
 
 The document status must remain `pending-approval` until the human explicitly approves it or requests changes.
 
+## Shared References
+
+Use these shared references when they apply:
+
+- `../_shared/complexity-levels.md` when reviewing generated plans, task documents, or plan-aligned implementation work.
+- `../_shared/project-rules-discovery.md` before judging local conventions, file placement, generated documents, or verification commands.
+- `../_shared/source-driven-development.md` when changed code depends on external framework, library, service, or API behavior.
+- `../_shared/no-workarounds.md` when evaluating fixes, mitigations, tests, and review adjustments.
+
 ## Workflow
 
 1. Determine the review scope.
@@ -49,6 +58,8 @@ The document status must remain `pending-approval` until the human explicitly ap
    - If a related plan contains `Implementation Subtasks`, use those subtasks and any `task_N.md` documents as review context for scope, sequencing, completed work, and missing progress documents.
 3. Gather only the context needed for review.
    - Read changed files plus the smallest amount of directly related source, tests, configuration, manifests, documentation, templates, and existing patterns needed to evaluate the diff.
+   - Apply Project Rules Discovery before judging conventions, generated-document formats, package-manager behavior, verification commands, or local workflow compliance.
+   - When changed code depends on external framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible; otherwise preserve the uncertainty in the review.
    - Use nearby files and unchanged lines in touched files as context only; do not review, critique, or report issues there unless the changed code directly depends on the issue or newly exposes it.
    - Anchor findings to changed hunks, newly added lines, removed lines, or new files whenever possible; do not request edits to pre-existing unchanged lines unless they are directly required to fix the changed-code issue.
    - Run read-only commands and focused verification commands when useful for review confidence.
@@ -56,6 +67,8 @@ The document status must remain `pending-approval` until the human explicitly ap
 4. Prioritize findings over commentary.
    - Treat correctness, regression risk, security/privacy issues, missing tests, plan drift, and project-pattern mismatches as first-class review findings.
    - Treat over-broad change sets as findings when the reviewed work uses speculative abstractions, broad refactors, new dependencies, architecture changes, or cleanup that is not clearly required to solve the specific problem.
+   - Treat workaround smells as findings when changed code relies on type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, or copy-pasted fixes instead of addressing the root cause.
+   - Treat unverified external API assumptions as findings or residual uncertainty when they affect correctness, compatibility, security, rollout, or test confidence.
    - Prefer targeted tests that add real confidence; do not request broad coverage churn unless the implementation risk justifies it.
    - Treat newly introduced nested ternary expressions in changed code as maintainability findings, and recommend clearer control flow.
    - Prefer early returns and guard clauses over avoidable changed-code nesting when that improves correctness, readability, or reviewability; do not request broad rewrites of existing unrelated control flow.
@@ -80,7 +93,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Invoke the exact pre-built `test-reviewer` agent.
    - Invoke the exact pre-built `implementation-plan-matcher` agent only when a related plan can be identified.
    - Run independent code-focused reviewers in parallel when the current assistant environment supports it, then wait for all available reviewers before merging findings.
-   - Pass reviewers the document path, source summary, diff or changed-file scope, focused test results, full quality gate results, related plan path when applicable, and related `task_N.md` progress documents when available.
+   - Pass reviewers the document path, source summary, diff or changed-file scope, discovered project rules that affect review, source-driven verification notes, focused test results, full quality gate results, related plan path when applicable, and related `task_N.md` progress documents when available.
    - Do not write separate review files.
 8. Merge reviewer feedback into `code-review.md`.
    - Apply blocking findings and important review gaps before finalizing.
@@ -151,6 +164,7 @@ Use these sections when useful:
 - Security / Privacy Notes
 - Test Coverage Notes
 - Project Convention Notes
+- Source-Driven / Workaround Notes
 - Plan Alignment
 - Workflow Compliance
 - Blocking Questions

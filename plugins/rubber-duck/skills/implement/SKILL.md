@@ -35,6 +35,15 @@ Use `templates/task.md` from this skill folder as the default structure. Do not 
 
 If implementation reveals a material gap or contradiction in an approved plan, diagnosis, code-review document, or planned subtask, ask the human before changing that document or continuing with a different scope.
 
+## Shared References
+
+Use these shared references when they apply:
+
+- `../_shared/complexity-levels.md` when interpreting `simple`, `medium`, or `complex` approved plans.
+- `../_shared/project-rules-discovery.md` before deciding local conventions, commands, file placement, or generated-document formats.
+- `../_shared/source-driven-development.md` when the implementation depends on external framework, library, service, or API behavior.
+- `../_shared/no-workarounds.md` before accepting a patch, mitigation, or review-adjustment fix.
+
 ## Workflow
 
 1. Determine the source context.
@@ -48,6 +57,7 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - If no matching artifact exists, treat `$ARGUMENTS` as a free-form implementation request.
 2. Confirm the implementable scope.
    - Prefer approved plans, diagnoses, and code-review documents when they exist.
+   - When an approved plan declares complexity, use Rubber Duck's existing `simple`, `medium`, and `complex` meaning: simple work should usually be one focused pass, medium work follows planned subtasks, and complex work needs extra attention to sequencing, rollout, rollback, security, and decision context.
    - When an approved plan includes `Implementation Subtasks`, treat those subtasks as the implementation queue.
    - Read existing `task_N.md` documents before editing so completed subtasks are not repeated.
    - If the human names a specific subtask, implement only that subtask unless its dependencies are incomplete.
@@ -62,6 +72,8 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - Record smaller uncertainties as assumptions in the final summary instead of blocking on them.
 3. Inspect the codebase and conventions.
    - Read relevant source, tests, configuration, dependency manifests, generated artifacts, and directly applicable patterns before editing.
+   - Apply Project Rules Discovery before editing: check relevant local instructions, manifests, CI, lint/type/test/build config, nearby source, nearby tests, and generated-document conventions that govern this change.
+   - When the change depends on external framework, library, service, browser, protocol, or third-party API behavior, verify the behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests before coding against it.
    - Use nearby files and unchanged lines in touched files only when they are needed to understand the requested change or local convention; do not review, critique, or opportunistically clean up unrelated nearby code.
    - Check `git status` before modifying files so unrelated user changes are preserved.
    - Work with existing user changes when they affect the task; do not revert changes you did not make.
@@ -75,6 +87,7 @@ If implementation reveals a material gap or contradiction in an approved plan, d
 5. Implement the smallest correct change.
    - Prefer existing helpers, patterns, frameworks, naming, layering, and file organization.
    - Keep the change set small and focused: make the minimal clean change that fully solves the specific problem.
+   - Prefer root-cause fixes. Do not use type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, or copy-pasted fixes unless a temporary mitigation is explicit, constrained, and tracked.
    - Make sure each changed line traces to the request, approved artifact, review comment, or directly required test and integration work.
    - Apply KISS and YAGNI; avoid speculative abstractions, broad refactors, new dependencies, architecture changes, generated file updates, or public API changes unless clearly required by the source context.
    - Prefer early returns and guard clauses over avoidable nested branches when they make the changed code clearer.
@@ -106,6 +119,7 @@ If implementation reveals a material gap or contradiction in an approved plan, d
    - Identify the next planned subtask or state that the plan implementation appears complete.
    - List tests and checks run.
    - Call out skipped TDD, Verification Mode use, skipped verification, assumptions, risks, or follow-up work.
+   - Call out any temporary workaround that remains, including why it was necessary, how it is constrained, and what follow-up removes it.
    - When adjacent issues were noticed but intentionally left out of scope, add a concise `Noticed but not touching` note.
 
 ## TDD Guidance

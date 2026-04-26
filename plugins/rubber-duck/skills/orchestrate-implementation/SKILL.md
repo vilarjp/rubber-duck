@@ -34,6 +34,15 @@ docs/yyyy-mm-dd-{slug}/task_N.md
 
 Do not create a separate orchestration report unless the human explicitly asks for one. The per-task documents are the durable implementation history.
 
+## Shared References
+
+Use these shared references when they apply:
+
+- `../_shared/complexity-levels.md` when interpreting `simple`, `medium`, or `complex` approved plans.
+- `../_shared/project-rules-discovery.md` before deciding local conventions, commands, file placement, or generated-document formats.
+- `../_shared/source-driven-development.md` when a selected task depends on external framework, library, service, or API behavior.
+- `../_shared/no-workarounds.md` before accepting task implementations or temporary mitigations.
+
 ## Workflow
 
 1. Resolve the approved plan.
@@ -43,7 +52,8 @@ Do not create a separate orchestration report unless the human explicitly asks f
    - If no plan matches, ask for the plan path or slug.
    - Require `status: approved` before orchestrating implementation. If the plan is `pending-approval` or `requested-changes`, ask the human whether to stop, approve/update the plan first, or proceed with explicit risk acceptance.
 2. Read orchestration context.
-   - Read `Implementation Strategy`, `Implementation Subtasks`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Read `Implementation Strategy`, `Implementation Subtasks`, `Decision Notes`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Treat the plan's `simple`, `medium`, or `complex` classification as execution guidance: simple plans should normally run as one focused pass, medium plans should follow subtasks, and complex plans require extra care around sequencing, rollback, security, and decision context.
    - Inspect existing `task_*.md` documents in the same folder to identify completed tasks, partial tasks, deviations, blocked tasks, and the recommended next task.
    - Treat existing `task_N.md` documents as completed-work history. Do not repeat completed subtasks unless the human explicitly asks for a correction or resume.
 3. Build the task queue.
@@ -60,6 +70,7 @@ Do not create a separate orchestration report unless the human explicitly asks f
 5. Execute selected tasks.
    - For sequential execution, implement one selected task at a time with scoped edits, TDD when feasible, focused tests, full quality gate, and `task_N.md` progress documentation.
    - In sequential execution, follow the same TDD discipline as `implement`: run an existing nearby test first when practical, add or adjust the narrowest useful failing test, confirm it fails for the expected reason, make the smallest correct change, and use Verification Mode for non-behavior changes where artificial TDD would add no confidence.
+   - In sequential execution, apply Project Rules Discovery, Source-Driven External API Checks, and the No-Workarounds Checklist the same way `implement` does.
    - For parallel execution, launch one implementation subagent per selected task when the runtime supports it.
    - Give each subagent a self-contained prompt with:
      - Approved plan path and relevant plan excerpts.
@@ -67,6 +78,7 @@ Do not create a separate orchestration report unless the human explicitly asks f
      - Ownership/files and explicit write boundaries.
      - Dependencies and already completed `task_N.md` docs.
      - Required focused tests, including any known focused command and expected result.
+     - Relevant discovered project rules, source-driven external API verification needs, and any no-workarounds constraints from the approved plan.
      - TDD expectations: run an existing nearby test first when practical, confirm the new focused test fails for the expected reason before implementation, and use Verification Mode for non-behavior changes instead of forcing artificial tests.
      - Full quality gate expectations.
      - Required progress document path.
@@ -76,6 +88,7 @@ Do not create a separate orchestration report unless the human explicitly asks f
 6. Fan in and integrate.
    - Wait for every launched implementation subagent before finalizing orchestration.
    - Review each worker's changed files, tests, and `task_N.md` document before starting another dependent task.
+   - Reject worker changes that rely on untracked workaround smells unless the worker records a constrained temporary mitigation and required follow-up.
    - Resolve non-overlapping worker changes together only after confirming they stayed within ownership boundaries.
    - If workers conflict, stop and ask the human before resolving by dropping or overwriting another worker's changes.
    - If any task reveals a material plan gap, stop and ask before changing the approved plan or continuing with a different scope.

@@ -29,6 +29,17 @@ docs/yyyy-mm-dd-{slug}/plan.md
 
 The document status must remain `pending-approval` until the human explicitly approves it or requests changes.
 
+## Shared References
+
+Use these shared references when they apply:
+
+- `../_shared/complexity-levels.md` for `simple`, `medium`, and `complex` planning expectations.
+- `../_shared/project-rules-discovery.md` before relying on repository conventions.
+- `../_shared/source-driven-development.md` when the plan depends on external framework, library, service, or API behavior.
+- `../_shared/no-workarounds.md` to reject plans that patch symptoms instead of addressing root causes.
+- `../_shared/prd-plan-alignment.md` when planning from a PRD.
+- `../_shared/decision-notes.md` for optional mini-ADR-style decision notes in complex plans.
+
 ## Workflow
 
 1. Determine the source context.
@@ -42,6 +53,8 @@ The document status must remain `pending-approval` until the human explicitly ap
 2. Gather only the context needed to write the implementation plan.
    - Inspect the codebase enough to identify the smallest correct implementation path.
    - Prefer repository files, manifests, tests, configuration, existing docs, and relevant nearby source code.
+   - Apply Project Rules Discovery before deciding conventions, commands, ownership boundaries, or generated-document formats.
+   - When implementation depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify it from repository evidence, local package/source docs, official docs, or version-specific release notes before treating it as a plan fact.
    - Do not inspect private or unrelated project areas unless the request requires it.
 3. Ask the human for missing technical or product facts when they would materially change scope, architecture, data handling, security, rollout, or approval.
    - Ask as many times as necessary until approval-relevant ambiguity is resolved.
@@ -55,22 +68,26 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Include only sections that help implementation, review, approval, rollback, or later maintenance.
    - Keep confirmed facts, assumptions, decisions, risks, non-goals, blocking questions, and deferred non-blocking questions distinct.
    - Prefer evidence from the repository over speculation.
+   - If the source is a PRD, run the PRD-to-Plan Alignment check before reviewer invocation: map PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into plan sections, tests, rollout notes, or explicit out-of-scope rationale.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
    - When known, name the focused verification command and expected result for important behavior or regression coverage.
    - Classify implementation complexity as `simple`, `medium`, or `complex`.
+   - Use the shared complexity reference to scale detail: simple plans stay single-pass when possible, medium plans include clear subtasks, and complex plans include full sequencing, rollout, rollback, and decision context.
    - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
+   - For complex plans, include `Decision Notes` when architecture, public contracts, data migrations, security, third-party integrations, or intentionally avoided heavier alternatives matter to future implementers.
    - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`.
    - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether current runtime worker subagents can safely handle independent tasks.
    - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
+   - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
 6. Run specialist reviewer agents on the generated `plan.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `plan-future-maintainer` agent.
    - Invoke the exact pre-built `plan-security-reviewer` agent.
    - Invoke the exact pre-built `plan-staff-engineer` agent.
    - Run these independent reviewers in parallel when the current assistant environment supports it.
-   - Pass each reviewer the plan path, source context summary, and any relevant PRD or Jira context.
+   - Pass each reviewer the plan path, source context summary, discovered project rules that affect the plan, source-driven verification notes, and any relevant PRD or Jira context.
    - Do not write separate review files.
 7. Merge reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
    - Apply blocking findings before finalizing.
@@ -139,8 +156,10 @@ Use these sections when useful:
 - Source Context
 - Current System Notes
 - Proposed Approach
+- PRD Alignment
 - Implementation Strategy
 - Implementation Subtasks
+- Decision Notes
 - Files / Modules To Touch
 - Data Model / Migrations
 - API / UI Behavior
@@ -158,6 +177,7 @@ Plans must explicitly guide execution:
 
 - `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
 - `medium` and `complex` plans must include implementation subtasks.
+- `complex` plans should include decision notes for important architecture, public-contract, data, migration, security, or third-party integration decisions.
 - Each subtask must include task number, short title, status, execution mode, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
 - When a focused command is known, acceptance checks should include the command and the expected result instead of only saying "add tests" or "verify behavior".
 - Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.

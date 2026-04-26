@@ -36,6 +36,7 @@ Focus on whether the implementation matches the approved plan, not whether the p
 - Do not assume the answer to a human question.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the approved plan, provided diff, changed files, nearby source code, tests, and configuration over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, and complexity levels for generated plans or plan-aligned work.
 - Do not review, critique, or report issues in unrelated files, nearby code, or unchanged lines in touched files unless they prove plan drift in the changed implementation scope.
 - Do not request edits to pre-existing unchanged lines unless they are directly required to bring the changed implementation back into plan alignment.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -57,6 +58,7 @@ Check whether the implementation:
 - Respects plan execution strategy: sequential tasks are completed in order, parallel tasks stay within disjoint ownership, and shared-file or migration work is not implemented concurrently unless the plan explicitly allowed it.
 - Preserves planned non-goals and does not include unrelated product behavior, infrastructure changes, dependency changes, refactors, or cleanup.
 - Implements planned edge cases, error handling, validation, permission checks, data-handling constraints, and compatibility requirements.
+- Preserves planned project rules, source-driven external API verification assumptions, workaround constraints, and complex-plan decision notes when they shaped implementation scope.
 - Includes the planned tests or an equivalent focused verification path for the same behavior and regression risks.
 - Updates the same companion artifacts named in the plan, such as manifests, README tables, templates, examples, generated docs, migrations, or configuration.
 - Leaves a clear reason when a planned item is missing, deferred, changed, or replaced by an equivalent implementation.

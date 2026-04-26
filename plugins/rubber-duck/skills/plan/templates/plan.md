@@ -21,15 +21,23 @@ One short paragraph describing the intended technical change and the outcome it 
 - Prompt, Jira issue, or PRD path used as the source of truth.
 - Key requirements, constraints, and non-goals carried into implementation planning.
 
+## PRD Alignment
+
+- For plans created from a PRD, map goals, acceptance criteria, non-goals, risks, and answered blocking questions to planned work or explicit out-of-scope rationale.
+- Write `Not applicable` when the source is not a PRD.
+
 ## Current System Notes
 
 - Existing files, modules, tests, commands, data flows, or conventions that shape the implementation.
+- Project rules discovered from local instructions, config, manifests, CI, nearby files, or generated artifacts when they affect the plan.
+- External framework, library, service, or API behavior verified from repository evidence, local package/source docs, official docs, release notes, or existing tests when relevant.
 - Confirmed facts only; call out assumptions separately.
 
 ## Proposed Approach
 
 - Smallest correct implementation sequence.
 - Important decisions, tradeoffs, dependencies, and rejected heavier alternatives.
+- Root-cause path for bug fixes; avoid workaround strategies unless they are explicitly temporary, constrained, and tracked.
 
 ## Implementation Strategy
 
@@ -38,6 +46,16 @@ One short paragraph describing the intended technical change and the outcome it 
 - Rationale: why this mode is safer or faster for this work.
 - Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether runtime worker subagents can safely implement independent subtasks.
 - Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
+
+## Decision Notes
+
+- For complex plans only, capture important architecture, public-contract, data, migration, security, third-party integration, or avoided-heavier-alternative decisions.
+- Use this shape when needed:
+  - Decision: chosen approach.
+  - Alternatives considered: viable alternatives.
+  - Rationale: why this path is safest or simplest now.
+  - Consequences: tradeoffs, follow-ups, rollback notes, or aging risks.
+- Write `Not applicable` for simple and medium plans without consequential decisions.
 
 ## Implementation Subtasks
 
