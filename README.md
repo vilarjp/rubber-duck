@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.0.10" src="https://img.shields.io/badge/version-0.0.10-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -44,6 +44,7 @@ Start a new session or reload plugins, then invoke Rubber Duck with the plugin n
 /rubber-duck:diagnosis
 /rubber-duck:orchestrate-implementation
 /rubber-duck:implement
+/rubber-duck:frontend-design
 /rubber-duck:code-review
 /rubber-duck:commit-push
 ```
@@ -81,6 +82,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 /rubber-duck:diagnosis
 /rubber-duck:orchestrate-implementation
 /rubber-duck:implement
+/rubber-duck:frontend-design
 /rubber-duck:code-review
 /rubber-duck:commit-push
 ```
@@ -94,6 +96,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Bug investigation  | Produces an evidence-backed diagnosis before anyone starts changing code.                                          |
 | Orchestration      | Coordinates approved plan subtasks sequentially or with parallel-safe implementation subagents.                    |
 | Implementation     | Guides scoped, test-first changes against an approved artifact or direct request, including planned task progress. |
+| Frontend design    | Creates or renovates polished, responsive, accessible frontend experiences with design-system discipline.          |
 | Code review        | Reviews local diffs or PRs with specialist agents for correctness, security, tests, patterns, and plan alignment.  |
 | Commit and push    | Proposes conventional commit splits, blocks protected branches, asks for explicit confirmation, and pushes safely. |
 
@@ -106,6 +109,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `/rubber-duck:diagnosis`                  | You need to understand a bug before fixing it.                         | Bug report, Jira link, logs, reproduction notes, or source hint.                   | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.                                      |
 | `/rubber-duck:orchestrate-implementation` | You need to coordinate an approved plan's subtasks.                    | Approved plan slug/path, optional task IDs, and optional sequential/parallel hint. | Code/tests changed; completed planned subtasks emit `task_N.md` progress docs.               |
 | `/rubber-duck:implement`                  | You are ready to make a scoped code change.                            | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug.     | Code/tests changed; planned subtasks emit `task_N.md` progress docs.                         |
+| `/rubber-duck:frontend-design`            | You need a greenfield UI or existing frontend renovation.              | Product brief, target route/path, screenshot context, or redesign request.         | Working frontend code with design-system, responsive, accessibility, and polish guidance.     |
 | `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
 | `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
 | `/rubber-duck:setup-codex-agents`         | You installed Rubber Duck in Codex and want reviewer agents available. | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.               | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`.                     |

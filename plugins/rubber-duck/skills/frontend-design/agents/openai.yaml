@@ -1,0 +1,7 @@
+interface:
+  display_name: "Frontend Design"
+  short_description: "Create or renovate polished frontend interfaces."
+  brand_color: "#6D5EF8"
+  default_prompt: "Use $frontend-design to redesign this frontend with a polished, responsive, accessible design system."
+policy:
+  allow_implicit_invocation: true

@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
-  "version": "0.0.10",
-  "description": "Spec-driven agent workflows for planning, implementation, review, and safe shipping.",
+  "version": "0.1.0",
+  "description": "Spec-driven agent workflows for planning, frontend design, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",
     "email": "vilarjp93@gmail.com",
@@ -14,14 +14,16 @@
     "spec-driven",
     "planning",
     "implementation",
+    "frontend-design",
+    "design-system",
     "code-review",
     "safe-shipping"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Rubber Duck",
-    "shortDescription": "Spec-driven planning, implementation, review, and commit workflows.",
-    "longDescription": "Turn fuzzy software work into concise PRDs, reviewed implementation plans, evidence-backed diagnoses, orchestrated implementation passes, structured code reviews, and deliberate commit/push flows.",
+    "shortDescription": "Spec-driven planning, frontend design, review, and commit workflows.",
+    "longDescription": "Turn fuzzy software work into concise PRDs, reviewed implementation plans, evidence-backed diagnoses, polished frontend design systems, orchestrated implementation passes, structured code reviews, and deliberate commit/push flows.",
     "developerName": "João Vilar",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
@@ -30,6 +32,7 @@
       "Use Rubber Duck to write a PRD for this feature.",
       "Use Rubber Duck to plan this implementation.",
       "Use Rubber Duck orchestrate-implementation to coordinate this approved plan.",
+      "Use Rubber Duck frontend-design to renovate this frontend while preserving product identity.",
       "Use Rubber Duck to review my local diff.",
       "Use Rubber Duck setup-codex-agents to install reviewer agents."
     ],
