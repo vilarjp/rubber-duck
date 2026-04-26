@@ -29,6 +29,10 @@ docs/yyyy-mm-dd-{slug}/prd.md
 
 The document status must remain `pending-approval` until the human explicitly approves it or requests changes.
 
+## Shared References
+
+Use `../_shared/prd-plan-alignment.md` as downstream guidance: PRDs should make goals, non-goals, risks, dependencies, and acceptance criteria clear enough for a future plan to map them into implementation work and verification.
+
 ## Workflow
 
 1. Determine the source context.
@@ -52,6 +56,7 @@ The document status must remain `pending-approval` until the human explicitly ap
    - Keep facts, assumptions, non-goals, risks, blocking questions, and deferred non-blocking questions distinct.
    - Prefer evidence over speculation.
    - Use clear acceptance criteria that a future plan or implementation can verify.
+   - Make goals, non-goals, risks, dependencies, and answered blocking questions concrete enough for a future PRD-to-plan alignment check.
 6. Run the `document-reviewer` agent on the generated `prd.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `document-reviewer` agent.

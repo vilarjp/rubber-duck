@@ -34,6 +34,8 @@ Status: completed
 
 - Focused tests and checks run for this task.
 - Full quality gate commands run, deferred, unavailable, or blocked.
+- External framework, library, service, or API behavior verified when it shaped implementation.
+- Any temporary workaround that remains, including why it was necessary, how it is constrained, and what follow-up removes it.
 
 ## Deviations / Follow-Ups
 

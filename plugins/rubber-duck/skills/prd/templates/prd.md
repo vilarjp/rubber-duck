@@ -39,6 +39,7 @@ What user or business problem this solves, with only the context needed for plan
 ## Acceptance Criteria
 
 - Given/when/then or checklist-style criteria that can be tested or reviewed.
+- Criteria should be specific enough for a future implementation plan to map each one to planned work, tests, checks, or explicit out-of-scope rationale.
 
 ## Success Signals
 

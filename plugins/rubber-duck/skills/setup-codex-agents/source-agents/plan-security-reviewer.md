@@ -33,6 +33,7 @@ Focus on whether the plan identifies and mitigates material risk across:
 - Do not assume the answer to a human question.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, and decision notes for complex plans.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the plan does not contain enough evidence.
 - Do not invent compliance scope. If LGPD, PII, PCI, regulated data, or third-party data handling is unclear, return an exact question for the invoking skill to ask.
@@ -50,10 +51,13 @@ Check whether the plan:
 - Identifies new secrets, environment variables, or configuration and how they will be managed safely.
 - Describes retention, deletion, migration, rollback, and backup behavior when data storage changes.
 - Covers third-party integrations, webhooks, file uploads, external URLs, or network calls when relevant.
+- Verifies or explicitly flags security-sensitive external framework, library, service, or API assumptions, especially auth, parsing, escaping, logging, storage, network, webhook, and SDK behavior.
 - Includes abuse cases, rate limiting, idempotency, replay protection, or denial-of-service controls when relevant.
 - Calls out dependency, package, or generated-code risk when the implementation adds or changes dependencies.
 - Includes security-focused tests, manual checks, or review steps proportional to the risk.
 - Assigns security-sensitive work to subtasks with clear ownership, dependencies, and verification when the plan is medium-to-complex.
+- Uses complex-plan decision notes for important authorization, privacy, logging, retention, third-party integration, migration, or rollback decisions when those choices affect security review.
+- Avoids security workarounds such as swallowed errors, disabled validation, bypassed tests, broad allowlists, temporary auth skips, or logging-only mitigations unless they are explicitly temporary, constrained, and tracked.
 - Avoids unsafe parallelization of security-sensitive migrations, authorization changes, secrets handling, logging, or data-retention changes when ordering matters.
 - Separates confirmed security requirements from assumptions, open blocking compliance questions, answered blocking compliance questions, deferred non-blocking compliance questions, and document changelog entries.
 - Preserves answered security or compliance blocking questions with the human answer and document impact.

@@ -31,6 +31,7 @@ Supported document types:
 - Do not ask the human directly unless the human invoked this agent directly.
 - Do not recommend approval while blocking issues or blocking missing questions remain.
 - Prefer evidence from the provided document and nearby source context over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, and decision notes for complex plans.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the document does not contain enough evidence.
 - Focus on blockers, missing questions, and approval readiness.
@@ -49,6 +50,7 @@ Check whether the document:
 - Keeps `updated` aligned with the latest material document change and not earlier than `created`.
 - Captures the smallest useful scope without smuggling in unrelated work.
 - Names material risks, dependencies, and verification steps when relevant.
+- Records project rules, external API verification, and root-cause/workaround constraints when they materially affect approval readiness.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, security, or user intent.
 - Leaves enough context for a future implementer or reviewer to act without re-discovering the same facts.
 
@@ -56,7 +58,7 @@ For code-review documents, additionally check whether findings are specific, sev
 
 For diagnosis documents, additionally check whether the probable root cause is supported by investigation evidence and whether solution options are separated from confirmed facts.
 
-For implementation plans, additionally check whether the approach, files to touch, tests, rollout, rollback, and security/privacy concerns are specific enough to guide implementation. For medium-to-complex plans, check that `Implementation Strategy` recommends single-pass, incremental task-by-task, or parallel implementation subagents; explains why; recommends `/rubber-duck:orchestrate-implementation` when coordination is needed; and breaks the work into subtasks with execution mode, dependencies, ownership/files, acceptance checks, and expected `task_N.md` progress documents.
+For implementation plans, additionally check whether the approach, files to touch, tests, rollout, rollback, and security/privacy concerns are specific enough to guide implementation. When the plan source is a PRD, check that PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions are mapped to planned work, tests, rollout notes, or explicit out-of-scope rationale. For medium-to-complex plans, check that `Implementation Strategy` recommends single-pass, incremental task-by-task, or parallel implementation subagents; explains why; recommends `/rubber-duck:orchestrate-implementation` when coordination is needed; and breaks the work into subtasks with execution mode, dependencies, ownership/files, acceptance checks, and expected `task_N.md` progress documents. For complex plans, check that consequential architecture, public-contract, data, migration, security, third-party integration, or avoided-heavier-alternative choices have concise decision notes.
 
 For PRDs, additionally check whether goals, non-goals, requirements, acceptance criteria, success signals, blocking questions, and deferred non-blocking questions are clear enough for technical planning.
 

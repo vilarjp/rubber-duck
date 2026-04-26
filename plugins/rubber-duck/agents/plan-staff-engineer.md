@@ -25,6 +25,7 @@ Focus on whether the plan is likely to produce a correct, maintainable productio
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack from repository files only, such as manifests, lockfiles, framework config, package scripts, tests, source structure, and existing conventions.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, and decision notes for complex plans.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Flag uncertainty explicitly when the plan or repository does not contain enough evidence.
 - Stay focused on design correctness, stack fit, implementation risk, compatibility, observability, testing implications, and simpler paths.
@@ -36,9 +37,15 @@ Focus on whether the plan is likely to produce a correct, maintainable productio
 Check whether the plan:
 
 - Fits the repository's detected language, framework, runtime, build tooling, test framework, and deployment assumptions.
+- Reflects repository-local rules from instructions, manifests, CI, lint/type/test/build configuration, nearby source, nearby tests, generated artifacts, and project docs when those rules affect implementation.
+- Verifies or explicitly flags important external framework, library, service, or API assumptions, especially version-sensitive behavior.
+- When the source is a PRD, maps PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into planned work, tests, rollout notes, or explicit out-of-scope rationale.
 - Names the right files, modules, ownership boundaries, APIs, data flows, and integration points for the planned change.
 - Chooses an implementation approach that is proportionate to the requested behavior and avoids unnecessary abstractions.
+- Avoids workaround strategies that suppress errors, bypass lint/tests, add arbitrary timing, scatter special cases, or copy-paste fixes instead of addressing root cause.
 - Breaks medium-to-complex work into implementation subtasks with clear dependencies, ownership/files, acceptance checks, and progress document names.
+- Uses `simple`, `medium`, and `complex` consistently: simple stays single-pass when possible, medium uses clear subtasks, and complex includes sequencing, rollout, rollback, security, and decision context.
+- Includes concise decision notes for complex architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 - Recommends a safe execution strategy: single focused pass, incremental task-by-task, or parallel implementation subagents.
 - Only recommends parallel implementation when subtasks have disjoint write sets, stable interfaces, clear merge boundaries, and no unresolved blockers.
 - Evaluates whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.

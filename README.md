@@ -154,9 +154,16 @@ docs/yyyy-mm-dd-{slug}/task_1.md
 docs/yyyy-mm-dd-{slug}/task_2.md
 ```
 
+Rubber Duck uses the existing complexity labels `simple`, `medium`, and `complex` to scale ceremony. Simple plans stay single-pass when possible, medium plans include explicit subtasks, and complex plans add stronger sequencing, rollout, rollback, security, and decision context. Plans created from PRDs include a stricter PRD-to-plan alignment check so goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions survive translation into implementation work.
+
+Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They cover complexity levels, project rules discovery, source-driven external API checks, no-workaround guidance, PRD-to-plan alignment, and optional mini-ADR-style decision notes for complex plans.
+
 ## Safety Rails
 
 - `implement` follows TDD whenever feasible and explains when it cannot.
+- Skills discover repository-local rules and conventions before relying on generic preferences.
+- Skills verify external framework, library, service, or API behavior from repository evidence, local package/source docs, official docs, or version-specific references when that behavior shapes a plan, implementation, diagnosis, or review.
+- Skills prefer root-cause fixes and flag workaround smells such as type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, and copy-pasted fixes.
 - `orchestrate-implementation` owns multi-subtask coordination and only runs parallel workers when tasks are explicitly parallel-safe.
 - `implement` reads planned subtasks and existing `task_N.md` documents before choosing the next task.
 - `implement` runs a full quality gate before completion: format checks, linting, type checks, builds, and the full automated test suite when those commands exist.

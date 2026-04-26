@@ -33,6 +33,7 @@ Focus on security and privacy risks introduced, changed, or left unprotected by 
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack, data flows, and trust boundaries from repository files only, such as manifests, framework config, routing, middleware, tests, source structure, and existing conventions.
 - Prefer evidence from the provided diff, changed files, nearby source code, tests, configuration, and documentation over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, and complexity levels for generated plans or plan-aligned work.
 - Do not review, critique, or report security issues in unrelated files, nearby code, or unchanged lines in touched files unless the changed code directly depends on the issue or newly exposes it.
 - Do not request edits to pre-existing unchanged lines unless they are directly required to fix a changed-code security or privacy issue.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -56,7 +57,9 @@ Check whether the implementation:
 - Maintains safe data storage, retention, deletion, migration, rollback, backups, and export behavior when data handling changes.
 - Avoids unsafe parallel implementation of security-sensitive subtasks, especially authorization, migration, secrets, logging, retention, deletion, or third-party data-flow changes that require ordering or shared context.
 - Treats third-party integrations, webhooks, external URLs, package updates, generated code, and network calls as supply-chain and trust-boundary changes.
+- Verifies or explicitly flags security-sensitive external framework, library, service, or API assumptions, especially auth, parsing, escaping, logging, storage, network, webhook, and SDK behavior.
 - Considers abuse cases such as rate limits, replay, idempotency, spam, denial of service, oversized payloads, privilege escalation, and unsafe automation.
+- Avoids security workarounds such as swallowed errors, disabled validation, bypassed tests, broad allowlists, temporary auth skips, arbitrary timing patches, or logging-only mitigations unless they are explicitly temporary, constrained, and tracked.
 - Includes or recommends security-focused tests or manual checks proportional to the risk introduced by the change.
 
 ## Output

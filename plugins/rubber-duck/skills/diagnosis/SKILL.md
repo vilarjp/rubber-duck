@@ -29,6 +29,14 @@ docs/yyyy-mm-dd-{slug}/diagnosis.md
 
 The diagnosis document is the only file this skill may create or modify. Its status must remain `pending-approval` until the human explicitly approves it or requests changes.
 
+## Shared References
+
+Use these shared references when they apply:
+
+- `../_shared/project-rules-discovery.md` before relying on repository conventions, diagnostics, or verification commands.
+- `../_shared/source-driven-development.md` when the suspected cause depends on external framework, library, service, or API behavior.
+- `../_shared/no-workarounds.md` when evaluating solution options and recommended next steps.
+
 ## Workflow
 
 1. Determine the source context.
@@ -43,12 +51,15 @@ The diagnosis document is the only file this skill may create or modify. Its sta
    - Do not ask for facts that the human explicitly accepts as deferred and non-blocking.
 3. Inspect the codebase and evidence without changing project files.
    - Read relevant source, tests, configuration, logs, documentation, git history, and local diffs.
+   - Apply Project Rules Discovery before relying on local conventions, commands, generated artifacts, or diagnostics.
+   - When the diagnosis depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible.
    - Run read-only searches and diagnostics where useful.
    - If reproducing the bug or running tests would intentionally create or modify repository files other than the diagnosis document, ask the human first or record the command in the Verification Plan instead.
 4. Form and validate hypotheses.
    - Tie each hypothesis to concrete evidence from the prompt, Jira content, code, tests, logs, or recent changes.
    - Separate confirmed facts from assumptions and unknowns.
    - Prefer the simplest explanation that fits the evidence.
+   - Do not recommend workaround fixes unless the root cause is identified or the document explicitly labels the mitigation as temporary, constrained, and requiring follow-up.
 5. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
    - Use a human-provided slug when available.
@@ -128,6 +139,7 @@ Use these sections when useful:
 - Solution Options
 - Recommended Next Step
 - Verification Plan
+- Workaround / Root-Cause Check
 - Blocking Questions
 - Deferred Non-Blocking Questions
 - Document Changelog

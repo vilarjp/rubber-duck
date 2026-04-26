@@ -33,6 +33,7 @@ Focus on whether tests prove the behavior created or modified by the implementat
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack, test framework, fixture style, and assertion conventions from repository files only, such as manifests, lockfiles, test directories, nearby tests, framework config, and CI configuration.
 - Prefer evidence from the provided diff, changed files, nearby tests, test utilities, fixtures, snapshots, CI configuration, and documentation over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, and complexity levels for generated plans or plan-aligned work.
 - Do not review, critique, or report test issues for unrelated files, nearby behavior, or unchanged lines in touched files unless the changed code directly depends on that coverage gap or newly exposes it.
 - Do not request edits to pre-existing unchanged tests unless they are directly required to prove or fix the changed behavior.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -58,6 +59,7 @@ Check whether the implementation:
 - Does not add or endorse test-only production methods, flags, exported internals, or public APIs unless they are clearly justified by product behavior or existing project convention.
 - Updates fixtures, snapshots, golden files, generated examples, or documentation tests intentionally when expected outputs change.
 - Avoids brittle or flaky patterns such as sleeps, order-dependent assertions, real network calls, uncontrolled time, shared mutable state, or environment-dependent behavior.
+- Treats lint/test bypasses, skipped tests, weakened assertions, arbitrary sleeps, over-mocking, and test-only production APIs as workaround smells unless clearly justified and tracked.
 - Avoids redundant tests that repeat the same assertions without increasing confidence.
 - Leaves clear manual verification steps when automated tests are not feasible for the reviewed change.
 - Runs or recommends the smallest useful focused test commands before the full quality gate.

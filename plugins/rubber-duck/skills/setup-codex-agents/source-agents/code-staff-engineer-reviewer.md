@@ -33,6 +33,7 @@ Focus on whether the changed code is likely to be correct, maintainable, and saf
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer the project stack from repository files only, such as manifests, lockfiles, framework config, package scripts, tests, source structure, and existing conventions.
 - Prefer evidence from the provided diff, changed files, nearby source code, tests, and configuration over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, and complexity levels for generated plans or plan-aligned work.
 - Do not review, critique, or report issues in unrelated files, nearby code, or unchanged lines in touched files unless the changed code directly depends on the issue or newly exposes it.
 - Do not request edits to pre-existing unchanged lines unless they are directly required to fix a changed-code issue.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -53,8 +54,11 @@ Check whether the implementation:
 - Preserves existing public contracts, API shapes, data formats, CLI behavior, file paths, plugin manifests, and backwards compatibility when relevant.
 - Handles important edge cases, invalid input, empty states, errors, retries, async ordering, idempotency, concurrency, and failure modes.
 - Fits the detected language, framework, runtime, build system, package manager, testing style, and local abstractions.
+- Reflects repository-local rules from instructions, manifests, CI, lint/type/test/build configuration, nearby source, nearby tests, generated artifacts, and project docs when those rules affect implementation.
+- Verifies or explicitly flags important external framework, library, service, or API assumptions, especially version-sensitive behavior.
 - Keeps control flow readable by avoiding nested ternaries and using early returns or guard clauses where they make changed behavior easier to verify.
 - Keeps the change set small and focused, using the minimal clean change that fully solves the specific problem.
+- Avoids workaround smells such as type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, or copy-pasted fixes instead of root-cause changes.
 - Avoids speculative abstractions, broad refactors, new dependencies, architecture changes, global state, or coupling unless clearly required.
 - Maintains clear ownership boundaries between modules, layers, commands, documents, generated artifacts, and runtime plugin components.
 - Preserves generated-document contracts when those documents are changed: `created`, `updated`, answered blocking questions, document changelog, implementation strategy, subtasks, and task progress docs.

@@ -17,6 +17,7 @@ Status: pending-approval
 - Review target: local diff or GitHub PR link.
 - Review boundary: changed hunks/lines, new files, commits, PR metadata, checks, comments, and relevant untracked files reviewed.
 - Context-only files or related plan, diagnosis, PRD, or code-review document used to understand the reviewed change, if any.
+- Project rules, conventions, and verification sources used when they affected review judgment.
 
 ## Findings
 
@@ -48,6 +49,14 @@ Write `None` when there are no material notes.
 - Alignment or mismatch with local naming, layering, file organization, templates, manifests, generated documents, tests, and existing project patterns.
 - Evidence from directly related context files when a convention drives a recommendation.
 - Unrelated nearby files and unchanged lines in touched files are not review targets.
+
+Write `None` when there are no material notes.
+
+## Source-Driven / Workaround Notes
+
+- External framework, library, service, API, or version-sensitive behavior verified from repository evidence, local package/source docs, official docs, release notes, or existing tests.
+- Any unverified external API assumptions that affect correctness, compatibility, security, rollout, or test confidence.
+- Any workaround smells found in changed code, tests, or generated documents, including type suppression, lint/test bypasses, swallowed errors, timing patches, monkey patches, scattered special cases, or copy-pasted fixes.
 
 Write `None` when there are no material notes.
 

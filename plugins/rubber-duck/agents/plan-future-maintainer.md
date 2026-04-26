@@ -30,6 +30,7 @@ Focus on whether a future engineer can understand:
 - Do not assume the answer to a human question.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, and decision notes for complex plans.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Stay focused on future maintainability and plan readability.
 - Do not duplicate security, compliance, or general architecture review unless the issue directly affects future maintainers' ability to understand or operate the change.
@@ -42,13 +43,17 @@ Check whether the plan:
 
 - Explains the current system context enough for a later implementer or reviewer.
 - Connects proposed changes to the original source context, PRD, diagnosis, Jira issue, or prompt.
+- When the source is a PRD, preserves PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions in the technical plan or explains why they are out of scope.
 - Records important assumptions, constraints, non-goals, and tradeoffs.
+- Records repository-local rules and external API verification notes when they shape implementation choices or future maintenance risk.
 - Names the files, modules, APIs, data flows, commands, tests, and docs that future maintainers are likely to inspect.
 - Makes sequencing and dependencies clear when multiple steps must happen in order.
 - Breaks medium-to-complex work into subtasks with task IDs, ownership/files, dependencies, execution mode, acceptance checks, and expected `task_N.md` progress documents.
 - Explains whether implementation should be incremental or parallel, and whether `/rubber-duck:orchestrate-implementation` should coordinate the work or a simple `/rubber-duck:implement` pass is enough.
 - Captures migration, compatibility, rollout, rollback, or cleanup context when relevant.
+- Captures concise decision notes for complex architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 - Separates confirmed facts from decisions, hypotheses, open blocking questions, answered blocking questions, deferred non-blocking questions, changelog entries, and follow-up work.
+- Avoids preserving workaround strategies unless they are explicitly temporary, constrained, and tracked with follow-up.
 - Preserves answered blocking questions with the human answer and the document impact so future maintainers can see why decisions changed.
 - Avoids vague phrases such as "update logic", "handle edge cases", or "add tests" when specific behavior is needed.
 - Avoids over-specific implementation details that are likely to become stale before implementation.

@@ -32,6 +32,8 @@ One short paragraph describing the bug, affected behavior, and current confidenc
 ## Investigation Notes
 
 - Evidence from the prompt, Jira issue, code paths, tests, logs, git history, and local diffs.
+- Project rules, local diagnostics, and verification commands discovered when they affect the diagnosis.
+- External framework, library, service, or API behavior verified from repository evidence, local package/source docs, official docs, release notes, or existing tests when relevant.
 - Keep confirmed facts, hypotheses, assumptions, and unknowns separate.
 
 ## Probable Root Cause
@@ -55,6 +57,12 @@ The recommended implementation or follow-up action, with the reason it is prefer
 ## Verification Plan
 
 - Focused checks, tests, reproduction steps, logs, or manual validation that should confirm the fix.
+
+## Workaround / Root-Cause Check
+
+- Why the recommended next step addresses the probable root cause rather than only hiding the symptom.
+- Any temporary mitigation that remains, why it is necessary, how it is constrained, and what follow-up removes it.
+- Write `None` when no workaround or temporary mitigation is recommended.
 
 ## Blocking Questions
 

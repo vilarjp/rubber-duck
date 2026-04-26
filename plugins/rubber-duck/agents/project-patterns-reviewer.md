@@ -33,6 +33,7 @@ Focus on whether the changed code follows the repository's existing conventions 
 - Do not ask the human directly unless the human invoked this agent directly.
 - Infer project conventions from repository files only, such as nearby source, tests, manifests, framework config, generated artifacts, documentation, and existing naming or folder patterns.
 - Prefer evidence from the provided diff, changed files, nearby source code, tests, and configuration over assumptions.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, and complexity levels for generated plans or plan-aligned work.
 - Do not review, critique, or report pattern issues in unrelated files, nearby code, or unchanged lines in touched files unless the changed code directly depends on the issue or newly exposes it.
 - Do not request edits to pre-existing unchanged lines unless they are directly required to fix a changed-code pattern mismatch.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
@@ -48,6 +49,7 @@ Focus on whether the changed code follows the repository's existing conventions 
 Check whether the implementation:
 
 - Places files in the same directories and ownership boundaries used by comparable features, commands, agents, skills, docs, templates, or tests.
+- Applies repository-local instructions and conventions from rules files, project docs, manifests, CI, lint/type/test/build configuration, generated artifacts, and nearby code when they affect the reviewed change.
 - Uses naming, frontmatter fields, descriptions, statuses, command names, slugs, file names, and section names consistently with nearby project artifacts.
 - Uses Rubber Duck generated-document conventions consistently, including `updated` metadata, `Document Changelog`, answered blocking-question entries, `Implementation Strategy`, `Implementation Subtasks`, and `task_N.md` progress document naming.
 - Follows local layering and dependency direction instead of crossing boundaries or introducing new coupling.
@@ -59,6 +61,7 @@ Check whether the implementation:
 - Keeps tests in the local test style, naming pattern, fixture layout, and assertion style used by similar behavior.
 - Updates companion documentation, examples, manifests, indexes, or tables when the repository pattern requires it.
 - Avoids introducing inconsistent tooling, formatting, dependencies, scripts, or runtime assumptions without a clear local precedent.
+- Avoids pattern workarounds such as scattered special cases, copy-pasted fixes, monkey patches, or local convention bypasses unless they are explicitly temporary, constrained, and tracked.
 - Keeps the change scoped to the requested behavior and avoids opportunistic refactors of unrelated patterns.
 
 ## Output
