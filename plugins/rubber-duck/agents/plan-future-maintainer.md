@@ -27,6 +27,7 @@ Focus on whether a future engineer can understand:
 - Do not use persistent memory.
 - If human input is needed, return the exact question in the required output section for the invoking skill to ask.
 - Classify human questions as blocking or non-blocking, with rationale for any non-blocking question.
+- Use the shared Rubber Duck clarifying-question pattern: return only questions that materially affect approval, explain why each matters, and mark non-blocking only when the workflow can safely continue.
 - Do not assume the answer to a human question.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.

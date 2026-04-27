@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Generate a concise technical implementation plan from a prompt, Jira link, or existing PRD slug, then review it with document, future-maintainer, security, and staff-engineer agents before asking for human approval.
+description: Generate a concise technical implementation plan from a prompt, Jira link, or existing PRD slug, using code/docs research and specialist reviewers before asking for human approval.
 disable-model-invocation: true
 argument-hint: "[implementation prompt | Jira link | PRD slug]"
 ---
@@ -39,6 +39,7 @@ Use these shared references when they apply:
 - `../_shared/no-workarounds.md` to reject plans that patch symptoms instead of addressing root causes.
 - `../_shared/prd-plan-alignment.md` when planning from a PRD.
 - `../_shared/decision-notes.md` for optional mini-ADR-style decision notes in complex plans.
+- `../_shared/clarifying-questions.md` to keep human questions focused on approval-relevant uncertainty after investigation.
 
 ## Workflow
 
@@ -53,10 +54,15 @@ Use these shared references when they apply:
 2. Gather only the context needed to write the implementation plan.
    - Inspect the codebase enough to identify the smallest correct implementation path.
    - Prefer repository files, manifests, tests, configuration, existing docs, and relevant nearby source code.
+   - When available, use `docs-locator` and `docs-analyzer` to find prior PRDs, plans, diagnoses, task documents, ADRs, and project docs that affect the requested work.
+   - When available, use `codebase-researcher` for broad or unfamiliar areas, or run `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrower questions.
+   - Prefer running independent locator and pattern-finding passes in parallel when the current runtime supports it, then synthesize the evidence locally before drafting.
    - Apply Project Rules Discovery before deciding conventions, commands, ownership boundaries, or generated-document formats.
    - When implementation depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify it from repository evidence, local package/source docs, official docs, or version-specific release notes before treating it as a plan fact.
    - Do not inspect private or unrelated project areas unless the request requires it.
 3. Ask the human for missing technical or product facts when they would materially change scope, architecture, data handling, security, rollout, or approval.
+   - Apply the clarifying-questions reference: investigate first, ask 1-2 focused questions at a time when possible, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
+   - Treat questions returned by research, docs, test, or reviewer agents as candidate questions for the parent skill to ask; specialist agents do not ask the human directly unless invoked directly.
    - Ask as many times as necessary until approval-relevant ambiguity is resolved.
    - Do not ask about details that the human explicitly accepts as deferred and non-blocking.
 4. Derive the output folder.
@@ -72,6 +78,7 @@ Use these shared references when they apply:
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
    - When known, name the focused verification command and expected result for important behavior or regression coverage.
+   - For medium-to-complex plans, risky behavior changes, or unclear verification strategy, use `test-plan-architect` when available to draft layered test cases with stable `T###` IDs, fixtures, commands, and manual checks.
    - Classify implementation complexity as `simple`, `medium`, or `complex`.
    - Use the shared complexity reference to scale detail: simple plans stay single-pass when possible, medium plans include clear subtasks, and complex plans include full sequencing, rollout, rollback, and decision context.
    - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
@@ -116,6 +123,15 @@ Use these shared references when they apply:
 - In Codex, prefer the exact named generated custom agents installed by `setup-codex-agents`.
 - If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
 - Do not skip a configured reviewer solely because the current runtime exposes reviewer prompts as files instead of native agents.
+
+## Research And Test Agent Invocation Contract
+
+- Use exact pre-built agent names for research and test planning roles, such as `codebase-researcher`, `docs-locator`, `docs-analyzer`, or `test-plan-architect`.
+- Keep read-only research agents read-only. They return evidence, paths, patterns, and questions; the parent skill owns the plan document and all human interaction.
+- Use `codebase-researcher` when the question spans multiple areas. Use `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `docs-locator`, and `docs-analyzer` directly when their narrower scopes can run independently.
+- In Codex delegation APIs, select the exact custom-agent name when it exists, for example `agent_type: codebase-researcher` or `agent_type: test-plan-architect`; otherwise perform the same pass inline from the agent definition.
+- Start launch prompts with the selected agent name for auditability, then provide only run-specific context: source request, candidate artifact paths, known constraints, and the exact research or test-planning question.
+- Preserve returned `Questions For The Human` in the planning flow. Ask blocking questions before approval; record deferred non-blocking questions separately.
 
 ## Reviewer Invocation Contract
 

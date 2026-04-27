@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -46,6 +46,7 @@ Start a new session or reload plugins, then invoke Rubber Duck with the plugin n
 /rubber-duck:implement
 /rubber-duck:frontend-design
 /rubber-duck:code-review
+/rubber-duck:skill-eval
 /rubber-duck:commit-push
 ```
 
@@ -66,13 +67,13 @@ codex
 
 Select the `rubber-duck` marketplace, install the `rubber-duck` plugin, then start a new thread or restart Codex if the plugin does not appear immediately.
 
-Install the Codex reviewer agents for the current project:
+Install the Codex custom agents for the current project:
 
 ```text
 /rubber-duck:setup-codex-agents
 ```
 
-This generates Codex custom-agent TOML files under `.codex/agents/` with `gpt-5.5` and medium reasoning. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead.
+This generates Codex custom-agent TOML files under `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead.
 
 Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a Rubber Duck skill:
 
@@ -84,6 +85,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 /rubber-duck:implement
 /rubber-duck:frontend-design
 /rubber-duck:code-review
+/rubber-duck:skill-eval
 /rubber-duck:commit-push
 ```
 
@@ -98,6 +100,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Implementation     | Guides scoped, test-first changes against an approved artifact or direct request, including planned task progress. |
 | Frontend design    | Creates or renovates polished, responsive, accessible frontend experiences with design-system discipline.          |
 | Code review        | Reviews local diffs or PRs with specialist agents for correctness, security, tests, patterns, and plan alignment.  |
+| Skill evaluation   | Tests Rubber Duck skills and agent prompts with baseline runs, grading, blind comparison, and analyzer notes.      |
 | Commit and push    | Proposes conventional commit splits, blocks protected branches, asks for explicit confirmation, and pushes safely. |
 
 ## Skill Menu
@@ -111,8 +114,23 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `/rubber-duck:implement`                  | You are ready to make a scoped code change.                            | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug.     | Code/tests changed; planned subtasks emit `task_N.md` progress docs.                         |
 | `/rubber-duck:frontend-design`            | You need a greenfield UI or existing frontend renovation.              | Product brief, target route/path, screenshot context, or redesign request.         | Working frontend code with design-system, responsive, accessibility, and polish guidance.     |
 | `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
+| `/rubber-duck:skill-eval`                 | You want to test Rubber Duck's own skills or agent prompts.            | Skill path, agent path, eval prompt set, or improvement goal.                      | Optional eval artifacts with baseline outputs, grades, comparisons, and recommendations.      |
 | `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
-| `/rubber-duck:setup-codex-agents`         | You installed Rubber Duck in Codex and want reviewer agents available. | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.               | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`.                     |
+| `/rubber-duck:setup-codex-agents`         | You installed Rubber Duck in Codex and want custom agents available.   | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.               | Generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`.                     |
+
+## Research, Test, And Eval Crew
+
+| Agent                     | Used by                                      | Helps with                                                                                               |
+| ------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `codebase-locator`        | `plan`, `diagnosis`, `implement`, review     | Finds relevant source, tests, config, docs, generated files, and entry points.                            |
+| `codebase-analyzer`       | `plan`, `diagnosis`, `implement`, review     | Explains current behavior, data flow, dependencies, tests, and uncertainty from repository evidence.      |
+| `codebase-pattern-finder` | `plan`, `implement`, `code-review`           | Finds nearby implementation and test patterns to reuse or avoid.                                          |
+| `codebase-researcher`     | Planning, diagnosis, implementation context  | Coordinates locator, analyzer, pattern, and docs passes into an evidence-backed research brief.           |
+| `docs-locator`            | `prd`, `plan`, `diagnosis`, `code-review`    | Finds relevant generated Rubber Duck artifacts, ADRs, standards, README notes, and project docs.          |
+| `docs-analyzer`           | `prd`, `plan`, `diagnosis`, `code-review`    | Extracts decisions, requirements, constraints, stale context, and questions from docs.                    |
+| `test-plan-architect`     | `plan`, orchestration refreshes              | Designs layered test plans with stable `T###` IDs, fixtures, commands, and manual checks.                 |
+| `test-implementer`        | `implement`, `orchestrate-implementation`    | Adds or adjusts bounded test coverage inside explicit write boundaries.                                   |
+| Skill eval agents         | `skill-eval`                                 | Run with-skill/baseline evals, grade outputs, compare blind variants, and analyze prompt-quality changes. |
 
 ## Review Crew
 
@@ -128,7 +146,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure.               |
 | `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.                    |
 
-Reviewer agents return findings and exact human questions to the invoking skill. Claude Code installs the Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Skills must invoke these reviewers by exact pre-built agent name, omit full-history forks for Codex named agents, and use the launch prompt only for run-specific context such as document paths, diffs, source summaries, and verification results. They should not create generic runtime subagents with compressed prompts that replace the full agent definition. The invoking skill owns document edits, merges accepted findings, and asks the human for clarification when needed. For `plan` and `code-review`, `document-reviewer` runs last on the merged document as the approval-readiness check.
+Specialist agents return findings, evidence, and exact human questions to the invoking skill. Claude Code installs the Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Skills must invoke agents by exact pre-built agent name, omit full-history forks for Codex named agents, and use the launch prompt only for run-specific context such as document paths, diffs, source summaries, assigned tasks, and verification results. They should not create generic runtime subagents with compressed prompts that replace the full agent definition. The invoking skill owns document edits, merges accepted findings, and asks the human for clarification when needed. For `plan` and `code-review`, `document-reviewer` runs last on the merged document as the approval-readiness check.
 
 ## Duck Trail
 
@@ -149,6 +167,8 @@ Approval-gated documents start as `pending-approval` in YAML frontmatter and inc
 
 Approval is intentionally a loop. Rubber Duck should ask follow-up questions as many times as necessary until approval-relevant ambiguity is resolved, explicitly deferred by the human as non-blocking, or the workflow stops. Generated documents separate `Blocking Questions` from `Deferred Non-Blocking Questions` so unresolved approval blockers do not get hidden in ordinary notes. When the human answers a blocking question, the original question stays in the document as an answered entry with the human answer, answer date, and document impact.
 
+Clarifying questions are intentionally narrow. Rubber Duck investigates local code, docs, tests, and generated artifacts first, then asks 1-2 focused questions when the answer would materially change scope, architecture, behavior, data handling, security, rollout, ownership, or approval. Agents surface candidate questions with blocking/non-blocking classification; the invoking skill decides what to ask and records the answer.
+
 Material document updates are tracked in `Document Changelog`, including human answers, requested changes, reviewer-driven updates, approvals, and requested-changes decisions.
 
 Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. The strategy recommends `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Completed planned subtasks create colocated progress documents such as:
@@ -160,16 +180,18 @@ docs/yyyy-mm-dd-{slug}/task_2.md
 
 Rubber Duck uses the existing complexity labels `simple`, `medium`, and `complex` to scale ceremony. Simple plans stay single-pass when possible, medium plans include explicit subtasks, and complex plans add stronger sequencing, rollout, rollback, security, and decision context. Plans created from PRDs include a stricter PRD-to-plan alignment check so goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions survive translation into implementation work.
 
-Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They cover complexity levels, project rules discovery, source-driven external API checks, no-workaround guidance, PRD-to-plan alignment, and optional mini-ADR-style decision notes for complex plans.
+Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They cover clarifying questions, complexity levels, project rules discovery, source-driven external API checks, no-workaround guidance, PRD-to-plan alignment, and optional mini-ADR-style decision notes for complex plans.
 
 ## Safety Rails
 
 - `implement` follows TDD whenever feasible and explains when it cannot.
 - Skills discover repository-local rules and conventions before relying on generic preferences.
+- Skills can use read-only codebase and docs agents to investigate first, then ask focused human questions for unresolved uncertainty.
 - Skills verify external framework, library, service, or API behavior from repository evidence, local package/source docs, official docs, or version-specific references when that behavior shapes a plan, implementation, diagnosis, or review.
 - Skills prefer root-cause fixes and flag workaround smells such as type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, and copy-pasted fixes.
 - `orchestrate-implementation` owns multi-subtask coordination and only runs parallel workers when tasks are explicitly parallel-safe.
 - `implement` reads planned subtasks and existing `task_N.md` documents before choosing the next task.
+- `implement` and `orchestrate-implementation` may use `test-implementer` only for bounded test work with explicit write ownership.
 - `implement` runs a full quality gate before completion: format checks, linting, type checks, builds, and the full automated test suite when those commands exist.
 - `implement` writes one progress document per completed planned subtask so later runs can see what is done and what should run next.
 - `commit-push` runs the same final verification gate before commit and push confirmation, and stops when required checks fail or cannot run without explicit human risk acceptance.

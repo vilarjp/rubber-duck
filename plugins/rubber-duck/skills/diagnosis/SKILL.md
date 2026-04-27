@@ -36,6 +36,7 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before relying on repository conventions, diagnostics, or verification commands.
 - `../_shared/source-driven-development.md` when the suspected cause depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` when evaluating solution options and recommended next steps.
+- `../_shared/clarifying-questions.md` to ask only diagnosis-shaping questions that code and evidence cannot answer.
 
 ## Workflow
 
@@ -47,10 +48,14 @@ Use these shared references when they apply:
 2. Gather the minimum bug context needed for diagnosis.
    - Capture reproduction steps, expected behavior, observed behavior, frequency, environment, affected users or flows, error messages, logs, screenshots, recent changes, and suspected entry points when available.
    - Ask the human for missing facts when they would materially change the investigation path, root-cause confidence, risk, recommended next step, or approval readiness.
+   - Apply the clarifying-questions reference: investigate first when possible, ask 1-2 focused questions at a time, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Ask as many times as necessary until approval-relevant bug context and root-cause uncertainty are resolved.
    - Do not ask for facts that the human explicitly accepts as deferred and non-blocking.
 3. Inspect the codebase and evidence without changing project files.
    - Read relevant source, tests, configuration, logs, documentation, git history, and local diffs.
+   - When available, use `docs-locator` and `docs-analyzer` to find prior plans, diagnoses, task documents, release notes, ADRs, or known-issue docs that affect the bug.
+   - When available, use `codebase-researcher` for broad or unfamiliar failure areas, or run `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrower investigation questions.
+   - Prefer codebase investigation plus human interview over browser automation. Do not add parallel browser reproduction unless the human asks for it or the bug cannot be understood without it.
    - Apply Project Rules Discovery before relying on local conventions, commands, generated artifacts, or diagnostics.
    - When the diagnosis depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible.
    - Run read-only searches and diagnostics where useful.

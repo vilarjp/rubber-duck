@@ -37,6 +37,7 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before judging local conventions, file placement, generated documents, or verification commands.
 - `../_shared/source-driven-development.md` when changed code depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` when evaluating fixes, mitigations, tests, and review adjustments.
+- `../_shared/clarifying-questions.md` when review scope, plan alignment, security posture, or expected behavior is unclear.
 
 ## Workflow
 
@@ -51,6 +52,7 @@ Use these shared references when they apply:
 2. Find related planning context when available.
    - If `$ARGUMENTS` includes a slug or source hint, search for matching `docs/*-{slug}/plan.md` files.
    - If the PR description, branch name, commit messages, or local changed files mention a docs folder or plan slug, inspect the matching `plan.md`.
+   - When available, use `docs-locator` and `docs-analyzer` to find and summarize related PRDs, diagnoses, code-review docs, task documents, ADRs, or project docs before judging plan alignment.
    - When a related plan folder exists, inspect matching `task_*.md` implementation progress documents in that folder.
    - Prefer `status: approved` plans as the plan-alignment contract.
    - If multiple plausible plans exist, ask the human which plan to use before invoking `implementation-plan-matcher`.
@@ -58,6 +60,8 @@ Use these shared references when they apply:
    - If a related plan contains `Implementation Subtasks`, use those subtasks and any `task_N.md` documents as review context for scope, sequencing, completed work, and missing progress documents.
 3. Gather only the context needed for review.
    - Read changed files plus the smallest amount of directly related source, tests, configuration, manifests, documentation, templates, and existing patterns needed to evaluate the diff.
+   - When available and useful, use `codebase-pattern-finder` to locate local implementation and test patterns that should inform project-convention findings.
+   - When available and useful, use `codebase-analyzer` or `codebase-researcher` to understand changed behavior before raising correctness or regression findings.
    - Apply Project Rules Discovery before judging conventions, generated-document formats, package-manager behavior, verification commands, or local workflow compliance.
    - When changed code depends on external framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible; otherwise preserve the uncertainty in the review.
    - Use nearby files and unchanged lines in touched files as context only; do not review, critique, or report issues there unless the changed code directly depends on the issue or newly exposes it.
@@ -108,6 +112,7 @@ Use these shared references when they apply:
    - Preserve `document-reviewer` missing questions and approval recommendation in the Approval section when they affect human review.
 10. Resolve all approval blockers before presenting the review for approval.
    - Ask the human follow-up questions as many times as necessary.
+   - Apply the clarifying-questions reference: ask focused questions that materially affect approval or review severity, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Update `code-review.md` after each answer.
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
    - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.

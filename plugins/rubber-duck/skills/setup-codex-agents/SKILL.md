@@ -1,17 +1,17 @@
 ---
 name: setup-codex-agents
-description: Install Codex custom-agent TOML files generated from Rubber Duck reviewer agents so Codex can run equivalent review passes.
+description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, test, eval, and review agents.
 disable-model-invocation: true
 argument-hint: "[--project path | --global | --agents-dir path | --model model-id | --reasoning low|medium|high|xhigh]"
 ---
 
 # Setup Codex Agents Skill
 
-Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck reviewer agents.
+Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck research, docs, test, eval, and review agents.
 
 Claude Code loads the Markdown files in the plugin root `agents/` directory directly. Codex custom agents use TOML files under `.codex/agents/` for a project or `~/.codex/agents/` globally. This skill bridges that packaging difference.
 
-The generated agents are the source of truth for reviewer behavior in Codex. Rubber Duck skills should invoke them by exact custom-agent name, omit full-history forks, and use the self-contained launch prompt only for document paths, diffs, source summaries, and other run-specific context.
+The generated agents are the source of truth for specialized Rubber Duck behavior in Codex. Rubber Duck skills should invoke them by exact custom-agent name, omit full-history forks, and use the self-contained launch prompt only for document paths, diffs, source summaries, assigned tasks, and other run-specific context.
 
 ## Inputs
 
@@ -34,9 +34,12 @@ If no target flag is provided, install into `.codex/agents/` under the current p
    - Read Markdown agents from `source-agents/*.md`.
    - Parse each YAML frontmatter `name` and `description`.
    - Write one TOML file per agent using the Markdown body as `developer_instructions`.
-   - Use `model = "gpt-5.5"`, `model_reasoning_effort = "medium"`, and `sandbox_mode = "read-only"` unless the human provided overrides.
-4. If setup succeeds, tell the human which agents directory was updated and list the generated TOML files.
-5. Tell the human to restart Codex or start a new thread if the new agents do not appear immediately.
+   - Use `model = "gpt-5.5"`, `model_reasoning_effort = "medium"`, and each agent's frontmatter `sandbox` value when present.
+   - Default missing sandbox values to `read-only`; only generate `workspace-write` for agents that explicitly declare it.
+   - Reject any sandbox value other than `read-only` or `workspace-write`, matching the bundled script.
+4. For publish or release validation, run `scripts/validate-rubber-duck-plugin.mjs` from this skill folder. It checks plugin manifests, skill metadata, root/source-agent mirroring, generated TOML count, default model/reasoning, and allowed sandbox modes.
+5. If setup succeeds, tell the human which agents directory was updated and list the generated TOML files.
+6. Tell the human to restart Codex or start a new thread if the new agents do not appear immediately.
 
 ## Safety
 
@@ -44,3 +47,4 @@ If no target flag is provided, install into `.codex/agents/` under the current p
 - Do not edit source code, Rubber Duck Markdown agents, or unrelated project files.
 - Do not install globally unless the human passes `--global`.
 - Do not change the selected model or reasoning effort unless the human passes explicit flags.
+- Preserve each agent's declared sandbox. Read-only agents must remain read-only; workspace-write agents still require explicit task ownership from the invoking skill.

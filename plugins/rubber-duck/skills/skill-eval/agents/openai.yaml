@@ -1,0 +1,7 @@
+interface:
+  display_name: "Skill Eval"
+  short_description: "Evaluate Rubber Duck skills and agents with baseline comparisons and human review."
+  brand_color: "#F8C84E"
+  default_prompt: "Use Rubber Duck skill-eval to test whether this skill or agent prompt improved."
+policy:
+  allow_implicit_invocation: false

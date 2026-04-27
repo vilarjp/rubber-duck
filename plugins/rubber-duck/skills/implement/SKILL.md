@@ -43,6 +43,7 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before deciding local conventions, commands, file placement, or generated-document formats.
 - `../_shared/source-driven-development.md` when the implementation depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` before accepting a patch, mitigation, or review-adjustment fix.
+- `../_shared/clarifying-questions.md` to resolve behavior, ownership, data, or security uncertainty without over-asking.
 
 ## Workflow
 
@@ -69,9 +70,12 @@ Use these shared references when they apply:
    - Treat the requested behavior, approved artifact, review comment, or changed-file scope as the boundary for edits; do not modify unrelated files just because they are nearby.
    - Inside files that must be edited, touch only the lines required for the requested behavior, tests, imports, or directly necessary integration; do not reformat, clean up, reorder, or rewrite unchanged lines opportunistically.
    - Ask the human when missing information would materially change behavior, data handling, migration needs, security posture, or the intended files to touch.
+   - Apply the clarifying-questions reference: investigate first, ask 1-2 focused questions at a time when possible, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Record smaller uncertainties as assumptions in the final summary instead of blocking on them.
 3. Inspect the codebase and conventions.
    - Read relevant source, tests, configuration, dependency manifests, generated artifacts, and directly applicable patterns before editing.
+   - When available and useful, use `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, or `codebase-researcher` before editing to find the right files, current behavior, similar implementations, and test patterns.
+   - When available and useful, use `docs-locator` and `docs-analyzer` to inspect related generated artifacts or project docs that affect the implementation contract.
    - Apply Project Rules Discovery before editing: check relevant local instructions, manifests, CI, lint/type/test/build config, nearby source, nearby tests, and generated-document conventions that govern this change.
    - When the change depends on external framework, library, service, browser, protocol, or third-party API behavior, verify the behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests before coding against it.
    - Use nearby files and unchanged lines in touched files only when they are needed to understand the requested change or local convention; do not review, critique, or opportunistically clean up unrelated nearby code.
@@ -84,6 +88,8 @@ Use these shared references when they apply:
    - If a failing test cannot be written first because the project has no suitable test setup, the change is documentation-only, or the cost is disproportionate, state that reason in the final summary.
    - For non-behavior changes where a focused failing test would be artificial, use Verification Mode: identify the smallest meaningful checks for the changed artifact, run them when available, and state why TDD was not applicable.
    - Keep tests targeted to meaningful behavior and regression risk; add tests only where they provide real confidence rather than broad coverage churn.
+   - When the selected work is test-only or can be split into a clearly bounded test-coverage subtask, use the exact pre-built `test-implementer` agent when available. Give it explicit write boundaries, assigned `T###` cases or scenarios, required commands, and the progress-document path if it may update one.
+   - Do not delegate test work when the next implementation step depends on the result immediately and doing it locally would keep the critical path clearer.
 5. Implement the smallest correct change.
    - Prefer existing helpers, patterns, frameworks, naming, layering, and file organization.
    - Keep the change set small and focused: make the minimal clean change that fully solves the specific problem.

@@ -13,13 +13,19 @@ This skill is intentionally conservative. It must never commit, branch-switch, o
 
 ## Inputs
 
-Accept `$ARGUMENTS` as an optional hint, such as:
+Accept `$ARGUMENTS` as optional invocation input, such as:
 
-- A target branch name.
+- A target branch name supplied directly in the skill call.
 - A short commit intent.
 - A note about which files or logical units should be included.
 
-Even when `$ARGUMENTS` appears to include a branch name, ask the human to confirm the exact target branch before committing or pushing.
+When the user invokes the skill with exactly one plausible non-protected branch name, treat that argument as the required branch selection and continue to repository inspection without asking for another branch confirmation. For example:
+
+```text
+$commit-push BUGSCR-149
+```
+
+In that case, set the target branch to `BUGSCR-149` and proceed. Ask the human for the exact target branch only when no branch argument was provided, the branch argument is ambiguous, or the branch argument is protected.
 
 ## Output
 
@@ -27,7 +33,7 @@ Create one or more local commits and push the selected branch to the configured 
 
 ## Required Confirmations
 
-1. Ask the human for the exact target branch name before any commit or push work.
+1. Confirm the target branch before any commit or push work. A single plausible non-protected branch argument supplied in the skill invocation, such as `$commit-push BUGSCR-149`, satisfies this branch confirmation; otherwise ask for the exact branch name.
 2. Present the proposed commit split, included paths, excluded paths, and conventional commit messages.
 3. Ask for the exact final confirmation:
 
@@ -35,7 +41,7 @@ Create one or more local commits and push the selected branch to the configured 
 yes, commit and push
 ```
 
-Do not treat a vague approval, approval of only the branch, or approval of only the commit message as final confirmation.
+Do not treat a vague approval, branch confirmation, approval of only the branch, or approval of only the commit message as final confirmation.
 
 If the scope, branch, remote state, or proposed commits change after confirmation, present the updated proposal and ask again.
 
@@ -59,8 +65,9 @@ Do not force push a protected branch. Do not force push any branch unless the hu
 ## Workflow
 
 1. Gather branch intent.
-   - Read `$ARGUMENTS` only as a hint.
-   - Ask the human for the exact target branch name.
+   - Read `$ARGUMENTS` as invocation input.
+   - If `$ARGUMENTS` contains exactly one plausible non-protected branch name, set it as the target branch and continue; do not ask the human to confirm it again.
+   - If `$ARGUMENTS` has no branch argument or an ambiguous branch argument, ask the human for the exact target branch name.
    - If the target branch is protected, stop and ask for a non-protected branch.
 2. Inspect the repository state before changing branches.
    - Run `git status --short --branch`.

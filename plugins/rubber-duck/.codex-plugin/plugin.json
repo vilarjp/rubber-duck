@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
-  "version": "0.1.0",
-  "description": "Spec-driven agent workflows for planning, frontend design, implementation, review, and safe shipping.",
+  "version": "0.2.0",
+  "description": "Spec-driven agent workflows for planning, codebase research, frontend design, implementation, review, skill evaluation, and safe shipping.",
   "author": {
     "name": "João Vilar",
     "email": "vilarjp93@gmail.com",
@@ -13,17 +13,19 @@
   "keywords": [
     "spec-driven",
     "planning",
+    "codebase-research",
     "implementation",
     "frontend-design",
     "design-system",
     "code-review",
+    "skill-eval",
     "safe-shipping"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Rubber Duck",
-    "shortDescription": "Spec-driven planning, frontend design, review, and commit workflows.",
-    "longDescription": "Turn fuzzy software work into concise PRDs, reviewed implementation plans, evidence-backed diagnoses, polished frontend design systems, orchestrated implementation passes, structured code reviews, and deliberate commit/push flows.",
+    "shortDescription": "Spec-driven planning, research, frontend design, review, and commit workflows.",
+    "longDescription": "Turn fuzzy software work into concise PRDs, codebase-informed implementation plans, evidence-backed diagnoses, polished frontend design systems, orchestrated implementation passes, structured code reviews, internal skill evaluations, and deliberate commit/push flows.",
     "developerName": "João Vilar",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
@@ -34,7 +36,8 @@
       "Use Rubber Duck orchestrate-implementation to coordinate this approved plan.",
       "Use Rubber Duck frontend-design to renovate this frontend while preserving product identity.",
       "Use Rubber Duck to review my local diff.",
-      "Use Rubber Duck setup-codex-agents to install reviewer agents."
+      "Use Rubber Duck skill-eval to evaluate this Rubber Duck skill or agent prompt.",
+      "Use Rubber Duck setup-codex-agents to install custom agents."
     ],
     "brandColor": "#F8C84E"
   }

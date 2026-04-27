@@ -42,6 +42,7 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before deciding local conventions, commands, file placement, or generated-document formats.
 - `../_shared/source-driven-development.md` when a selected task depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` before accepting task implementations or temporary mitigations.
+- `../_shared/clarifying-questions.md` when selected tasks expose behavior, ownership, dependency, or verification uncertainty.
 
 ## Workflow
 
@@ -56,11 +57,13 @@ Use these shared references when they apply:
    - Treat the plan's `simple`, `medium`, or `complex` classification as execution guidance: simple plans should normally run as one focused pass, medium plans should follow subtasks, and complex plans require extra care around sequencing, rollback, security, and decision context.
    - Inspect existing `task_*.md` documents in the same folder to identify completed tasks, partial tasks, deviations, blocked tasks, and the recommended next task.
    - Treat existing `task_N.md` documents as completed-work history. Do not repeat completed subtasks unless the human explicitly asks for a correction or resume.
+   - If the plan context appears stale, ambiguous, or too thin for safe task assignment, use `codebase-researcher`, `docs-analyzer`, or `test-plan-architect` when available to refresh only the missing execution context before editing.
 3. Build the task queue.
    - If the human named task IDs, consider only those tasks and their unmet dependencies.
    - Otherwise choose the next ready task for `incremental task-by-task` plans.
    - For `parallel implementation subagents` plans, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution.
    - A task is ready only when its dependencies are complete, no open blocking questions affect it, and its ownership/files do not conflict with another selected task.
+   - If a selected task exposes approval-relevant uncertainty, apply the clarifying-questions reference and ask before assigning or editing. Record non-blocking uncertainty in the relevant `task_N.md`.
    - If the plan has no subtasks, fall back to a single focused implementation pass and note that the plan should be updated later if the work is medium-to-complex.
 4. Select execution mode.
    - Use sequential execution when the plan recommends a single focused pass or incremental task-by-task execution.
@@ -72,6 +75,7 @@ Use these shared references when they apply:
    - In sequential execution, follow the same TDD discipline as `implement`: run an existing nearby test first when practical, add or adjust the narrowest useful failing test, confirm it fails for the expected reason, make the smallest correct change, and use Verification Mode for non-behavior changes where artificial TDD would add no confidence.
    - In sequential execution, apply Project Rules Discovery, Source-Driven External API Checks, and the No-Workarounds Checklist the same way `implement` does.
    - For parallel execution, launch one implementation subagent per selected task when the runtime supports it.
+   - For test-only or clearly bounded test-heavy tasks, prefer the exact pre-built `test-implementer` agent when available. Use ordinary implementation workers for production-code tasks.
    - Give each subagent a self-contained prompt with:
      - Approved plan path and relevant plan excerpts.
      - Exact task ID and task text.
@@ -83,6 +87,7 @@ Use these shared references when they apply:
      - Full quality gate expectations.
      - Required progress document path.
      - Instruction that other agents may be editing disjoint tasks, and it must not revert or rewrite others' work.
+     - For `test-implementer`, the assigned `T###` cases or scenarios, permitted test/fixture/helper files, and any production-code areas it must not touch.
    - Do not assign two workers to the same file or task.
    - Do not delegate a task whose immediate dependency is still running unless the plan explicitly allows it.
 6. Fan in and integrate.

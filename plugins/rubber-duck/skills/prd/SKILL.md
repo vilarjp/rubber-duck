@@ -33,6 +33,8 @@ The document status must remain `pending-approval` until the human explicitly ap
 
 Use `../_shared/prd-plan-alignment.md` as downstream guidance: PRDs should make goals, non-goals, risks, dependencies, and acceptance criteria clear enough for a future plan to map them into implementation work and verification.
 
+Use `../_shared/clarifying-questions.md` to keep product questions focused on approval-relevant uncertainty after checking available context.
+
 ## Workflow
 
 1. Determine the source context.
@@ -42,8 +44,11 @@ Use `../_shared/prd-plan-alignment.md` as downstream guidance: PRDs should make 
    - If `$ARGUMENTS` is a prompt, use it as the source of truth.
 2. Gather only the context needed to write the PRD.
    - Prefer the human prompt, Jira content, existing README files, nearby docs, and relevant product context.
+   - When available, use `docs-locator` and `docs-analyzer` to find existing product docs, prior PRDs, diagnoses, plans, task documents, or decision notes that shape the requested product change.
    - Do not inspect private or unrelated project areas unless the request requires it.
 3. Ask the human for missing product facts when they would materially change scope, user value, requirements, acceptance criteria, or approval.
+   - Apply the clarifying-questions reference: ask 1-2 focused questions at a time when possible, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
+   - Treat questions returned by docs or review agents as candidate questions for the parent skill to ask; specialist agents do not ask the human directly unless invoked directly.
    - Ask as many times as necessary until approval-relevant product ambiguity is resolved.
    - Do not ask about details that the human explicitly accepts as deferred and non-blocking.
 4. Derive the output folder.
