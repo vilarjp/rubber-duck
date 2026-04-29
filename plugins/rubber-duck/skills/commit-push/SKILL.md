@@ -31,6 +31,16 @@ In that case, set the target branch to `BUGSCR-149` and proceed. Ask the human f
 
 Create one or more local commits and push the selected branch to the configured remote after explicit confirmation.
 
+## Shared References
+
+Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only delegation, fallback behavior, and how specialist questions flow back to the parent skill.
+
+## Agent Crew
+
+- Run `shipping-hygiene-reviewer` after inspecting the intended change scope and before proposing commits or asking for final confirmation.
+- Pass branch state, included paths, excluded paths, staged/unstaged/untracked scope, relevant diffs or summaries, verification evidence, and any known human intent.
+- Treat returned shipping blockers as blockers before staging, committing, or pushing unless the human explicitly accepts the risk after seeing the finding.
+
 ## Required Confirmations
 
 1. Confirm the target branch before any commit or push work. A single plausible non-protected branch argument supplied in the skill invocation, such as `$commit-push BUGSCR-149`, satisfies this branch confirmation; otherwise ask for the exact branch name.
@@ -96,7 +106,14 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Confirm code changes include relevant focused coverage, or record the explicit reason coverage was not added.
    - Confirm the intended diff matches the stated scope and does not silently include nearby cleanup, formatting churn, or unrelated files.
    - Treat this as a lightweight shipping-safety check, not a broad QA workflow or full security audit.
-8. Run the final verification gate.
+8. Run the `shipping-hygiene-reviewer` agent.
+   - Follow the Specialist Invocation Contract below.
+   - Invoke the exact pre-built `shipping-hygiene-reviewer` agent.
+   - Pass the target branch, `git status` summary, proposed included and excluded paths, staged and unstaged diff summaries, untracked-file notes, verification evidence so far, and any scope constraints from the human.
+   - Do not allow the reviewer to stage, commit, push, or edit files.
+   - If it returns shipping blockers, stop before staging, committing, or pushing. Report the blockers and ask whether to fix, change scope, or proceed with explicit known risk.
+   - Merge scope notes and verification notes into the commit proposal when they are not blockers.
+9. Run the final verification gate.
    - Run this gate after identifying the intended commit scope and before asking for final commit/push confirmation.
    - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
    - Run every available non-mutating command that checks formatting, linting, type checking, builds or compilation, and the full automated test suite.
@@ -104,30 +121,40 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Prefer a single repo-native `check`, `verify`, `ci`, or equivalent command only when repository evidence shows that it covers the relevant formatting, linting, type checking, build, and test categories; otherwise run the individual commands.
    - Do not run formatters, linters, generators, snapshots, or other tools in write/fix/update mode unless the human explicitly asks for it.
    - If any important verification command fails, is unavailable, too expensive, blocked, or cannot be inferred safely, stop before staging, committing, or pushing. Report the exact command or category and ask whether to fix the issue, change the scope, or proceed with explicit known risk.
-9. Propose the commit plan.
+10. Propose the commit plan.
    - Split commits only when there are clear logical units that can be understood and reverted independently.
    - Prefer a single commit when the work is one coherent change.
    - For each proposed commit, list the conventional commit message and included paths.
    - List excluded local changes when they exist.
    - List any pre-commit scope or hygiene concerns found, including relevant coverage gaps or the explicit reason coverage was not added.
+   - Include `shipping-hygiene-reviewer` blockers, scope notes, verification notes, or state that it found no blockers.
    - List the final verification gate commands and results, including unavailable categories.
-10. Ask for final confirmation.
+11. Ask for final confirmation.
    - Use the required phrase `yes, commit and push`.
    - Do not commit or push until the human responds with that exact confirmation.
-11. Create commits after confirmation.
+12. Create commits after confirmation.
    - Stage only the files for the current commit.
    - Preserve unrelated working tree and index changes.
    - Use conventional commit messages.
    - If a commit command fails, stop and report the failure instead of trying broad recovery commands.
-12. Push after successful commits.
+13. Push after successful commits.
     - Push the selected branch to the configured remote.
     - Use upstream setup for new branches, usually `git push -u origin <branch>`.
     - Do not force push unless explicitly approved and non-protected.
-13. Summarize the result.
+14. Summarize the result.
     - Include the branch, commit SHA or SHAs, commit messages, pushed remote, and any excluded local changes.
-    - Include pre-commit scope and hygiene check results.
+    - Include pre-commit scope and hygiene check results, including `shipping-hygiene-reviewer` notes.
     - Include the final verification gate commands and results, including unavailable categories.
     - Mention any remaining local uncommitted changes.
+
+## Specialist Invocation Contract
+
+- Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
+- Invoke the exact pre-built `shipping-hygiene-reviewer` agent for commit/push readiness review.
+- In Codex delegation APIs, select `agent_type: shipping-hygiene-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- Start the launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck shipping-hygiene-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Keep the reviewer read-only. It may inspect local status and diffs through read-only commands, but must not edit, stage, unstage, commit, push, branch, or mutate remotes.
+- The parent skill owns scope decisions, human questions, final confirmation, staging, committing, pushing, and final summary.
 
 ## Conventional Commit Rules
 

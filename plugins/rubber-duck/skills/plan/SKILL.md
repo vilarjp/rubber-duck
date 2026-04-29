@@ -34,6 +34,7 @@ The document status must remain `pending-approval` until the human explicitly ap
 Use these shared references when they apply:
 
 - `../_shared/complexity-levels.md` for `simple`, `medium`, and `complex` planning expectations.
+- `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, complexity gates, read-only vs workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware planning.
 - `../_shared/project-rules-discovery.md` before relying on repository conventions.
 - `../_shared/source-driven-development.md` when the plan depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` to reject plans that patch symptoms instead of addressing root causes.
@@ -76,6 +77,9 @@ Use these shared references when they apply:
    - Prefer evidence from the repository over speculation.
    - If the source is a PRD, run the PRD-to-Plan Alignment check before reviewer invocation: map PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into plan sections, tests, rollout notes, or explicit out-of-scope rationale.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
+   - Include an `Implementation Surface` section for every plan. This section defines where implementation may happen before describing how it will happen.
+   - In `Implementation Surface`, separate write targets, read-only context, tests and verification surfaces, no-touch boundaries, and parallel or merge-risk notes.
+   - Keep `Implementation Surface` focused on ownership and coordination boundaries. Keep `Files / Modules To Touch` as the concise per-file change list.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
    - When known, name the focused verification command and expected result for important behavior or regression coverage.
    - For medium-to-complex plans, risky behavior changes, or unclear verification strategy, use `test-plan-architect` when available to draft layered test cases with stable `T###` IDs, fixtures, commands, and manual checks.
@@ -85,7 +89,7 @@ Use these shared references when they apply:
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
    - For complex plans, include `Decision Notes` when architecture, public contracts, data migrations, security, third-party integrations, or intentionally avoided heavier alternatives matter to future implementers.
    - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`.
-   - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether current runtime worker subagents can safely handle independent tasks.
+   - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether available implementation subagents can safely handle independent tasks.
    - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
    - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
 6. Run specialist reviewer agents on the generated `plan.md`.
@@ -119,13 +123,12 @@ Use these shared references when they apply:
 
 ## Runtime Compatibility
 
-- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory and their full Markdown definitions.
-- In Codex, prefer the exact named generated custom agents installed by `setup-codex-agents`.
-- If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
-- Do not skip a configured reviewer solely because the current runtime exposes reviewer prompts as files instead of native agents.
+- Follow `../_shared/agent-orchestration.md` for native plugin agents, Codex generated custom agents, exact named-agent invocation, full-definition fallback, and inline fallback behavior.
+- Do not skip configured research, test-planning, or reviewer passes solely because the current runtime exposes agent prompts as files instead of native agents.
 
 ## Research And Test Agent Invocation Contract
 
+- Follow `../_shared/agent-orchestration.md` for skill-owned orchestration, complexity gates, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Use exact pre-built agent names for research and test planning roles, such as `codebase-researcher`, `docs-locator`, `docs-analyzer`, or `test-plan-architect`.
 - Keep read-only research agents read-only. They return evidence, paths, patterns, and questions; the parent skill owns the plan document and all human interaction.
 - Use `codebase-researcher` when the question spans multiple areas. Use `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `docs-locator`, and `docs-analyzer` directly when their narrower scopes can run independently.
@@ -135,6 +138,7 @@ Use these shared references when they apply:
 
 ## Reviewer Invocation Contract
 
+- Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke reviewer roles by exact pre-built agent name, such as `plan-future-maintainer` or `document-reviewer`.
 - In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: plan-future-maintainer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
 - In Codex, omit `fork_context` or set `fork_context: false` for named reviewer agents. Do not try a full-history/context fork first; named custom agents must receive a self-contained launch prompt.
@@ -170,9 +174,10 @@ Use these sections when useful:
 
 - Summary
 - Source Context
+- PRD Alignment
 - Current System Notes
 - Proposed Approach
-- PRD Alignment
+- Implementation Surface
 - Implementation Strategy
 - Implementation Subtasks
 - Decision Notes
@@ -191,6 +196,8 @@ Use these sections when useful:
 
 Plans must explicitly guide execution:
 
+- Every plan must include an `Implementation Surface` section before `Implementation Strategy`.
+- `Implementation Surface` must identify write targets, read-only context, tests and verification surfaces, no-touch boundaries, and parallel or merge-risk notes. Use `Not applicable` only for categories that truly do not apply.
 - `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
 - `medium` and `complex` plans must include implementation subtasks.
 - `complex` plans should include decision notes for important architecture, public-contract, data, migration, security, or third-party integration decisions.

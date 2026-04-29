@@ -1,6 +1,6 @@
 ---
 name: diagnosis
-description: Investigate a bug from a prompt or Jira link, document reproduction, evidence-backed root cause, solution options, and review it with the document-reviewer agent before asking for human approval.
+description: Investigate a bug from a prompt or Jira link, document reproduction, evidence-backed root cause, solution options, and review it with root-cause and document specialist agents before asking for human approval.
 disable-model-invocation: true
 argument-hint: "[bug report | Jira link | slug/source hint]"
 ---
@@ -36,7 +36,15 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before relying on repository conventions, diagnostics, or verification commands.
 - `../_shared/source-driven-development.md` when the suspected cause depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` when evaluating solution options and recommended next steps.
+- `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` to ask only diagnosis-shaping questions that code and evidence cannot answer.
+
+## Agent Crew
+
+- Use `docs-locator` and `docs-analyzer` when prior plans, diagnoses, task documents, release notes, ADRs, or known-issue docs may affect the bug.
+- Use `codebase-researcher` for broad or unfamiliar failure areas, or invoke `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrow evidence questions.
+- Run `diagnosis-root-cause-investigator` after drafting the diagnosis and before `document-reviewer` to challenge evidence quality, root-cause confidence, alternate hypotheses, affected flows, and recommended next steps.
+- Run `document-reviewer` last as the approval-readiness check after root-cause feedback has been merged.
 
 ## Workflow
 
@@ -73,38 +81,45 @@ Use these shared references when they apply:
    - Use `templates/diagnosis.md` from this skill folder as the default structure.
    - Include only sections that help decide the next implementation or product action.
    - Do not implement fixes, edit tests, update configuration, or change source code.
-7. Run the `document-reviewer` agent on the generated `diagnosis.md`.
+7. Run the `diagnosis-root-cause-investigator` agent on the generated `diagnosis.md`.
+   - Follow the Reviewer Invocation Contract below.
+   - Invoke the exact pre-built `diagnosis-root-cause-investigator` agent.
+   - Pass the diagnosis path, bug source summary, reproduction evidence, root-cause evidence, affected files or flows, competing hypotheses, and any material constraints from the current session.
+   - Do not write a separate review file.
+8. Apply root-cause investigator feedback only when it improves evidence quality, root-cause confidence, affected-flow clarity, recommendation quality, or approval readiness.
+   - Treat evidence gaps, unsupported root causes, workaround risks, and missing questions as approval blockers unless the investigator explicitly marks them non-blocking with rationale or the human explicitly defers them.
+   - Preserve alternate hypotheses as open investigation notes when they are plausible but not blocking.
+9. Run the `document-reviewer` agent on the generated `diagnosis.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `document-reviewer` agent.
    - Pass the diagnosis path, source context summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
    - Do not write a separate review file.
-8. Apply reviewer feedback only by updating `diagnosis.md`, and only when it improves correctness, evidence quality, clarity, or approval readiness.
+10. Apply document reviewer feedback only by updating `diagnosis.md`, and only when it improves correctness, evidence quality, clarity, or approval readiness.
    - Treat blocking issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-9. Resolve all approval blockers before presenting the diagnosis for approval.
+11. Resolve all approval blockers before presenting the diagnosis for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `diagnosis.md` after each answer.
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
    - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
    - Update the frontmatter `updated` field to the local date whenever the document changes.
-   - Rerun `document-reviewer` when an answer materially changes reproduction, expected behavior, observed behavior, root-cause confidence, risk, recommended next step, or approval readiness.
+   - Rerun `diagnosis-root-cause-investigator` and `document-reviewer` when an answer materially changes reproduction, expected behavior, observed behavior, root-cause confidence, risk, recommended next step, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the diagnosis not ready for approval.
-10. Tell the human the diagnosis path and that it is pending approval.
+12. Tell the human the diagnosis path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
 
 ## Runtime Compatibility
 
-- In runtimes with native plugin agents, use the named plugin agents from the root-level `agents/` directory and their full Markdown definitions.
-- In Codex, prefer the exact named generated custom agents installed by `setup-codex-agents`.
-- If no compatible native or generated agent is available, read the matching reviewer prompt from `agents/<agent-name>.md` or `skills/setup-codex-agents/source-agents/<agent-name>.md` and perform that pass inline or through the closest available delegation mechanism.
-- Do not skip `document-reviewer` solely because the current runtime exposes reviewer prompts as files instead of native agents.
+- Follow `../_shared/agent-orchestration.md` for native plugin agents, Codex generated custom agents, exact named-agent invocation, full-definition fallback, and inline fallback behavior.
+- Do not skip configured docs, codebase, root-cause, or reviewer passes solely because the current runtime exposes agent prompts as files instead of native agents.
 
 ## Reviewer Invocation Contract
 
-- Invoke reviewer roles by exact pre-built agent name, such as `document-reviewer`.
-- In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: document-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
+- Invoke reviewer roles by exact pre-built agent name, such as `diagnosis-root-cause-investigator` or `document-reviewer`.
+- In Codex delegation APIs, selecting a reviewer means setting the reviewer as the agent type or custom-agent name, for example `agent_type: diagnosis-root-cause-investigator`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
 - In Codex, omit `fork_context` or set `fork_context: false` for named reviewer agents. Do not try a full-history/context fork first; named custom agents must receive a self-contained launch prompt.
-- Start each launch prompt with the selected reviewer name for auditability, for example: `You are the already-selected Rubber Duck document-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Start each launch prompt with the selected reviewer name for auditability, for example: `You are the already-selected Rubber Duck diagnosis-root-cause-investigator custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Use the rest of the launch prompt only for run-specific context: document path, source summary, reproduction evidence, root-cause evidence, and any material constraints from the current session.
 - Do not replace the reviewer with a compressed prompt such as `Please review for completeness...`. A short launch prompt is acceptable only after the named pre-built reviewer has been selected, and it must not restate, narrow, or override the agent definition.
 - Let the selected reviewer follow its own scope, operating rules, checklist, and output format from `agents/<agent-name>.md` or the generated Codex TOML.
@@ -152,7 +167,7 @@ Use these sections when useful:
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `diagnosis.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `diagnosis.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `diagnosis-root-cause-investigator` and `document-reviewer` when the change materially affects root-cause confidence or approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 

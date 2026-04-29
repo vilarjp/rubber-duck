@@ -39,12 +39,20 @@ One short paragraph describing the intended technical change and the outcome it 
 - Important decisions, tradeoffs, dependencies, and rejected heavier alternatives.
 - Root-cause path for bug fixes; avoid workaround strategies unless they are explicitly temporary, constrained, and tracked.
 
+## Implementation Surface
+
+- Write targets: files, modules, generated artifacts, configuration, data stores, or external systems that implementation may change.
+- Read-only context: files, docs, tests, logs, generated artifacts, external references, or prior decisions that should be inspected but not edited.
+- Tests and verification surfaces: focused tests, fixtures, commands, snapshots, manual checks, or quality gates expected to prove the work.
+- No-touch boundaries: files, modules, APIs, data, generated outputs, or project areas that must stay unchanged unless the human approves a scope change.
+- Parallel and merge-risk notes: ownership boundaries, shared files, sequencing constraints, conflicts, and tasks that must not run concurrently.
+
 ## Implementation Strategy
 
 - Complexity: simple | medium | complex.
 - Recommended execution: single focused pass | incremental task-by-task | parallel implementation subagents.
 - Rationale: why this mode is safer or faster for this work.
-- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether runtime worker subagents can safely implement independent subtasks.
+- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether available implementation subagents can safely implement independent subtasks.
 - Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
 
 ## Decision Notes

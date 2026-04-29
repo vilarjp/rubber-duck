@@ -8,8 +8,10 @@ import { fileURLToPath } from "node:url";
 
 const EXPECTED_MODEL = "gpt-5.5";
 const EXPECTED_REASONING = "medium";
+const EXPECTED_AGENT_COUNT = 29;
 const VALID_SANDBOXES = new Set(["read-only", "workspace-write"]);
 const EXPECTED_WORKSPACE_WRITE = new Set([
+  "implementation-agent",
   "skill-eval-executor",
   "test-implementer",
 ]);
@@ -129,7 +131,9 @@ async function assertSkillMetadata() {
 async function assertAgentSources() {
   const rootAgents = await listFiles(rootAgentsDir, ".md");
   const bundledAgents = await listFiles(bundledAgentsDir, ".md");
-  if (rootAgents.length !== 21) fail(`Expected 21 root agents, found ${rootAgents.length}`);
+  if (rootAgents.length !== EXPECTED_AGENT_COUNT) {
+    fail(`Expected ${EXPECTED_AGENT_COUNT} root agents, found ${rootAgents.length}`);
+  }
   if (bundledAgents.length !== rootAgents.length) {
     fail(`Root/source agent count mismatch: ${rootAgents.length} vs ${bundledAgents.length}`);
   }
@@ -168,7 +172,9 @@ async function assertGeneratedAgents() {
     }
 
     const generated = await listFiles(targetDir, ".toml");
-    if (generated.length !== 21) fail(`Expected 21 generated TOML files, found ${generated.length}`);
+    if (generated.length !== EXPECTED_AGENT_COUNT) {
+      fail(`Expected ${EXPECTED_AGENT_COUNT} generated TOML files, found ${generated.length}`);
+    }
 
     const workspaceWrite = new Set();
     for (const file of generated) {

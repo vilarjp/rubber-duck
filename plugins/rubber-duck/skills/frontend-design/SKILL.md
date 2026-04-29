@@ -30,11 +30,24 @@ First classify the request, then load only the references that apply:
 - **Landing or brand surface**: Also read the brand portions of `references/context-and-direction.md` and the imagery guidance in `references/layout-composition.md`.
 - **Operational app, dashboard, admin UI, or SaaS tool**: Also read the product portions of `references/context-and-direction.md` and the density guidance in `references/layout-composition.md`.
 
+## Shared References
+
+Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
+
+## Agent Crew
+
+- Use `codebase-researcher` for broad or unfamiliar frontend areas, or invoke `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for route, component, token, test, or pattern questions.
+- Use `docs-locator` and `docs-analyzer` when product docs, design docs, prior plans, generated artifacts, or README guidance shape the frontend work.
+- Use `frontend-ux-ui-reviewer` for substantial redesigns, audits, final polish passes, and questions about information architecture, interaction quality, visual hierarchy, responsiveness, usability, and design-system fit.
+- Use `frontend-accessibility-reviewer` when the work touches semantic structure, keyboard behavior, focus management, contrast, reduced motion, touch targets, form states, overlays, or inclusive interaction quality.
+- Use `frontend-ux-writing-reviewer` when the work touches labels, calls to action, errors, empty/loading/success states, terminology, localization readiness, or content resilience.
+
 ## Working Loop
 
 1. **Gather context**
    - Read the user brief and local project instructions.
    - Inspect `package.json`, app routes, existing styles, component libraries, tokens, shared UI primitives, design docs, and nearby screens.
+   - When available and useful, use exact named codebase and docs agents to find routes, components, tokens, comparable screens, design docs, and relevant project guidance before editing.
    - For existing UIs, understand the current structure before changing it. Identify what must be preserved.
 2. **Frame the design**
    - Name the audience, job-to-be-done, usage scene, register (`product`, `brand`, or `hybrid`), quality bar, and constraints.
@@ -51,7 +64,18 @@ First classify the request, then load only the references that apply:
 5. **Verify like a frontend engineer**
    - Run the app when possible and inspect real screens.
    - Check keyboard navigation, focus order, reduced motion, contrast, long content, empty data, loading, errors, and at least one mobile viewport.
+   - For substantial work, audits, or final polish, fan out to the exact relevant frontend specialists and merge their findings before finalizing. For small targeted work, invoke only the specialist whose scope materially reduces risk.
    - Run the repository's relevant format, lint, typecheck, test, and build commands when available.
+
+## Specialist Review Contract
+
+- Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
+- Invoke specialist reviewers by exact pre-built agent name: `frontend-ux-ui-reviewer`, `frontend-accessibility-reviewer`, and `frontend-ux-writing-reviewer`.
+- In Codex delegation APIs, select the exact custom-agent name, for example `agent_type: frontend-accessibility-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
+- Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck frontend-ux-ui-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Pass the route, component paths, screenshots or observations, design brief, relevant constraints, and exact review question. Keep reviewers read-only.
+- The parent skill owns all code and copy edits, visual iteration, validation, and user-facing summary. Specialist agents return findings, required fixes, optional polish, and questions only.
+- Treat blocking accessibility, usability, or copy findings as work to fix before claiming the frontend is ready unless the human explicitly accepts the risk or defers the issue.
 
 ## Design Laws
 

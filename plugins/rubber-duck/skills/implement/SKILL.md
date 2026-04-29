@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a feature, bug fix, quick win, or review adjustment from a prompt, Jira link, or approved artifact slug, using focused TDD when feasible and keeping changes scoped.
+description: Implement a feature, bug fix, quick win, or review adjustment from a prompt, Jira link, or approved artifact slug, using focused TDD, scoped edits, and implementation-agent delegation when useful.
 disable-model-invocation: true
 argument-hint: "[implementation prompt | Jira link | plan/diagnosis/code-review slug]"
 ---
@@ -43,7 +43,16 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before deciding local conventions, commands, file placement, or generated-document formats.
 - `../_shared/source-driven-development.md` when the implementation depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` before accepting a patch, mitigation, or review-adjustment fix.
+- `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only vs workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - `../_shared/clarifying-questions.md` to resolve behavior, ownership, data, or security uncertainty without over-asking.
+
+## Agent Crew
+
+- Use `docs-locator` and `docs-analyzer` when approved artifacts, generated docs, ADRs, prior task documents, or project docs affect the implementation contract.
+- Use `codebase-researcher` for broad or unfamiliar implementation areas, or invoke `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrow file, behavior, or pattern questions before editing.
+- Use the exact pre-built `implementation-agent` only for bounded production-code delegation with explicit write ownership, especially parallel-safe planned subtasks or sidecar work that will not block the parent skill's next local step.
+- Use the exact pre-built `test-implementer` for bounded test-only or test-heavy work with explicit test, fixture, helper, and progress-document boundaries.
+- Do not run reviewer agents from this skill. Reviewer agents are invoked by `code-review`.
 
 ## Workflow
 
@@ -64,8 +73,8 @@ Use these shared references when they apply:
    - If the human names a specific subtask, implement only that subtask unless its dependencies are incomplete.
    - If no subtask is named, choose the next ready subtask from the plan: the first uncompleted sequential task whose dependencies are complete, or the next independent task from the recommended parallel group.
    - For `incremental task-by-task` plans, complete one planned subtask per run unless the human explicitly asks for a larger batch.
-   - For `parallel implementation subagents` plans, only coordinate multiple implementation subagents when the runtime supports safe parallel workers, the plan marks tasks as parallel-safe with disjoint ownership, and the current request authorizes implementing more than one task. Otherwise proceed with one ready task and note the parallel recommendation in the final summary.
-   - When delegating parallel subtasks, give each implementation subagent an explicit task ID, ownership/files, dependencies, expected tests, and progress-document path; tell each subagent that other agents may be editing disjoint tasks and they must not revert others' work.
+   - For `parallel implementation subagents` plans, only coordinate multiple `implementation-agent` delegations when the runtime supports safe workspace-write agents, the plan marks tasks as parallel-safe with disjoint ownership, and the current request authorizes implementing more than one task. Otherwise proceed with one ready task and note the parallel recommendation in the final summary.
+   - When delegating production-code subtasks, select the exact pre-built `implementation-agent` and give it an explicit task ID, write ownership/files, read-only context, no-touch boundaries, dependencies, expected tests, and progress-document path; tell it that other agents may be editing disjoint tasks and it must not revert others' work.
    - Keep the change scoped to the requested behavior, bug, or review adjustment.
    - Treat the requested behavior, approved artifact, review comment, or changed-file scope as the boundary for edits; do not modify unrelated files just because they are nearby.
    - Inside files that must be edited, touch only the lines required for the requested behavior, tests, imports, or directly necessary integration; do not reformat, clean up, reorder, or rewrite unchanged lines opportunistically.
@@ -74,7 +83,7 @@ Use these shared references when they apply:
    - Record smaller uncertainties as assumptions in the final summary instead of blocking on them.
 3. Inspect the codebase and conventions.
    - Read relevant source, tests, configuration, dependency manifests, generated artifacts, and directly applicable patterns before editing.
-   - When available and useful, use `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, or `codebase-researcher` before editing to find the right files, current behavior, similar implementations, and test patterns.
+   - When available and useful, use exact named `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, or `codebase-researcher` agents before editing to find the right files, current behavior, similar implementations, and test patterns.
    - When available and useful, use `docs-locator` and `docs-analyzer` to inspect related generated artifacts or project docs that affect the implementation contract.
    - Apply Project Rules Discovery before editing: check relevant local instructions, manifests, CI, lint/type/test/build config, nearby source, nearby tests, and generated-document conventions that govern this change.
    - When the change depends on external framework, library, service, browser, protocol, or third-party API behavior, verify the behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests before coding against it.
@@ -141,6 +150,17 @@ Use this default loop when practical:
 7. Run the full quality gate: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
 
 Use Verification Mode instead of forcing artificial TDD for non-behavior changes such as documentation, prompts, metadata, comments, or purely mechanical updates. In Verification Mode, identify the smallest meaningful checks for the changed artifact, run available non-mutating validation commands, and report any unavailable verification clearly.
+
+## Implementation Agent Invocation Contract
+
+- Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
+- Use exact pre-built agent names. In Codex delegation APIs, select `agent_type: implementation-agent` for production-code delegation and `agent_type: test-implementer` for bounded test-only or test-heavy delegation.
+- Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck implementation-agent custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Pass task goal, approved artifact path or prompt summary, explicit write targets, read-only context, no-touch boundaries, dependencies, expected focused tests, full quality gate expectations, and progress-document path when applicable.
+- Prefer one `implementation-agent` per disjoint write set. Do not assign overlapping files to parallel write-capable agents unless the approved plan names the merge risk and sequencing.
+- Keep immediate critical-path implementation local when waiting for delegation would slow or blur the parent skill's next step.
+- Inspect every delegated change before finalizing. The parent skill owns integration, verification, task document completion, and the user-facing summary.
+- If `implementation-agent` is unavailable, implement locally or ask the human before changing an approved parallel execution strategy. Do not replace it with a generic worker when the named agent exists.
 
 ## Artifact Handling
 
