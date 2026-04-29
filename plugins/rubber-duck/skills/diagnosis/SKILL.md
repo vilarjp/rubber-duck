@@ -51,6 +51,7 @@ Use these shared references when they apply:
 1. Determine the source context.
    - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
+   - Before writing Jira, connector, log, screenshot, or external-doc content into a diagnosis or passing it to agents, verify it belongs to the current project/repository or ask the human to confirm cross-project use. Redact or summarize unrelated private details, credentials, tokens, personal data, customer content, private URLs, and raw comments/logs that are not needed for diagnosis.
    - If Jira access fails, ask the human to paste the Jira title, description, reproduction steps, expected behavior, observed behavior, comments, logs, screenshots, and relevant links.
    - If `$ARGUMENTS` is a prompt, use it as the source of truth.
 2. Gather the minimum bug context needed for diagnosis.

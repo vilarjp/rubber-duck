@@ -86,8 +86,8 @@ The implementation should avoid creating a maze of agents that run for every tin
 | `codebase-pattern-finder` | Existing | `plan`, `diagnosis`, `implement`, `frontend-design`, `code-review` | Similar implementation, frontend, workflow, test, and convention patterns to reuse or avoid. |
 | `codebase-researcher` | Existing | `plan`, `diagnosis`, `implement`, `orchestrate-implementation`, `frontend-design`, `code-review` | Broad or unfamiliar areas where locator, analyzer, pattern, and docs findings need synthesis. |
 | `diagnosis-root-cause-investigator` | New | `diagnosis` | Bug hypotheses, evidence quality, root-cause confidence, affected flows, and recommended next step. |
-| `docs-analyzer` | Existing | `prd`, `plan`, `diagnosis`, `orchestrate-implementation`, `frontend-design`, `code-review` | Decisions, requirements, constraints, stale context, and questions from docs and generated artifacts. |
-| `docs-locator` | Existing | `prd`, `plan`, `diagnosis`, `frontend-design`, `code-review` | Prior PRDs, plans, diagnoses, code reviews, ADRs, standards, design docs, and README context. |
+| `docs-analyzer` | Existing | `prd`, `plan`, `diagnosis`, `implement`, `orchestrate-implementation`, `frontend-design`, `code-review` | Decisions, requirements, constraints, stale context, and questions from docs and generated artifacts. |
+| `docs-locator` | Existing | `prd`, `plan`, `diagnosis`, `implement`, `frontend-design`, `code-review` | Prior PRDs, plans, diagnoses, code reviews, ADRs, standards, design docs, and README context. |
 | `document-reviewer` | Existing | `prd`, `plan`, `diagnosis`, `code-review` | Final approval-readiness check for generated approval-gated documents. |
 | `frontend-accessibility-reviewer` | New | `frontend-design` | Semantic structure, keyboard navigation, focus, contrast, reduced motion, touch targets, and inclusive states. |
 | `frontend-ux-ui-reviewer` | New | `frontend-design` | Information architecture, interaction model, visual hierarchy, layout, responsiveness, usability, and design-system fit. |
@@ -182,42 +182,42 @@ The implementation should avoid creating a maze of agents that run for every tin
 ## Implementation Subtasks
 
 - Task 1: Add shared orchestration and surface-planning contract.
-  Status: planned
+  Status: completed
   Execution: sequential first
   Ownership / files: `plugins/rubber-duck/skills/_shared/agent-orchestration.md`, `plugins/rubber-duck/skills/plan/templates/plan.md`, `plugins/rubber-duck/skills/plan/SKILL.md`
   Dependencies: None
   Acceptance: Plans require `Implementation Surface`; the shared reference defines skill-owned orchestration, exact named-agent invocation, complexity gates, read-only vs workspace-write delegation, fan-out/fan-in, and fallback behavior.
   Progress document: `task_1.md`
 - Task 2: Add new specialized agent definitions and mirrors.
-  Status: planned
+  Status: completed
   Execution: sequential after Task 1
   Ownership / files: `plugins/rubber-duck/agents/*.md`, `plugins/rubber-duck/skills/setup-codex-agents/source-agents/*.md`
   Dependencies: Task 1 agent-orchestration contract and approved agent names/sandbox modes.
   Acceptance: New agents have YAML frontmatter with `name`, `description`, `model`, tools, color, and sandbox; mirrored source-agent files are byte-for-byte identical to root agents; existing agents remain in place; `implementation-agent` is the only new `workspace-write` agent unless implementation proves another write-capable role is necessary.
   Progress document: `task_2.md`
 - Task 3: Wire under-served skills to their agent crews.
-  Status: planned
+  Status: completed
   Execution: sequential after Task 2
   Ownership / files: `plugins/rubber-duck/skills/prd/SKILL.md`, `plugins/rubber-duck/skills/diagnosis/SKILL.md`, `plugins/rubber-duck/skills/implement/SKILL.md`, `plugins/rubber-duck/skills/orchestrate-implementation/SKILL.md`, `plugins/rubber-duck/skills/frontend-design/SKILL.md`, `plugins/rubber-duck/skills/commit-push/SKILL.md`, `plugins/rubber-duck/skills/setup-codex-agents/SKILL.md`
   Dependencies: Task 2 agent definitions.
   Acceptance: Each skill except `skill-eval` names at least one specialized agent and explains when to invoke it; `implement` and `orchestrate-implementation` use exact `implementation-agent` for production-code delegation; `frontend-design` can selectively invoke UX/UI, accessibility, and UX-writing specialists; code-review's existing reviewer flow remains materially unchanged.
   Progress document: `task_3.md`
 - Task 4: Update validation and generated-agent expectations.
-  Status: planned
+  Status: completed
   Execution: sequential after Task 2, can run before or after Task 3
   Ownership / files: `plugins/rubber-duck/skills/setup-codex-agents/scripts/validate-rubber-duck-plugin.mjs`, possibly `plugins/rubber-duck/skills/setup-codex-agents/scripts/install-codex-agents.mjs` if generation assumptions need adjustment
   Dependencies: Final agent count and sandbox set from Task 2.
   Acceptance: Validator expects the new total root/source/generated agent count, permits the updated workspace-write set, verifies mirrors, and generated TOML still uses `gpt-5.5` with medium reasoning by default.
   Progress document: `task_4.md`
 - Task 5: Update README and durable workflow documentation.
-  Status: planned
+  Status: completed
   Execution: sequential after Tasks 1-4
   Ownership / files: `README.md`, optionally `docs/2026-04-23-rubber-duck-build-plan/plan.md`
   Dependencies: Tasks 1-4.
   Acceptance: README documents the new agent crew, the skill-orchestrates-agents model, the `skill-eval` exception, where-aware plans, and the updated setup/validation behavior.
   Progress document: `task_5.md`
 - Task 6: Final verification and consistency pass.
-  Status: planned
+  Status: completed
   Execution: sequential last
   Ownership / files: validation outputs only; no new source ownership unless issues are found.
   Dependencies: Tasks 1-5.
@@ -307,6 +307,7 @@ None.
 - 2026-04-29: Clarified that existing agents should be kept and not merged in this pass; replaced the single broad frontend reviewer proposal with UX/UI, accessibility, and UX-writing specialists.
 - 2026-04-29: Added a skill-to-agent invocation map and agent coverage view so every existing and proposed agent has an explicit skill context.
 - 2026-04-29: Marked approved after human approval.
+- 2026-04-29: Reconciled completed task statuses and aligned the docs agent coverage table with implemented `implement` skill usage.
 
 ## Approval
 

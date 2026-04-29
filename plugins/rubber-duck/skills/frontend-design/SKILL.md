@@ -72,6 +72,7 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke specialist reviewers by exact pre-built agent name: `frontend-ux-ui-reviewer`, `frontend-accessibility-reviewer`, and `frontend-ux-writing-reviewer`.
 - In Codex delegation APIs, select the exact custom-agent name, for example `agent_type: frontend-accessibility-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named frontend reviewers. Pass only the bounded route, component, screenshot, design brief, and review context needed for the pass.
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck frontend-ux-ui-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Pass the route, component paths, screenshots or observations, design brief, relevant constraints, and exact review question. Keep reviewers read-only.
 - The parent skill owns all code and copy edits, visual iteration, validation, and user-facing summary. Specialist agents return findings, required fixes, optional polish, and questions only.

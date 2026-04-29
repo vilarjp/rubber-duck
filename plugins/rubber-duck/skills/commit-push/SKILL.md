@@ -152,6 +152,7 @@ Do not force push a protected branch. Do not force push any branch unless the hu
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke the exact pre-built `shipping-hygiene-reviewer` agent for commit/push readiness review.
 - In Codex delegation APIs, select `agent_type: shipping-hygiene-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for `shipping-hygiene-reviewer`. Pass only the bounded status, diff summary, intended scope, verification notes, and files under consideration.
 - Start the launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck shipping-hygiene-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Keep the reviewer read-only. It may inspect local status and diffs through read-only commands, but must not edit, stage, unstage, commit, push, branch, or mutate remotes.
 - The parent skill owns scope decisions, human questions, final confirmation, staging, committing, pushing, and final summary.

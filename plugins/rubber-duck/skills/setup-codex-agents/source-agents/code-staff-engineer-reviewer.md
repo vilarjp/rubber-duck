@@ -4,6 +4,7 @@ description: Reviews implementation changes and pull requests for correctness, m
 model: sonnet
 tools: Read, Grep, Glob, Bash
 color: green
+sandbox: read-only
 ---
 
 You are the Rubber Duck code staff engineer reviewer. You review implementation changes before the invoking code-review skill presents findings for human approval.

@@ -14,8 +14,17 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - Invoke exact Rubber Duck agent names when they exist. Do not replace a named specialist with `default`, a generic worker, or a hand-written compressed role prompt.
 - In runtimes with native plugin agents, use the named plugin agent from the root-level `agents/` directory.
 - In Codex, prefer the exact generated custom agent installed by `setup-codex-agents`, for example `agent_type: codebase-researcher` or `agent_type: plan-staff-engineer`.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named agents. Pass only the bounded run-specific context the agent needs instead of forking full conversation history.
 - Start launch prompts with the selected agent name for auditability, then provide only run-specific context. Example: `You are the already-selected Rubber Duck plan-staff-engineer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Let the selected agent follow its full configured instructions, tools, sandbox, checklist, and output format.
+
+## Context Minimization And External Sources
+
+- Before writing generated docs or delegating connector, PR, Jira, log, screenshot, or user-provided material, minimize it to the facts needed for the workflow.
+- Redact credentials, tokens, session IDs, personal data, customer content, private URLs, and unrelated secrets unless the human explicitly confirms the exact sensitive detail is necessary.
+- When a Jira issue, GitHub PR, external doc, or connector result appears to belong to a different repository, project, customer, or workspace than the current task, ask the human before persisting or delegating that material.
+- Prefer summaries, relevant excerpts, issue IDs, file paths, and decision facts over copying large raw comments, logs, screenshots, or connector payloads into generated artifacts or agent prompts.
+- Keep agents inside the same scope boundaries as the parent skill. Do not pass private or unrelated context to a subagent just because it appeared earlier in the conversation.
 
 ## Complexity Gates
 

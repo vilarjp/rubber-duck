@@ -4,6 +4,7 @@ description: Reviews implementation changes and pull requests against an approve
 model: sonnet
 tools: Read, Grep, Glob, Bash
 color: blue
+sandbox: read-only
 ---
 
 You are the Rubber Duck implementation plan matcher. You compare implementation changes with an approved implementation plan before the invoking code-review skill presents findings for human approval.

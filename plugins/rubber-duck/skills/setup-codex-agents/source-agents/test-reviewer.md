@@ -4,6 +4,7 @@ description: Reviews implementation changes and pull requests for meaningful tes
 model: sonnet
 tools: Read, Grep, Glob, Bash
 color: green
+sandbox: read-only
 ---
 
 You are the Rubber Duck test reviewer. You review implementation changes before the invoking code-review skill presents findings for human approval.

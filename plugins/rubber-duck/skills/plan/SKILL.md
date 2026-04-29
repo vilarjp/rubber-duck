@@ -47,6 +47,7 @@ Use these shared references when they apply:
 1. Determine the source context.
    - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
+   - Before writing Jira, connector, log, or external-doc content into a plan or passing it to agents, verify it belongs to the current project/repository or ask the human to confirm cross-project use. Redact or summarize unrelated private details, credentials, tokens, personal data, customer content, private URLs, and raw comments/logs that are not needed for planning.
    - If Jira access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, and relevant links.
    - If `$ARGUMENTS` looks like a slug, search for matching `docs/*-{slug}/prd.md` files.
    - If exactly one matching PRD exists, use it as source context.
@@ -78,7 +79,7 @@ Use these shared references when they apply:
    - If the source is a PRD, run the PRD-to-Plan Alignment check before reviewer invocation: map PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into plan sections, tests, rollout notes, or explicit out-of-scope rationale.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include an `Implementation Surface` section for every plan. This section defines where implementation may happen before describing how it will happen.
-   - In `Implementation Surface`, separate write targets, read-only context, tests and verification surfaces, no-touch boundaries, and parallel or merge-risk notes.
+   - In `Implementation Surface`, separate write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
    - Keep `Implementation Surface` focused on ownership and coordination boundaries. Keep `Files / Modules To Touch` as the concise per-file change list.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
    - When known, name the focused verification command and expected result for important behavior or regression coverage.
@@ -88,8 +89,8 @@ Use these shared references when they apply:
    - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
    - For complex plans, include `Decision Notes` when architecture, public contracts, data migrations, security, third-party integrations, or intentionally avoided heavier alternatives matter to future implementers.
-   - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`.
-   - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether available implementation subagents can safely handle independent tasks.
+   - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation.
+   - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely handle independent tasks.
    - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
    - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
 6. Run specialist reviewer agents on the generated `plan.md`.
@@ -197,14 +198,14 @@ Use these sections when useful:
 Plans must explicitly guide execution:
 
 - Every plan must include an `Implementation Surface` section before `Implementation Strategy`.
-- `Implementation Surface` must identify write targets, read-only context, tests and verification surfaces, no-touch boundaries, and parallel or merge-risk notes. Use `Not applicable` only for categories that truly do not apply.
+- `Implementation Surface` must identify write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Use `Not applicable` only for categories that truly do not apply.
 - `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
 - `medium` and `complex` plans must include implementation subtasks.
 - `complex` plans should include decision notes for important architecture, public-contract, data, migration, security, or third-party integration decisions.
 - Each subtask must include task number, short title, status, execution mode, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
 - When a focused command is known, acceptance checks should include the command and the expected result instead of only saying "add tests" or "verify behavior".
 - Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.
-- The strategy must recommend incremental task-by-task execution or parallel execution across multiple implementation subagents, with rationale.
+- The strategy must recommend incremental task-by-task execution or parallel execution across exact `implementation-agent` / `test-implementer` workers, with rationale.
 - The strategy must recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
 - Parallel implementation must only be recommended when tasks can be assigned disjoint write sets and merged without cross-task ordering risk.
 

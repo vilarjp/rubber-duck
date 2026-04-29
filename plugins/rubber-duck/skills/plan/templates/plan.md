@@ -44,15 +44,16 @@ One short paragraph describing the intended technical change and the outcome it 
 - Write targets: files, modules, generated artifacts, configuration, data stores, or external systems that implementation may change.
 - Read-only context: files, docs, tests, logs, generated artifacts, external references, or prior decisions that should be inspected but not edited.
 - Tests and verification surfaces: focused tests, fixtures, commands, snapshots, manual checks, or quality gates expected to prove the work.
+- Generated artifacts: files or outputs that may be created, refreshed, checked in, ignored, or must remain untouched.
 - No-touch boundaries: files, modules, APIs, data, generated outputs, or project areas that must stay unchanged unless the human approves a scope change.
 - Parallel and merge-risk notes: ownership boundaries, shared files, sequencing constraints, conflicts, and tasks that must not run concurrently.
 
 ## Implementation Strategy
 
 - Complexity: simple | medium | complex.
-- Recommended execution: single focused pass | incremental task-by-task | parallel implementation subagents.
+- Recommended execution: single focused pass | incremental task-by-task | parallel implementation-agent/test-implementer delegation.
 - Rationale: why this mode is safer or faster for this work.
-- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether available implementation subagents can safely implement independent subtasks.
+- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely implement independent subtasks.
 - Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
 
 ## Decision Notes

@@ -2,7 +2,7 @@
 name: setup-codex-agents
 description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, eval, and review agents.
 disable-model-invocation: true
-argument-hint: "[--project path | --global | --agents-dir path | --model model-id | --reasoning low|medium|high|xhigh]"
+argument-hint: "[--project path | --global | --agents-dir path | --model model-id | --reasoning low|medium|high|xhigh | --dry-run]"
 ---
 
 # Setup Codex Agents Skill
@@ -24,7 +24,7 @@ Accept `$ARGUMENTS` as optional flags for the bundled script:
 - `--reasoning low|medium|high|xhigh`: override reasoning effort. Defaults to `medium`.
 - `--dry-run`: print planned writes without creating files.
 
-If no target flag is provided, install into `.codex/agents/` under the current project root.
+If no target flag is provided, install into `.codex/agents/` under the nearest current project root.
 
 ## Shared References
 
@@ -41,12 +41,12 @@ Use `../_shared/agent-orchestration.md` for exact named-agent invocation, read-o
 2. Run the script with Node.js, forwarding any `$ARGUMENTS`.
 3. If Node.js is unavailable, perform the conversion inline:
    - Read Markdown agents from `source-agents/*.md`.
-   - Parse each YAML frontmatter `name` and `description`.
+   - Parse each YAML frontmatter `name`, `description`, `model`, `tools`, `color`, and `sandbox`.
    - Write one TOML file per agent using the Markdown body as `developer_instructions`.
    - Use `model = "gpt-5.5"`, `model_reasoning_effort = "medium"`, and each agent's frontmatter `sandbox` value when present.
-   - Default missing sandbox values to `read-only`; only generate `workspace-write` for agents that explicitly declare it.
+   - Require every agent to declare `sandbox`; only generate `workspace-write` for agents that explicitly declare it.
    - Reject any sandbox value other than `read-only` or `workspace-write`, matching the bundled script.
-4. For publish or release validation, run `scripts/validate-rubber-duck-plugin.mjs` from this skill folder. It checks plugin manifests, skill metadata, root/source-agent mirroring, generated TOML count, default model/reasoning, and allowed sandbox modes.
+4. For publish or release validation, run `scripts/validate-rubber-duck-plugin.mjs` from this skill folder. It checks plugin manifests, skill metadata, root/source-agent mirroring, exact agent inventory, required frontmatter, generated TOML count, default model/reasoning, and allowed sandbox modes.
 5. When validating packaging changes or investigating validation/generation risk, run the `agent-packaging-reviewer` agent.
    - Follow the Specialist Invocation Contract below.
    - Invoke the exact pre-built `agent-packaging-reviewer` agent.
@@ -61,6 +61,7 @@ Use `../_shared/agent-orchestration.md` for exact named-agent invocation, read-o
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke the exact pre-built `agent-packaging-reviewer` agent for packaging validation review.
 - In Codex delegation APIs, select `agent_type: agent-packaging-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for `agent-packaging-reviewer`. Pass only the bounded packaging paths, validation output, generation settings, and release-risk question under review.
 - Start the launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck agent-packaging-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Keep the reviewer read-only. It returns packaging findings, required fixes, generated-agent notes, and questions; the parent skill owns edits, validation commands, install commands, and the final user summary.
 

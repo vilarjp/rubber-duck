@@ -73,7 +73,7 @@ Install the Codex custom agents for the current project:
 /rubber-duck:setup-codex-agents
 ```
 
-This generates 29 Codex custom-agent TOML files under `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead.
+This generates 29 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
 
 Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a Rubber Duck skill:
 
@@ -116,7 +116,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
 | `/rubber-duck:skill-eval`                 | You want to test Rubber Duck's own skills or agent prompts.            | Skill path, agent path, eval prompt set, or improvement goal.                      | Optional eval artifacts with baseline outputs, grades, comparisons, and recommendations.      |
 | `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
-| `/rubber-duck:setup-codex-agents`         | You installed Rubber Duck in Codex and want custom agents available.   | Optional `--global`, `--project`, `--model`, or `--reasoning` flags.               | 29 generated Codex custom agents in `.codex/agents/` or `~/.codex/agents/`.                  |
+| `/rubber-duck:setup-codex-agents`         | You installed or upgraded Rubber Duck in Codex and want custom agents available. | Optional `--global`, `--project`, `--agents-dir`, `--model`, `--reasoning`, or `--dry-run` flags. | 29 generated Codex custom agents in `.codex/agents/`, `~/.codex/agents/`, or a custom agents directory. |
 
 ## Agent Orchestration Model
 
@@ -194,7 +194,7 @@ Material document updates are tracked in `Document Changelog`, including human a
 
 Plans include `Implementation Surface` before execution strategy so the document says where work may happen before it says how to do the work. The surface separates write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Implementation and orchestration skills pass those boundaries to read-only agents as context and to workspace-write agents as explicit ownership.
 
-Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. The strategy recommends `single focused pass`, `incremental task-by-task`, or `parallel implementation subagents`, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Completed planned subtasks create colocated progress documents such as:
+Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. The strategy recommends `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Completed planned subtasks create colocated progress documents such as:
 
 ```text
 docs/yyyy-mm-dd-{slug}/task_1.md
@@ -210,6 +210,7 @@ Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They c
 - `implement` follows TDD whenever feasible and explains when it cannot.
 - Skills discover repository-local rules and conventions before relying on generic preferences.
 - Skills can use read-only codebase and docs agents to investigate first, then ask focused human questions for unresolved uncertainty.
+- Skills minimize and redact connector, Jira, PR, log, screenshot, and user-provided content before persisting it or passing it to agents, and ask before using material from a different repository, project, customer, or workspace.
 - Skills verify external framework, library, service, or API behavior from repository evidence, local package/source docs, official docs, or version-specific references when that behavior shapes a plan, implementation, diagnosis, or review.
 - Skills prefer root-cause fixes and flag workaround smells such as type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, and copy-pasted fixes.
 - `orchestrate-implementation` owns multi-subtask coordination and only runs parallel workers when tasks are explicitly parallel-safe.
@@ -219,6 +220,7 @@ Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They c
 - `frontend-design` can fan out to UX/UI, accessibility, and UX-writing specialists for substantial work, then merges their read-only findings before final polish.
 - `implement` runs a full quality gate before completion: format checks, linting, type checks, builds, and the full automated test suite when those commands exist.
 - `implement` writes one progress document per completed planned subtask so later runs can see what is done and what should run next.
+- `implement` and `orchestrate-implementation` may record `partial` or `blocked` task progress when delegated or sequential work cannot safely complete yet.
 - `commit-push` runs `shipping-hygiene-reviewer` before proposing final commits and confirmation.
 - `commit-push` runs the same final verification gate before commit and push confirmation, and stops when required checks fail or cannot run without explicit human risk acceptance.
 - `commit-push` refuses `main`, `master`, `production`, and `staging`.
@@ -243,10 +245,11 @@ Rubber Duck is versioned with SemVer in both plugin manifests:
 
 Keep both manifest versions in sync. Release tags use the `vX.Y.Z` form, starting with `v0.0.1`.
 
-Before release, run the bundled plugin validator:
+Before release, run the bundled plugin validator and installer dry-run:
 
 ```text
 node plugins/rubber-duck/skills/setup-codex-agents/scripts/validate-rubber-duck-plugin.mjs
+node plugins/rubber-duck/skills/setup-codex-agents/scripts/install-codex-agents.mjs --dry-run
 ```
 
-The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the expected 29 root/source/generated agents, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.
+The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the exact expected 29 root/source/generated agents, required agent frontmatter, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.

@@ -61,15 +61,18 @@ Use these shared references when they apply:
    - If no plan matches, ask for the plan path or slug.
    - Require `status: approved` before orchestrating implementation. If the plan is `pending-approval` or `requested-changes`, ask the human whether to stop, approve/update the plan first, or proceed with explicit risk acceptance.
 2. Read orchestration context.
-   - Read `Implementation Strategy`, `Implementation Subtasks`, `Decision Notes`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Read `Implementation Surface`, `Implementation Strategy`, `Implementation Subtasks`, `Decision Notes`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Use `Implementation Surface` as the primary source for write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
+   - When an older approved plan lacks `Implementation Surface`, derive temporary boundaries from `Files / Modules To Touch`, `Test Plan`, security/rollout notes, and subtask ownership. If those boundaries are ambiguous or approval-relevant, stop and ask the human before assigning work.
    - Treat the plan's `simple`, `medium`, or `complex` classification as execution guidance: simple plans should normally run as one focused pass, medium plans should follow subtasks, and complex plans require extra care around sequencing, rollback, security, and decision context.
    - Inspect existing `task_*.md` documents in the same folder to identify completed tasks, partial tasks, deviations, blocked tasks, and the recommended next task.
    - Treat existing `task_N.md` documents as completed-work history. Do not repeat completed subtasks unless the human explicitly asks for a correction or resume.
+   - Treat `status: partial` task documents as resumable only after confirming what remains and whether prior edits or verification can be safely reused. Treat `status: blocked` task documents as blocked until their recorded dependency, question, or verification failure is resolved.
    - If the plan context appears stale, ambiguous, or too thin for safe task assignment, use `codebase-researcher`, `docs-analyzer`, or `test-plan-architect` when available to refresh only the missing execution context before editing.
 3. Build the task queue.
    - If the human named task IDs, consider only those tasks and their unmet dependencies.
    - Otherwise choose the next ready task for `incremental task-by-task` plans.
-   - For `parallel implementation subagents` plans, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution, then assign production-code tasks to exact `implementation-agent` workers.
+   - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution, then assign production-code tasks to exact `implementation-agent` workers.
    - A task is ready only when its dependencies are complete, no open blocking questions affect it, and its ownership/files do not conflict with another selected task.
    - If a selected task exposes approval-relevant uncertainty, apply the clarifying-questions reference and ask before assigning or editing. Record non-blocking uncertainty in the relevant `task_N.md`.
    - If the plan has no subtasks, fall back to a single focused implementation pass and note that the plan should be updated later if the work is medium-to-complex.
@@ -88,7 +91,7 @@ Use these shared references when they apply:
      - Approved plan path and relevant plan excerpts.
      - Exact task ID and task text.
      - Ownership/files and explicit write boundaries.
-     - Read-only context and no-touch boundaries from the plan's `Implementation Surface`.
+     - Read-only context, generated-artifact boundaries, and no-touch boundaries from the plan's `Implementation Surface`.
      - Dependencies and already completed `task_N.md` docs.
      - Required focused tests, including any known focused command and expected result.
      - Relevant discovered project rules, source-driven external API verification needs, and any no-workarounds constraints from the approved plan.
@@ -108,7 +111,8 @@ Use these shared references when they apply:
    - If any task reveals a material plan gap, stop and ask before changing the approved plan or continuing with a different scope.
 7. Verify the run.
    - Ensure each completed selected task has a completed `task_N.md` progress document.
-   - Ensure each task document includes source plan task, implementation summary, changed files, tests/verification, TDD or Verification Mode notes, deviations/follow-ups, blocking questions, deferred non-blocking questions, `Document Changelog`, and next task.
+   - Ensure each task document includes source plan task, implementation summary, changed files, tests/verification, delegated-agent ownership when applicable, TDD or Verification Mode notes, deviations/follow-ups, blocking questions, deferred non-blocking questions, `Document Changelog`, and next task.
+   - If a selected task ends partial or blocked, ensure its `task_N.md` records reusable work, remaining work, blockers, and what must happen before completion.
    - Run focused tests for each completed task.
    - Run the full quality gate before final summary unless the plan or human explicitly scoped the run to discovery only.
    - If a full quality gate category is unavailable, blocked, too expensive, or cannot be inferred safely, state that plainly in the final summary.
@@ -126,7 +130,7 @@ Use these shared references when they apply:
 
 Parallel execution is allowed only when all of these are true:
 
-- The approved plan recommends `parallel implementation subagents` or explicitly marks the selected tasks as parallel-safe for exact `implementation-agent` or `test-implementer` delegation.
+- The approved plan recommends parallel `implementation-agent` / `test-implementer` delegation or explicitly marks the selected tasks as parallel-safe for exact agent delegation.
 - Selected tasks have disjoint ownership/files.
 - No selected task depends on another selected task's unfinished output.
 - Selected tasks do not share migrations, data model changes, generated files, snapshots, package manifests, release steps, or public contracts.
@@ -146,8 +150,9 @@ If any condition is false, run sequentially.
 
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - Use exact pre-built agent names. In Codex delegation APIs, select `agent_type: implementation-agent` for production-code tasks and `agent_type: test-implementer` for bounded test-only or test-heavy tasks.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named implementation agents. Pass only the approved plan excerpts, ownership boundaries, and run-specific context needed for the task.
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck implementation-agent custom agent. Use your configured agent instructions; this message only provides run-specific context.`
-- Pass the approved plan path, task ID, task text, write targets, read-only context, no-touch boundaries, dependencies, prior task documents, required focused checks, full quality gate expectations, and required `task_N.md` path.
+- Pass the approved plan path, task ID, task text, write targets, read-only context, generated-artifact boundaries, no-touch boundaries, dependencies, prior task documents, required focused checks, full quality gate expectations, and required `task_N.md` path.
 - Assign one write-capable agent per disjoint write set. Do not assign overlapping files, migrations, generated artifacts, snapshots, manifests, or shared public contracts to parallel agents.
 - Tell every write-capable agent that it is not alone in the codebase, must preserve unrelated human and worker edits, and must adapt to concurrent changes instead of reverting them.
 - If `implementation-agent` is unavailable, run selected production-code tasks sequentially in the parent skill or ask the human before changing an approved parallel execution strategy. Do not replace it with a generic worker when the named agent exists.

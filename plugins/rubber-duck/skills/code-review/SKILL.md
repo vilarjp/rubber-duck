@@ -37,6 +37,7 @@ Use these shared references when they apply:
 - `../_shared/project-rules-discovery.md` before judging local conventions, file placement, generated documents, or verification commands.
 - `../_shared/source-driven-development.md` when changed code depends on external framework, library, service, or API behavior.
 - `../_shared/no-workarounds.md` when evaluating fixes, mitigations, tests, and review adjustments.
+- `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, context minimization, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` when review scope, plan alignment, security posture, or expected behavior is unclear.
 
 ## Workflow
@@ -44,6 +45,7 @@ Use these shared references when they apply:
 1. Determine the review scope.
    - If `$ARGUMENTS` includes a GitHub PR link, fetch PR metadata, description, branch details, diff, changed files, comments, and checks through authenticated tools already available in the current assistant session.
    - Do not configure or bundle GitHub credentials, tokens, apps, or MCP servers.
+   - Before writing PR, connector, check-log, or external issue content into a review document or passing it to agents, verify it belongs to the current repository/project or ask the human to confirm cross-repository use. Redact or summarize unrelated private details, credentials, tokens, personal data, customer content, private URLs, and raw comments/logs that are not needed for review.
    - If authenticated PR access fails, ask the human to paste the PR description, diff, changed file list, review comments, check status, and any related plan or issue link.
    - If no PR link is provided, inspect local uncommitted work with `git status`, `git diff --staged`, `git diff`, and targeted reads of relevant untracked files.
    - Include untracked source, test, config, documentation, template, manifest, and generated artifact files that appear relevant to the change.

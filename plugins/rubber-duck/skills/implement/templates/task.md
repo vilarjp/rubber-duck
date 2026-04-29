@@ -2,7 +2,7 @@
 title: Task N: Short Task Title
 slug: short-slug
 type: implementation-task
-status: completed
+status: completed | partial | blocked
 created: yyyy-mm-dd
 updated: yyyy-mm-dd
 source: plan
@@ -10,7 +10,7 @@ plan: plan.md
 task: N
 ---
 
-Status: completed
+Status: completed | partial | blocked
 
 # Task N: Short Task Title
 
@@ -25,6 +25,8 @@ Status: completed
 
 - What changed for this subtask and why it satisfies the planned acceptance criteria.
 - Note whether this was implemented sequentially or in parallel with other planned subtasks.
+- If delegated, record the assigned `implementation-agent` or `test-implementer`, its write ownership, read-only context, generated-artifact boundaries, and no-touch boundaries.
+- For `partial` or `blocked` status, summarize completed work, remaining work, blockers, and whether any edits or verification results can be safely reused.
 
 ## Changed Files
 

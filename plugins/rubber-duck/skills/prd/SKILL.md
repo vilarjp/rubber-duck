@@ -48,6 +48,7 @@ Use `../_shared/clarifying-questions.md` to keep product questions focused on ap
 1. Determine the source context.
    - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
+   - Before writing Jira or connector content into a PRD, verify it belongs to the current product/project or ask the human to confirm cross-project use. Redact or summarize unrelated private details, credentials, tokens, personal data, customer content, private URLs, and raw comments/logs that are not needed for requirements.
    - If Jira access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, and relevant links.
    - If `$ARGUMENTS` is a prompt, use it as the source of truth.
 2. Gather only the context needed to write the PRD.

@@ -59,6 +59,7 @@ Use these shared references when they apply:
 1. Determine the source context.
    - If `$ARGUMENTS` includes a Jira link, try to read it only through authenticated tools already available in the current assistant session.
    - Do not configure or bundle Jira MCP servers.
+   - Before using Jira, connector, log, screenshot, or external-doc content as implementation context or passing it to agents, verify it belongs to the current project/repository or ask the human to confirm cross-project use. Redact or summarize unrelated private details, credentials, tokens, personal data, customer content, private URLs, and raw comments/logs that are not needed for implementation.
    - If Jira access fails, ask the human to paste the Jira title, description, acceptance criteria, comments, reproduction steps, logs, and relevant links.
    - If `$ARGUMENTS` looks like a slug, search for matching `docs/*-{slug}/plan.md`, `docs/*-{slug}/diagnosis.md`, and `docs/*-{slug}/code-review.md` files.
    - When a matching `plan.md` exists, also inspect `docs/*-{slug}/task_*.md` progress documents in the same folder.
@@ -68,13 +69,15 @@ Use these shared references when they apply:
 2. Confirm the implementable scope.
    - Prefer approved plans, diagnoses, and code-review documents when they exist.
    - When an approved plan declares complexity, use Rubber Duck's existing `simple`, `medium`, and `complex` meaning: simple work should usually be one focused pass, medium work follows planned subtasks, and complex work needs extra attention to sequencing, rollout, rollback, security, and decision context.
+   - When an approved plan includes `Implementation Surface`, read it before selecting files or delegating work. Use it as the source for write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
+   - When an older approved plan lacks `Implementation Surface`, derive temporary boundaries from `Files / Modules To Touch`, `Test Plan`, security/rollout notes, and subtask ownership. If those boundaries are ambiguous or approval-relevant, stop and ask the human before editing or delegating.
    - When an approved plan includes `Implementation Subtasks`, treat those subtasks as the implementation queue.
    - Read existing `task_N.md` documents before editing so completed subtasks are not repeated.
    - If the human names a specific subtask, implement only that subtask unless its dependencies are incomplete.
    - If no subtask is named, choose the next ready subtask from the plan: the first uncompleted sequential task whose dependencies are complete, or the next independent task from the recommended parallel group.
    - For `incremental task-by-task` plans, complete one planned subtask per run unless the human explicitly asks for a larger batch.
-   - For `parallel implementation subagents` plans, only coordinate multiple `implementation-agent` delegations when the runtime supports safe workspace-write agents, the plan marks tasks as parallel-safe with disjoint ownership, and the current request authorizes implementing more than one task. Otherwise proceed with one ready task and note the parallel recommendation in the final summary.
-   - When delegating production-code subtasks, select the exact pre-built `implementation-agent` and give it an explicit task ID, write ownership/files, read-only context, no-touch boundaries, dependencies, expected tests, and progress-document path; tell it that other agents may be editing disjoint tasks and it must not revert others' work.
+   - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, only coordinate multiple `implementation-agent` delegations when the runtime supports safe workspace-write agents, the plan marks tasks as parallel-safe with disjoint ownership, and the current request authorizes implementing more than one task. Otherwise proceed with one ready task and note the parallel recommendation in the final summary.
+   - When delegating production-code subtasks, select the exact pre-built `implementation-agent` and give it an explicit task ID, write ownership/files, read-only context, generated-artifact boundaries, no-touch boundaries, dependencies, expected tests, and progress-document path; tell it that other agents may be editing disjoint tasks and it must not revert others' work.
    - Keep the change scoped to the requested behavior, bug, or review adjustment.
    - Treat the requested behavior, approved artifact, review comment, or changed-file scope as the boundary for edits; do not modify unrelated files just because they are nearby.
    - Inside files that must be edited, touch only the lines required for the requested behavior, tests, imports, or directly necessary integration; do not reformat, clean up, reorder, or rewrite unchanged lines opportunistically.
@@ -122,8 +125,10 @@ Use these shared references when they apply:
    - Use `templates/task.md` as the default structure.
    - Set `created` when the task document is first created and `updated` to the local date on every task-document update.
    - Include the source plan path, planned task text, execution mode, dependencies, implementation summary, changed files, tests and verification, deviations, follow-ups, and recommended next task.
+   - When work was delegated, record the assigned `implementation-agent` or `test-implementer`, its write ownership, read-only context, generated-artifact boundaries, and no-touch boundaries.
    - Preserve any blocking question raised during the subtask; when the human answers, keep the original question, mark it `answered`, record the human answer with the local date, and explain the task impact.
    - Add a `Document Changelog` entry for every human answer, change request, material implementation update, verification update, or correction.
+   - Use `status: partial` for resumable work with useful completed scope but unfinished acceptance checks; use `status: blocked` when open questions, missing dependencies, or failed required verification prevent safe completion.
    - Do not mark a task document `completed` while open blocking questions remain, planned dependencies are incomplete, or required verification for that subtask has not run or been explicitly accepted as unavailable.
    - If a completed subtask deviates from the approved plan, record the deviation and human approval. If approval is missing and the deviation materially changes scope, stop and ask before proceeding.
 8. Do not invoke reviewer agents.
@@ -155,8 +160,9 @@ Use Verification Mode instead of forcing artificial TDD for non-behavior changes
 
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - Use exact pre-built agent names. In Codex delegation APIs, select `agent_type: implementation-agent` for production-code delegation and `agent_type: test-implementer` for bounded test-only or test-heavy delegation.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named implementation agents. Pass only the approved artifact excerpts, ownership boundaries, and run-specific context needed for the task.
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck implementation-agent custom agent. Use your configured agent instructions; this message only provides run-specific context.`
-- Pass task goal, approved artifact path or prompt summary, explicit write targets, read-only context, no-touch boundaries, dependencies, expected focused tests, full quality gate expectations, and progress-document path when applicable.
+- Pass task goal, approved artifact path or prompt summary, explicit write targets, read-only context, generated-artifact boundaries, no-touch boundaries, dependencies, expected focused tests, full quality gate expectations, and progress-document path when applicable.
 - Prefer one `implementation-agent` per disjoint write set. Do not assign overlapping files to parallel write-capable agents unless the approved plan names the merge risk and sequencing.
 - Keep immediate critical-path implementation local when waiting for delegation would slow or blur the parent skill's next step.
 - Inspect every delegated change before finalizing. The parent skill owns integration, verification, task document completion, and the user-facing summary.
@@ -183,7 +189,7 @@ Every completed planned subtask must have a matching progress document:
 title: Task N: Short Task Title
 slug: short-slug
 type: implementation-task
-status: completed
+status: completed | partial | blocked
 created: yyyy-mm-dd
 updated: yyyy-mm-dd
 source: plan
@@ -204,7 +210,7 @@ Task documents must include:
 - Document Changelog
 - Next Task
 
-Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent task completion.
+Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent task completion. `partial` and `blocked` task documents must explain what can be reused, what remains, and what is needed before the task can become `completed`.
 
 ## Final Response Requirements
 

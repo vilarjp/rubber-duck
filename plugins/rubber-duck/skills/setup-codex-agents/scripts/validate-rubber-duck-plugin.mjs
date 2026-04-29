@@ -8,7 +8,40 @@ import { fileURLToPath } from "node:url";
 
 const EXPECTED_MODEL = "gpt-5.5";
 const EXPECTED_REASONING = "medium";
-const EXPECTED_AGENT_COUNT = 29;
+const EXPECTED_AGENT_NAMES = [
+  "agent-packaging-reviewer",
+  "code-security-reviewer",
+  "code-staff-engineer-reviewer",
+  "codebase-analyzer",
+  "codebase-locator",
+  "codebase-pattern-finder",
+  "codebase-researcher",
+  "diagnosis-root-cause-investigator",
+  "docs-analyzer",
+  "docs-locator",
+  "document-reviewer",
+  "frontend-accessibility-reviewer",
+  "frontend-ux-ui-reviewer",
+  "frontend-ux-writing-reviewer",
+  "implementation-agent",
+  "implementation-plan-matcher",
+  "plan-future-maintainer",
+  "plan-security-reviewer",
+  "plan-staff-engineer",
+  "prd-product-reviewer",
+  "project-patterns-reviewer",
+  "shipping-hygiene-reviewer",
+  "skill-eval-analyzer",
+  "skill-eval-comparator",
+  "skill-eval-executor",
+  "skill-eval-grader",
+  "test-implementer",
+  "test-plan-architect",
+  "test-reviewer",
+];
+const EXPECTED_AGENT_COUNT = EXPECTED_AGENT_NAMES.length;
+const AGENT_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const REQUIRED_AGENT_FIELDS = ["name", "description", "model", "tools", "color", "sandbox"];
 const VALID_SANDBOXES = new Set(["read-only", "workspace-write"]);
 const EXPECTED_WORKSPACE_WRITE = new Set([
   "implementation-agent",
@@ -131,9 +164,9 @@ async function assertSkillMetadata() {
 async function assertAgentSources() {
   const rootAgents = await listFiles(rootAgentsDir, ".md");
   const bundledAgents = await listFiles(bundledAgentsDir, ".md");
-  if (rootAgents.length !== EXPECTED_AGENT_COUNT) {
-    fail(`Expected ${EXPECTED_AGENT_COUNT} root agents, found ${rootAgents.length}`);
-  }
+  const expectedMarkdownFiles = EXPECTED_AGENT_NAMES.map((name) => `${name}.md`);
+  assertArrayEquals(rootAgents, expectedMarkdownFiles, "root agent files");
+  assertArrayEquals(bundledAgents, expectedMarkdownFiles, "bundled source agent files");
   if (bundledAgents.length !== rootAgents.length) {
     fail(`Root/source agent count mismatch: ${rootAgents.length} vs ${bundledAgents.length}`);
   }
@@ -142,6 +175,7 @@ async function assertAgentSources() {
   }
 
   const workspaceWrite = new Set();
+  const names = new Set();
   for (const agentFile of rootAgents) {
     const rootPath = path.join(rootAgentsDir, agentFile);
     const bundledPath = path.join(bundledAgentsDir, agentFile);
@@ -150,9 +184,19 @@ async function assertAgentSources() {
     if (rootContent !== bundledContent) fail(`Bundled source differs: ${agentFile}`);
 
     const fields = parseFrontmatter(rootContent, rootPath);
-    if (!fields.name) fail(`Missing agent name: ${rootPath}`);
-    if (!fields.description) fail(`Missing agent description: ${rootPath}`);
-    const sandbox = fields.sandbox || "read-only";
+    for (const field of REQUIRED_AGENT_FIELDS) {
+      if (!fields[field]) fail(`Missing agent ${field}: ${rootPath}`);
+    }
+    if (!AGENT_NAME_PATTERN.test(fields.name)) {
+      fail(`Invalid agent name ${fields.name}: ${rootPath}`);
+    }
+    const expectedName = path.basename(agentFile, ".md");
+    if (fields.name !== expectedName) {
+      fail(`Agent name ${fields.name} does not match filename ${expectedName}: ${rootPath}`);
+    }
+    if (names.has(fields.name)) fail(`Duplicate agent name: ${fields.name}`);
+    names.add(fields.name);
+    const sandbox = fields.sandbox;
     if (!VALID_SANDBOXES.has(sandbox)) fail(`Invalid sandbox ${sandbox}: ${rootPath}`);
     if (sandbox === "workspace-write") workspaceWrite.add(fields.name);
   }
@@ -172,11 +216,11 @@ async function assertGeneratedAgents() {
     }
 
     const generated = await listFiles(targetDir, ".toml");
-    if (generated.length !== EXPECTED_AGENT_COUNT) {
-      fail(`Expected ${EXPECTED_AGENT_COUNT} generated TOML files, found ${generated.length}`);
-    }
+    const expectedTomlFiles = EXPECTED_AGENT_NAMES.map((name) => `${name}.toml`);
+    assertArrayEquals(generated, expectedTomlFiles, "generated TOML files");
 
     const workspaceWrite = new Set();
+    const names = new Set();
     for (const file of generated) {
       const fullPath = path.join(targetDir, file);
       const content = await readFile(fullPath, "utf8");
@@ -185,6 +229,15 @@ async function assertGeneratedAgents() {
       const reasoning = parseTomlScalar(content, "model_reasoning_effort", fullPath);
       const sandbox = parseTomlScalar(content, "sandbox_mode", fullPath);
 
+      if (!content.includes("# Source tools: ")) {
+        fail(`Missing source tools comment in generated agent: ${fullPath}`);
+      }
+      const expectedName = path.basename(file, ".toml");
+      if (name !== expectedName) {
+        fail(`Generated agent name ${name} does not match filename ${expectedName}: ${fullPath}`);
+      }
+      if (names.has(name)) fail(`Duplicate generated agent name: ${name}`);
+      names.add(name);
       if (model !== EXPECTED_MODEL) fail(`Unexpected model for ${name}: ${model}`);
       if (reasoning !== EXPECTED_REASONING) {
         fail(`Unexpected reasoning effort for ${name}: ${reasoning}`);
@@ -196,6 +249,14 @@ async function assertGeneratedAgents() {
     assertSetEquals(workspaceWrite, EXPECTED_WORKSPACE_WRITE, "workspace-write generated agents");
   } finally {
     await rm(targetDir, { recursive: true, force: true });
+  }
+}
+
+function assertArrayEquals(actual, expected, label) {
+  if (actual.join("\n") !== expected.join("\n")) {
+    fail(
+      `${label} mismatch. Expected [${expected.join(", ")}], got [${actual.join(", ")}]`,
+    );
   }
 }
 
