@@ -41,6 +41,7 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 - Use `frontend-ux-ui-reviewer` for substantial redesigns, audits, final polish passes, and questions about information architecture, interaction quality, visual hierarchy, responsiveness, usability, and design-system fit.
 - Use `frontend-accessibility-reviewer` when the work touches semantic structure, keyboard behavior, focus management, contrast, reduced motion, touch targets, form states, overlays, or inclusive interaction quality.
 - Use `frontend-ux-writing-reviewer` when the work touches labels, calls to action, errors, empty/loading/success states, terminology, localization readiness, or content resilience.
+- After implementation and browser/screenshot verification, use `design-implementation-validator` to check parity between the implemented UI and stated UX intent, design-system tokens, responsive behavior, and visual states. Skip when the parent skill has no UX intent, screenshots, or acceptance criteria to compare against.
 
 ## Working Loop
 
@@ -70,11 +71,12 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 ## Specialist Review Contract
 
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
-- Invoke specialist reviewers by exact pre-built agent name: `frontend-ux-ui-reviewer`, `frontend-accessibility-reviewer`, and `frontend-ux-writing-reviewer`.
+- Invoke specialist reviewers by exact pre-built agent name: `frontend-ux-ui-reviewer`, `frontend-accessibility-reviewer`, `frontend-ux-writing-reviewer`, and conditionally `design-implementation-validator`.
 - In Codex delegation APIs, select the exact custom-agent name, for example `agent_type: frontend-accessibility-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
 - In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named frontend reviewers. Pass only the bounded route, component, screenshot, design brief, and review context needed for the pass.
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck frontend-ux-ui-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
-- Pass the route, component paths, screenshots or observations, design brief, relevant constraints, and exact review question. Keep reviewers read-only.
+- Pass the route, component paths, screenshots or observations, design brief, relevant constraints, acceptance criteria or UX intent when available, and exact review question. Keep reviewers read-only.
+- Invoke `design-implementation-validator` only after implementation and browser/screenshot verification evidence exists, and merge parity findings or questions before claiming the frontend is ready.
 - The parent skill owns all code and copy edits, visual iteration, validation, and user-facing summary. Specialist agents return findings, required fixes, optional polish, and questions only.
 - Treat blocking accessibility, usability, or copy findings as work to fix before claiming the frontend is ready unless the human explicitly accepts the risk or defers the issue.
 

@@ -23,6 +23,18 @@ You may coordinate these specialist perspectives when available:
 
 If subagents are unavailable, perform a smaller inline version of the same work.
 
+## When To Invoke
+
+- Plan, diagnosis, implementation, or review needs an evidence-backed brief that combines locator, analyzer, pattern, and docs findings.
+- A workflow needs to ground a draft in concrete repository facts before asking the human.
+- An orchestrator needs current system context before assigning subtasks.
+
+## When Not To Invoke
+
+- A narrow, single-question lookup the parent skill can answer directly with `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, or `docs-locator`.
+- Bounded external research (use `web-researcher`).
+- Mining prior `docs/` lessons (use `learnings-researcher`).
+
 ## Operating Rules
 
 - Do not edit files.
@@ -44,6 +56,14 @@ If subagents are unavailable, perform a smaller inline version of the same work.
 4. Read the key files identified by those passes.
 5. Synthesize only the context needed for the parent workflow.
 6. Explicitly call out evidence gaps that should become blocking questions, deferred questions, or assumptions.
+
+## Fallback Behavior
+
+If `Agent` delegation is unavailable in the current runtime:
+
+1. Perform the locator/analyzer/pattern/docs passes inline with `Read`, `Grep`, `Glob`, and read-only `Bash`.
+2. Keep the same research budget and output sections.
+3. Make any skipped specialist perspective explicit in `Evidence Gaps`; do not claim delegated specialist research occurred.
 
 ## Output
 

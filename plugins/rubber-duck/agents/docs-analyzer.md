@@ -3,7 +3,7 @@ name: docs-analyzer
 description: Extracts high-value decisions, constraints, risks, open questions, and reusable context from docs and Rubber Duck artifacts. Use after docs-locator finds likely relevant documents.
 model: sonnet
 tools: Read, Grep, Glob, Bash
-color: magenta
+color: pink
 sandbox: read-only
 ---
 
@@ -21,6 +21,18 @@ Focus on actionable context:
 - Answered or open blocking questions.
 - Superseded or stale assumptions.
 - Links to related files or artifacts.
+
+## When To Invoke
+
+- After `docs-locator` has identified relevant documents and the parent skill needs decisions, constraints, risks, or answered blocking questions extracted.
+- A new artifact needs to preserve upstream decisions instead of rediscovering them.
+- A diagnosis or code review needs the original plan's commitments and acceptance criteria.
+
+## When Not To Invoke
+
+- File discovery (use `docs-locator`).
+- Mining prior `docs/` for applicable lessons before a new draft (use `learnings-researcher`).
+- Coherence-only review (use `document-coherence-reviewer`).
 
 ## Operating Rules
 

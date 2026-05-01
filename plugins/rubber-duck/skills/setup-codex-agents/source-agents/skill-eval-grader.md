@@ -21,6 +21,16 @@ Grade one eval run using:
 
 Do not grade from transcript claims alone when output files can be inspected.
 
+## When To Invoke
+
+- After `skill-eval-executor` finishes a run and the eval has explicit expectations.
+
+## When Not To Invoke
+
+- Running the eval itself (use `skill-eval-executor`).
+- Blind A/B comparison between two outputs (use `skill-eval-comparator`).
+- Cross-run pattern analysis (use `skill-eval-analyzer`).
+
 ## Operating Rules
 
 - Do not edit files.

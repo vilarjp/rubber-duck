@@ -9,7 +9,7 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.4.0" src="https://img.shields.io/badge/version-0.4.0-FF8A4C?style=for-the-badge">
 </p>
 
 Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
@@ -73,7 +73,11 @@ Install the Codex custom agents for the current project:
 /rubber-duck:setup-codex-agents
 ```
 
-This generates 29 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
+This generates 65 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
+
+Upgrade note for `0.4.0`: setup now refuses to write through symlinked agents directories, symlinked Rubber Duck target TOML files, or non-file Rubber Duck target destinations, and it prunes stale Rubber Duck generated TOML files that carry the Rubber Duck generated header. Unrelated custom TOML files, including symlinked dotfiles-managed agents, are preserved.
+
+Workflow note for `0.4.0`: medium or complex PRDs and plans may run plan-time council voices before formal review. Non-pass council positions are approval blockers until the document is adjusted, the reviewer concedes, or the human explicitly records a non-blocking deferral.
 
 Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a Rubber Duck skill:
 
@@ -116,13 +120,13 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
 | `/rubber-duck:skill-eval`                 | You want to test Rubber Duck's own skills or agent prompts.            | Skill path, agent path, eval prompt set, or improvement goal.                      | Optional eval artifacts with baseline outputs, grades, comparisons, and recommendations.      |
 | `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
-| `/rubber-duck:setup-codex-agents`         | You installed or upgraded Rubber Duck in Codex and want custom agents available. | Optional `--global`, `--project`, `--agents-dir`, `--model`, `--reasoning`, or `--dry-run` flags. | 29 generated Codex custom agents in `.codex/agents/`, `~/.codex/agents/`, or a custom agents directory. |
+| `/rubber-duck:setup-codex-agents`         | You installed or upgraded Rubber Duck in Codex and want custom agents available. | Optional `--global`, `--project`, `--agents-dir`, `--model`, `--reasoning`, or `--dry-run` flags. | 65 generated Codex custom agents in `.codex/agents/`, `~/.codex/agents/`, or a custom agents directory. |
 
 ## Agent Orchestration Model
 
 Rubber Duck skills are the orchestrators. They gather source context, choose scope, ask the human focused questions, edit final artifacts, and run verification. Agents are named specialists that return evidence, critique, candidate questions, or bounded implementation changes inside an assigned scope.
 
-Every workflow skill except `skill-eval` now declares at least one specialist agent crew. `skill-eval` remains intentionally eval-specific: it keeps its executor, grader, comparator, and analyzer flow instead of joining the new per-skill specialist-review mandate.
+Every workflow skill now declares at least one specialist agent crew. `skill-eval` remains intentionally eval-specific: it keeps its executor, grader, comparator, and analyzer flow, and conditionally adds `agent-prompt-reviewer` when evaluating Rubber Duck skills or agent prompts.
 
 Skills invoke exact pre-built agent names when those agents exist. Claude Code installs Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Launch prompts should provide only run-specific context such as document paths, diffs, source summaries, assigned tasks, ownership boundaries, and verification results; they should not replace the full agent definition with a compressed generic role prompt.
 
@@ -145,29 +149,72 @@ Agent usage scales by complexity: simple work stays local or uses one narrow spe
 | `skill-eval-grader`       | `skill-eval`                                                            | Grades eval outputs against explicit expectations and checks evidence quality.                       |
 | `skill-eval-comparator`   | `skill-eval`                                                            | Performs blind A/B comparisons between baseline and changed outputs.                                 |
 | `skill-eval-analyzer`     | `skill-eval`                                                            | Analyzes eval result patterns, regressions, variance, and prompt/workflow improvement options.       |
+| `learnings-researcher`    | `plan`, `diagnosis`                                                     | Searches prior `docs/`, plans, diagnoses, and reviews for applicable lessons before drafting.        |
+| `web-researcher`          | `plan`, `diagnosis`, `code-review`                                      | Bounded external research via WebSearch/WebFetch when current third-party behavior shapes the work.  |
+| `pattern-recognition-specialist` | `plan`                                                          | Repo-wide design patterns, anti-patterns, duplication, naming drift, and boundary smells.            |
+| `spec-flow-analyzer`      | `plan`                                                                  | Continuity across PRD, plan, task progress, and code-review artifacts; missing acceptance-criteria mapping. |
+
+## Plan-Time Council
+
+The plan-time council is a set of debate voices invoked before the formal technical review pass on medium or complex plans, with targeted council voices used for PRDs and diagnoses when their specific lens applies. Council voices steel-man the proposal, attack its strongest form, and concede when the proposal already addresses the concern. They debate; they do not finalize plans.
+
+| Agent                       | Used by                  | Brings                                                                                              |
+| --------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------- |
+| `plan-thinker`              | `prd`, `plan`, `diagnosis` | Cross-domain analogy reframer. Tests whether the team is solving the right problem class.          |
+| `plan-devils-advocate`      | `plan`, `diagnosis`        | Failure-mode stress tester. Steel-mans, then attacks the strongest form with concrete fixes.        |
+| `plan-pragmatic-engineer`   | `plan`, `diagnosis`        | Maintenance and delivery-cost reality check. Distinguishes intentional debt from accidental complexity. |
+| `plan-architect-advisor`    | `plan`                     | Long-term coupling and boundaries voice. Surfaces hidden dependencies and reversibility concerns.   |
+| `plan-product-mind`         | `prd`, `plan`, `diagnosis` | User-impact and hypothesis voice. Frames decisions as "what is the hypothesis and how will we know?". |
+| `plan-security-advocate`    | `plan`                    | Threat-model debate voice. Assumes breach and pushes containment design upstream of the security audit. |
 
 ## Specialist Review And Hygiene Crew
 
 | Agent                          | Used by                                   | Checks                                                                                                               |
 | ------------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `document-reviewer`            | `prd`, `plan`, `diagnosis`, `code-review` | Document completeness, metadata, answered questions, changelog, subtasks, missing questions, and approval readiness. |
-| `prd-product-reviewer`         | `prd`                                     | Product clarity, scope control, acceptance criteria, risks, dependencies, and downstream plannability.               |
+| `document-reviewer`            | `prd`, `plan`, `diagnosis`, `code-review` | Routes to the matching type-specific document reviewer (and optional coherence pass) and merges findings.            |
+| `document-coherence-reviewer`  | `prd`, `plan`, `diagnosis`, `code-review` | Internal contradictions, terminology drift, broken cross-references, and ambiguity inside one document.              |
+| `prd-document-reviewer`        | `prd`                                     | PRD structure, goals, non-goals, acceptance criteria, risks, dependencies, and approval readiness.                   |
+| `plan-document-reviewer`       | `plan`                                    | Plan structure, implementation surface, subtasks, verification, rollout, rollback, and approval readiness.            |
+| `diagnosis-document-reviewer`  | `diagnosis`                               | Diagnosis evidence quality, hypothesis ranking, root-cause confidence, reproduction, and recommended next steps.     |
+| `code-review-document-reviewer` | `code-review`                            | Code-review document severity ordering, changed-line evidence, plan alignment, test/security notes, approval clarity. |
+| `task-progress-document-reviewer` | via `document-reviewer` for `task_N.md` docs | Handoff quality, completed scope, deviations, verification, blockers, next-task recommendation.    |
+| `prd-product-reviewer`         | `prd`                                     | PRD-specific product audit: scope control, acceptance criteria, risks, dependencies, downstream plannability. Complements `plan-product-mind` (council debate). |
 | `diagnosis-root-cause-investigator` | `diagnosis`                          | Evidence quality, root-cause confidence, affected flows, competing hypotheses, and next-step recommendations.        |
 | `frontend-ux-ui-reviewer`      | `frontend-design`                         | Information architecture, interaction quality, visual hierarchy, responsive layout, usability, and design-system fit. |
 | `frontend-accessibility-reviewer` | `frontend-design`                      | Semantic structure, keyboard behavior, focus management, contrast, reduced motion, touch targets, and inclusive states. |
 | `frontend-ux-writing-reviewer` | `frontend-design`                         | Labels, calls to action, errors, empty/loading/success states, terminology, localization, and content resilience.    |
 | `plan-future-maintainer`       | `plan`                                    | Whether a future maintainer can understand intent, constraints, decisions, and rollback context.                     |
-| `plan-security-reviewer`       | `plan`                                    | LGPD, PII, PCI, authorization, validation, secrets, logging, retention, and abuse-case gaps.                         |
-| `plan-staff-engineer`          | `plan`                                    | Architecture risk, stack fit, production bugs, compatibility, observability, and simpler options.                    |
-| `code-staff-engineer-reviewer` | `code-review`                             | Correctness, maintainability, stack best practices, production risk, and required fixes.                             |
+| `plan-security-reviewer`       | `plan`                                    | Coordinates plan compliance, data-handling, authz, and supply-chain specialists; retains input-validation/output-encoding/abuse-case review. |
+| `plan-staff-engineer`          | `plan`                                    | Lead reviewer for stack fit, framework idioms, simpler-implementation alternatives, compatibility; delegates design/observability/execution-strategy. |
+| `plan-compliance-reviewer`     | `plan`                                    | LGPD, PII classification, PCI scope, and regulatory obligations triggered by the plan.                              |
+| `plan-data-handling-reviewer`  | `plan`                                    | Storage, retention, deletion, backups, residency, exports, and third-party sharing implications.                    |
+| `plan-authz-reviewer`          | `plan`                                    | Authentication, authorization, ownership, tenant isolation, IDOR, and permission model design.                       |
+| `plan-supply-chain-reviewer`   | `plan`                                    | Dependency, package, build, webhook, integration, generated-code, and vendor trust-boundary risk.                   |
+| `plan-design-reviewer`         | `plan`                                    | Architecture choices, proportional design, migration/compatibility, public contracts, and abstraction level.         |
+| `plan-observability-reviewer`  | `plan`                                    | Metrics, logs, traces, alerts, diagnosability, and SLI/SLO implications in the plan.                                |
+| `plan-execution-strategy-reviewer` | `plan`, `orchestrate-implementation`  | Subtask sequence, parallelization safety, ownership boundaries, merge risk, and progress-document shape.            |
+| `code-staff-engineer-reviewer` | `code-review`                             | Lead reviewer: stack fit, framework idioms, simpler-implementation alternatives; delegates correctness/maintainability/production-risk lanes. |
+| `code-correctness-reviewer`    | `code-review`                             | Logic errors, edge cases, state transitions, error propagation, intent-vs-implementation mismatches.                  |
+| `code-maintainability-reviewer` | `code-review`                            | Simplicity, naming, dead code, premature abstraction, indirection, coupling, readability.                            |
+| `code-production-risk-reviewer` | `code-review`                            | Concurrency, idempotency, ordering, performance hotspots, observability, rollout risk.                                |
 | `project-patterns-reviewer`    | `code-review`                             | Local conventions, naming, layering, testing style, file organization, and companion docs.                           |
 | `implementation-plan-matcher`  | `code-review`                             | Whether the implementation matches the approved plan, subtasks, task docs, and scope.                                |
-| `code-security-reviewer`       | `code-review`                             | Security, privacy, compliance, authorization, validation, secrets, dependency risk, and data exposure.               |
+| `code-security-reviewer`       | `code-review`                             | Coordinates code-* security specialists (secrets, input validation, authz, abuse cases, data exposure).              |
+| `code-secrets-reviewer`        | `code-review`                             | Hardcoded credentials, tokens, leak-prone logs, sensitive config exposure.                                          |
+| `code-input-validation-reviewer` | `code-review`                           | Parsing, validation, sanitization, escaping, bounds checks, injection surfaces.                                     |
+| `code-authz-reviewer`          | `code-review`                             | Authentication, authorization, ownership, tenant boundaries, IDOR, permission gates.                                |
+| `code-abuse-case-reviewer`     | `code-review`                             | Rate limits, replay, idempotency, webhook trust, spam/fraud, oversized inputs, automation abuse.                    |
+| `code-data-exposure-reviewer`  | `code-review`                             | PII, customer content, sensitive logs/analytics/errors, retention, deletion, exports, third-party sharing.          |
 | `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.                    |
 | `shipping-hygiene-reviewer`    | `commit-push`                             | Commit scope, secrets, debug artifacts, unrelated files, verification notes, and safe commit splitting.              |
 | `agent-packaging-reviewer`     | `setup-codex-agents`                      | Root/source mirror consistency, sandbox declarations, generated TOML behavior, setup scripts, and validation risks.  |
+| `agent-prompt-reviewer`        | `skill-eval`                              | Rubber Duck agent and skill prompt quality: scope clarity, confidence anchors, severity tiers, output schema discipline. |
+| `agent-runtime-parity-reviewer` | `setup-codex-agents`                     | Cross-runtime parity: mirror drift, generated TOML behavior, sandbox parity, model/reasoning defaults, fallback declarations. |
+| `api-contract-reviewer`        | `code-review`, `plan` (conditional)       | Public API/CLI/plugin/event/webhook contract changes; backward compatibility, deprecation discipline, consumer impact. |
+| `data-migrations-reviewer`     | `code-review`, `plan` (conditional)       | Data shape migrations, storage format changes, destructive transforms, backfills, retention/deletion, rollback safety.  |
+| `design-implementation-validator` | `frontend-design` (conditional)        | Frontend implementation parity vs UX intent, design tokens, responsive states, visual states, accessibility constraints. |
 
-Specialist agents return findings, evidence, and exact human questions to the invoking skill. The invoking skill owns document edits, merges accepted findings, handles conflicts, and asks the human for clarification when needed. For approval-gated documents, `document-reviewer` runs last on the merged document as the approval-readiness check.
+Specialist agents return findings, evidence, and exact questions to the invoking skill. The invoking skill classifies which questions need the human, owns document edits, merges accepted findings, handles conflicts, and asks for clarification when needed. For approval-gated documents, `document-reviewer` runs last on the merged document as the approval-readiness check.
 
 ## Duck Trail
 
@@ -225,7 +272,7 @@ Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They c
 - `commit-push` runs the same final verification gate before commit and push confirmation, and stops when required checks fail or cannot run without explicit human risk acceptance.
 - `commit-push` refuses `main`, `master`, `production`, and `staging`.
 - `commit-push` requires the exact final confirmation: `yes, commit and push`.
-- `setup-codex-agents` can use `agent-packaging-reviewer` when validating mirror consistency, sandbox declarations, generated TOML behavior, and release risk.
+- `setup-codex-agents` can use `agent-packaging-reviewer` when validating mirror consistency, sandbox declarations, generated TOML behavior, and release risk; it also uses `agent-runtime-parity-reviewer` when generated TOML behavior, sandbox parity, model/reasoning defaults, or tool fallback behavior changes.
 - Skills keep work scoped and avoid unrelated refactors.
 - Jira links rely only on authenticated tools already available in the user's current assistant session.
 - Reviewer agents return findings and questions to the invoking skill instead of writing separate review files.
@@ -252,4 +299,4 @@ node plugins/rubber-duck/skills/setup-codex-agents/scripts/validate-rubber-duck-
 node plugins/rubber-duck/skills/setup-codex-agents/scripts/install-codex-agents.mjs --dry-run
 ```
 
-The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the exact expected 29 root/source/generated agents, required agent frontmatter, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.
+The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the exact expected 65 root/source/generated agents, required agent frontmatter, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.

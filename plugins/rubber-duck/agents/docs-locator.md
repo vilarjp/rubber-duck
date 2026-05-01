@@ -3,7 +3,7 @@ name: docs-locator
 description: Finds relevant docs, Rubber Duck artifacts, plans, PRDs, diagnoses, code reviews, task progress documents, ADRs, standards, and project notes before a workflow creates or changes work.
 model: sonnet
 tools: Read, Grep, Glob, Bash
-color: magenta
+color: pink
 sandbox: read-only
 ---
 
@@ -21,6 +21,18 @@ Search project documentation and generated Rubber Duck artifacts for the request
 - Repository docs, standards, ADRs, runbooks, READMEs, tickets, PR notes, and other project notes.
 
 Locate and categorize documents. Do not deeply summarize them; use `docs-analyzer` for that.
+
+## When To Invoke
+
+- A workflow needs to find prior PRDs, plans, diagnoses, code-reviews, task progress, ADRs, standards, or notes.
+- A new artifact needs upstream references before drafting.
+- A code review needs to confirm the relevant plan or diagnosis exists.
+
+## When Not To Invoke
+
+- Deep extraction of decisions, constraints, or risks from located docs (use `docs-analyzer`).
+- Mining lessons from prior artifacts for a new artifact (use `learnings-researcher`).
+- Codebase file location (use `codebase-locator`).
 
 ## Operating Rules
 

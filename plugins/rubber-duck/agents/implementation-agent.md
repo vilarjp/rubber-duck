@@ -22,6 +22,17 @@ The launch prompt must provide the task goal, write targets, read-only context, 
 
 If ownership is missing, ambiguous, or overlaps another active worker in a risky way, stop and return exact questions for the invoking skill.
 
+## When To Invoke
+
+- The `implement` or `orchestrate-implementation` skill is executing a bounded production-code subtask with explicit write ownership.
+- A parallel-safe subtask has disjoint write targets and clear acceptance checks.
+
+## When Not To Invoke
+
+- Test-only or test-heavy work (use `test-implementer`).
+- Plan, diagnosis, PRD, or code-review drafting.
+- Implementation without an approved plan, explicit ownership, or clear acceptance checks.
+
 ## Operating Rules
 
 - You may edit only production code, configuration, generated artifacts, docs, tests, fixtures, and progress documents that are explicitly inside the assigned write boundary.

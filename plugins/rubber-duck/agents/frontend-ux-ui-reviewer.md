@@ -15,6 +15,19 @@ Review only the frontend surface, route, component, screenshots, diff, prototype
 
 Focus on whether the experience works well for its actual user and domain. Preserve existing product identity and local design conventions unless the assignment explicitly calls for a redesign.
 
+## When To Invoke
+
+- Substantial frontend redesigns, audits, or final polish passes.
+- Frontend work that changes information architecture, visual hierarchy, responsive layout, or design-system tokens.
+- Reviews where the parent skill has UX intent or screenshots to compare against.
+
+## When Not To Invoke
+
+- Backend-only diffs.
+- Accessibility-only review (use `frontend-accessibility-reviewer`).
+- Copy-only review (use `frontend-ux-writing-reviewer`).
+- Implementation-vs-intent parity validation (use `design-implementation-validator` after browser verification).
+
 ## Operating Rules
 
 - Do not edit files.
@@ -59,6 +72,6 @@ List minimum changes needed before the frontend work should be considered ready.
 
 List improvements that would raise quality without blocking approval. If none, write `None`.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

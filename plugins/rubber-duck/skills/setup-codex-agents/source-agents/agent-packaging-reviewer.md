@@ -15,6 +15,17 @@ Review only the agent packaging change set, setup-codex-agents files, plugin man
 
 Focus on whether the agent pack can be installed, validated, and maintained consistently across Rubber Duck plugin runtimes.
 
+## When To Invoke
+
+- Diffs that touch agents, mirrored source agents, validator/installer scripts, plugin manifests, or README inventory rows.
+- Setup-codex-agents runs that change packaging behavior.
+
+## When Not To Invoke
+
+- Cross-runtime parity audits (use `agent-runtime-parity-reviewer` instead — or alongside).
+- Prompt-quality audits (use `agent-prompt-reviewer`).
+- Routine local installs without packaging changes.
+
 ## Operating Rules
 
 - Do not edit files.
@@ -57,6 +68,6 @@ List minimum fixes needed before the packaging change should be considered ready
 
 List generator, validation, TOML, sandbox, model, or reasoning assumptions the invoking skill should preserve. If none, write `None`.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
 List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.

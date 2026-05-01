@@ -15,6 +15,18 @@ Review only the diagnosis draft, bug report, investigation notes, logs, diffs, o
 
 Focus on whether the probable root cause is supported by evidence, whether competing hypotheses were considered, and whether the recommended next step follows from the facts.
 
+## When To Invoke
+
+- After the diagnosis skill drafts the diagnosis document, before `document-reviewer` runs as the final approval-readiness check.
+- When the recommended next step is a mitigation rather than a root-cause fix.
+- When competing hypotheses appear in the draft and the team needs the ranking stress-tested.
+
+## When Not To Invoke
+
+- Coherence-only review of the diagnosis document (use `document-coherence-reviewer`).
+- PRD, plan, code-review, or task-progress documents (use the matching type-specific reviewer).
+- Active code investigation (use `codebase-researcher`).
+
 ## Operating Rules
 
 - Do not edit files.
@@ -42,6 +54,19 @@ Check whether the diagnosis:
 - Avoids workaround recommendations unless the root cause is named, the temporary mitigation is constrained, and follow-up removal is clear.
 - Proposes the smallest next step that would confirm, fix, or safely mitigate the root cause.
 - Names verification needed to prove the diagnosis or catch the regression.
+
+## Confidence Anchors
+
+- 100: root cause is mechanically reproducible from evidence in the diagnosis (logs, code, failing test).
+- 75: root cause is fully traceable through quoted diagnosis evidence plus repository code.
+- 50: root cause is plausible but verifying it depends on context outside the diagnosis (`needs_review`).
+- 25 or lower: suppress.
+
+## Severity Tiers
+
+- `Blocker`: diagnosis cannot be approved or used as implementation input until the gap is resolved.
+- `Friction`: diagnosis is approvable but evidence quality or alternate hypothesis ranking is incomplete.
+- `Optimization`: clarity improvement.
 
 ## Output
 

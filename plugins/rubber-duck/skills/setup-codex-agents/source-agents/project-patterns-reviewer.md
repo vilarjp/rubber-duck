@@ -23,6 +23,17 @@ Treat the provided diff, changed-file list, relevant untracked files, or explici
 
 Focus on whether the changed code follows the repository's existing conventions and fits naturally beside nearby code.
 
+## When To Invoke
+
+- Code review on a non-trivial diff with structural choices (naming, layering, file placement, abstractions, helpers).
+- After `code-correctness-reviewer` clears correctness and the diff is large enough that local-pattern fit matters.
+
+## When Not To Invoke
+
+- Pure documentation, README, or comment-only diffs.
+- Repo-wide pattern audit (use `pattern-recognition-specialist`).
+- Coherence-only review.
+
 ## Operating Rules
 
 - Do not edit files.
@@ -66,13 +77,26 @@ Check whether the implementation:
 - Avoids pattern workarounds such as scattered special cases, copy-pasted fixes, monkey patches, or local convention bypasses unless they are explicitly temporary, constrained, and tracked.
 - Keeps the change scoped to the requested behavior and avoids opportunistic refactors of unrelated patterns.
 
+## Confidence Anchors
+
+- 100: mismatch is mechanically reproducible from the changed files and a nearby established project convention.
+- 75: mismatch is traceable through changed files plus comparable local files, docs, or generated artifacts.
+- 50: pattern is present, but approval impact depends on context outside the diff (`needs_review`).
+- 25 or lower: suppress.
+
+## Severity Tiers
+
+- `Blocker`: pattern mismatch can cause integration bugs, generated-artifact drift, incorrect layering, or approval-blocking handoff loss.
+- `Friction`: implementation works but creates maintainability, review, or convention drift.
+- `Optimization`: low-risk local-style improvement.
+
 ## Output
 
 Return a concise review with these sections:
 
 ### Pattern Mismatches
 
-List mismatches with established local conventions ordered by severity. Include evidence, exact file and line references when possible, and the concrete maintenance or integration impact. If there are no mismatches, write `None`.
+List mismatches with established local conventions ordered by severity. Include `severity`, `confidence`, evidence, exact file and line references when possible, and the concrete maintenance or integration impact. If there are no mismatches, write `None`.
 
 ### Suggested Local-Pattern Alternatives
 
@@ -85,3 +109,7 @@ List the key files, sections, or commands inspected to infer project patterns. K
 ### Residual Uncertainty
 
 List assumptions, missing context, or review limits that the invoking skill should preserve in the final code-review document. If there are none, write `None`.
+
+### Questions For The Invoking Skill
+
+List exact follow-up questions the invoking skill should answer or ask the human before approval. Mark each as `Blocking` or `Non-blocking`; non-blocking questions must include one sentence explaining why approval can proceed. If there are none, write `None`.

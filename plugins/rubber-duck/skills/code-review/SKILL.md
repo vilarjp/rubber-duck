@@ -65,7 +65,7 @@ Use these shared references when they apply:
    - When available and useful, use `codebase-pattern-finder` to locate local implementation and test patterns that should inform project-convention findings.
    - When available and useful, use `codebase-analyzer` or `codebase-researcher` to understand changed behavior before raising correctness or regression findings.
    - Apply Project Rules Discovery before judging conventions, generated-document formats, package-manager behavior, verification commands, or local workflow compliance.
-   - When changed code depends on external framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible; otherwise preserve the uncertainty in the review.
+   - When changed code depends on external framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible. If local evidence is insufficient and the behavior materially affects the review, invoke `web-researcher` for a bounded external-research brief; otherwise preserve the uncertainty in the review.
    - Use nearby files and unchanged lines in touched files as context only; do not review, critique, or report issues there unless the changed code directly depends on the issue or newly exposes it.
    - Anchor findings to changed hunks, newly added lines, removed lines, or new files whenever possible; do not request edits to pre-existing unchanged lines unless they are directly required to fix the changed-code issue.
    - Run read-only commands and focused verification commands when useful for review confidence.
@@ -93,18 +93,23 @@ Use these shared references when they apply:
    - Include workflow compliance notes when generated documents, answered blocking questions, changelogs, plan subtasks, execution strategy, or `task_N.md` progress documents are part of the reviewed change.
 7. Run code-focused reviewer agents on the generated `code-review.md` and reviewed scope.
    - Follow the Reviewer Invocation Contract below.
-   - Invoke the exact pre-built `code-staff-engineer-reviewer` agent.
    - Invoke the exact pre-built `project-patterns-reviewer` agent.
-   - Invoke the exact pre-built `code-security-reviewer` agent.
    - Invoke the exact pre-built `test-reviewer` agent.
    - Invoke the exact pre-built `implementation-plan-matcher` agent only when a related plan can be identified.
-   - Run independent code-focused reviewers in parallel when the current assistant environment supports it, then wait for all available reviewers before merging findings.
+   - Use the exact pre-built `code-staff-engineer-reviewer` agent as the lead staff reviewer for every reviewed implementation scope so the original review contract is preserved.
+   - For simple or medium diffs, invoke `code-staff-engineer-reviewer` directly. For complex diffs, first fan out to relevant direct staff specialists (`code-correctness-reviewer`, `code-maintainability-reviewer`, `code-production-risk-reviewer`) and wait for their outputs. Then invoke the exact pre-built `code-staff-engineer-reviewer` with those outputs for lead-reviewer local lanes and cross-lane synthesis, asking it not to duplicate supplied specialist lanes.
+   - Use the exact pre-built `code-security-reviewer` agent for every reviewed implementation scope so security/privacy absence is explicitly classified by the security coordinator instead of pre-filtered by the parent skill. For complex or high-risk security/privacy surface, first fan out to relevant direct security specialists (`code-secrets-reviewer`, `code-input-validation-reviewer`, `code-authz-reviewer`, `code-abuse-case-reviewer`, `code-data-exposure-reviewer`) and wait for their outputs. Then invoke `code-security-reviewer` with those outputs for coordinator-owned dependency/package/build risk, generated-code and tooling trust boundaries, cross-lane risk synthesis, explicit no-security-finding classification, and reviewer questions, asking it not to duplicate supplied specialist lanes. For simple or apparently non-security diffs, use the coordinator alone and require it to return its normal schema with `None` under `Security / Privacy Findings`, plus risk classification and any uncertainty.
+   - When the diff modifies public APIs, CLIs, plugin interfaces, externally consumed schemas, events, webhooks, or generated artifacts consumed by other systems, also invoke the exact pre-built `api-contract-reviewer` agent.
+   - When the diff includes data migrations, stored data-shape changes, storage format changes, destructive transforms, backfills, or retention/deletion changes, also invoke the exact pre-built `data-migrations-reviewer` agent. For externally consumed schema, event, webhook, or API contract changes without stored-data migration risk, use `api-contract-reviewer` without adding migration review.
+   - Run reviewers in parallel only when they do not feed a later coordinator or lead reviewer. Specialist fan-out can run in parallel; coordinator/lead synthesis runs after the relevant specialist outputs are available.
    - Pass reviewers the document path, source summary, diff or changed-file scope, discovered project rules that affect review, source-driven verification notes, focused test results, full quality gate results, related plan path when applicable, and related `task_N.md` progress documents when available.
    - Do not write separate review files.
 8. Merge reviewer feedback into `code-review.md`.
-   - Apply blocking findings and important review gaps before finalizing.
+   - Fix document-readiness blockers before finalizing the review document: missing evidence, unclear severity, duplicate findings, dropped reviewer questions, stale plan references, or missing approval context.
    - Deduplicate overlapping findings and keep the strongest evidence.
-   - Treat security/privacy questions, required fixes, plan drift, and missing tests as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
+   - Preserve unresolved implementation-change blockers as findings or Approval notes that tell the human to request changes. Do not require the code-review skill to edit production code or tests before presenting the review.
+   - Treat security/privacy questions, reviewer questions, plan drift uncertainty, missing-test uncertainty, and document-reviewer approval-readiness gaps as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
+   - Treat required code fixes, mitigations, plan-drift defects, and missing tests that require source changes as request-changes findings, not as blockers that must be resolved inside this skill.
    - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking suggestions only when they improve approval confidence, future implementation clarity, or review usefulness.
 9. Run `document-reviewer` on the merged `code-review.md` as the final approval-readiness pass.
@@ -112,7 +117,7 @@ Use these shared references when they apply:
    - Invoke the exact pre-built `document-reviewer` agent.
    - Treat its blocking issues and missing questions as approval blockers unless the human explicitly defers them as non-blocking.
    - Preserve `document-reviewer` missing questions and approval recommendation in the Approval section when they affect human review.
-10. Resolve all approval blockers before presenting the review for approval.
+10. Resolve all document-readiness blockers and approval-relevant questions before presenting the review for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Apply the clarifying-questions reference: ask focused questions that materially affect approval or review severity, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Update `code-review.md` after each answer.
@@ -195,11 +200,14 @@ If exact line numbers are unavailable for a PR diff or untracked file, cite the 
 
 Findings should target changed hunks, newly added lines, removed lines, or new files. If a finding must mention an unchanged line in a touched file, explain why the changed code directly depends on it or newly exposes it.
 
+When reviewer agents use review taxonomy instead of code-review severity, map it before writing the final document: `Blocker` becomes `critical` or `high` based on impact, `Friction` becomes `medium`, and `Optimization` becomes `low` or a non-finding note.
+
 ## Reviewer Orchestration Notes
 
 - Run independent exact pre-built reviewer agents in parallel when the current assistant environment supports it.
+- When direct specialists feed a coordinator or lead reviewer, run the direct specialists first and pass their outputs into the coordinator/lead synthesis pass.
 - Wait for all available code-focused reviewers, merge their findings, then run `document-reviewer` last on the merged review document.
-- Use blocking findings, required questions or fixes, security/privacy questions, plan drift, missing tests, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
+- Use required questions, security/privacy uncertainty, reviewer conflicts, and document-readiness gaps as approval blockers unless they are explicitly deferred by the human as non-blocking. Keep unresolved code fixes, mitigations, plan-drift defects, and missing tests as request-changes findings for the human review decision.
 - Validate Rubber Duck workflow compliance when relevant: generated documents must include `created` and `updated`, answered blocking questions must preserve the original question and human answer, changelogs must explain material updates, medium-to-complex plans must include subtasks and execution strategy, and completed planned subtasks must have `task_N.md` progress documents.
 - The invoking skill owns the final review document. Reviewer agents return findings only; they do not edit the document.
 - If an expected reviewer agent is unavailable, note that gap in the final response and in the review document's Approval section when it affects confidence.

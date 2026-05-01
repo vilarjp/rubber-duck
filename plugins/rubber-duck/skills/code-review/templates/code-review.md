@@ -29,6 +29,8 @@ Status: pending-approval
 
 Write `None` when there are no findings.
 
+If reviewer agents use `Blocker`, `Friction`, and `Optimization`, map them before finalizing: `Blocker` becomes `critical` or `high` based on impact, `Friction` becomes `medium`, and `Optimization` becomes `low` or a non-finding note.
+
 ## Security / Privacy Notes
 
 - Security, privacy, compliance, authorization, validation, secrets, logging, dependency, data exposure, or abuse-case risks introduced or changed by the reviewed work.

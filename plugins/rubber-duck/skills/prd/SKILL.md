@@ -40,8 +40,11 @@ Use `../_shared/clarifying-questions.md` to keep product questions focused on ap
 ## Agent Crew
 
 - Use `docs-locator` and `docs-analyzer` when prior product docs, generated artifacts, decisions, or project context may shape requirements.
-- Run `prd-product-reviewer` after drafting the PRD and before `document-reviewer` to check product clarity, scope control, acceptance criteria, risks, dependencies, and downstream plannability.
-- Run `document-reviewer` last as the approval-readiness check after product-review feedback has been merged.
+- For medium or complex PRDs, run `plan-product-mind` after drafting to debate the product hypothesis, success signals, and user-facing trade-offs. Also run `plan-thinker` when the PRD framing risks locking in implementation choices prematurely. Council voices steel-man the proposal, attack its strongest form, and concede when the proposal already addresses the concern; they do not finalize the PRD.
+- Run any PRD council voices before formal product review on medium or complex PRDs so council feedback can be merged before audit.
+- Run `prd-product-reviewer` after any council-driven product edits and before `document-reviewer` to check product clarity, scope control, acceptance criteria, risks, dependencies, and downstream plannability.
+- For long PRDs, repeated terminology, or many answered blocking questions, tell `document-reviewer` that a coherence pass is required. `document-reviewer` owns any `document-coherence-reviewer` delegation so coherence findings are not duplicated.
+- Run `document-reviewer` last as the approval-readiness check after council and product-review feedback has been merged; any coherence feedback is produced during this final document-review pass.
 
 ## Workflow
 
@@ -71,31 +74,39 @@ Use `../_shared/clarifying-questions.md` to keep product questions focused on ap
    - Prefer evidence over speculation.
    - Use clear acceptance criteria that a future plan or implementation can verify.
    - Make goals, non-goals, risks, dependencies, and answered blocking questions concrete enough for a future PRD-to-plan alignment check.
-6. Run the `prd-product-reviewer` agent on the generated `prd.md`.
+6. Run PRD council voices on medium or complex PRDs.
+   - Follow the Reviewer Invocation Contract below.
+   - Invoke the exact pre-built `plan-product-mind` agent.
+   - Also invoke the exact pre-built `plan-thinker` agent when the PRD framing locks in implementation choices prematurely or may be solving the wrong product problem.
+   - Pass the PRD path, source context summary, relevant docs findings, answered or open questions, and any material constraints from the current session.
+   - Do not write a separate review file.
+   - Merge hypothesis, success-signal, and user-facing trade-off feedback before formal product review. Treat `proposal survives` from `plan-product-mind` and `keep current framing` from `plan-thinker` as pass states; treat any other `Final Position` as a blocker for approval unless the human explicitly resolves or defers it.
+7. Run the `prd-product-reviewer` agent on the generated `prd.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `prd-product-reviewer` agent.
    - Pass the PRD path, source context summary, relevant docs findings, answered or open questions, and any material constraints from the current session.
    - Do not write a separate review file.
-7. Apply product reviewer feedback only when it improves product correctness, scope control, acceptance criteria, risk/dependency clarity, or downstream plannability.
+8. Apply product reviewer feedback only when it improves product correctness, scope control, acceptance criteria, risk/dependency clarity, or downstream plannability.
    - Treat blocking product issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Keep implementation-planning details out of the PRD unless they constrain product scope.
-8. Run the `document-reviewer` agent on the generated `prd.md`.
+9. Run the `document-reviewer` agent on the generated `prd.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `document-reviewer` agent.
    - Pass the PRD path, source context summary, and any material constraints from the current session.
    - Do not write a separate review file.
-9. Apply document reviewer feedback only when it improves correctness, clarity, scope control, or approval readiness.
+   - For long PRDs, repeated terminology, or several answered blocking questions, tell `document-reviewer` that a coherence pass is required. `document-reviewer` owns any `document-coherence-reviewer` delegation so coherence findings are not duplicated. Coherence-only contradictions, terminology drift, and broken cross-references count as `Blocker` only when they would mislead a future reader; otherwise treat them as approval-readiness suggestions.
+10. Apply document reviewer feedback only when it improves correctness, clarity, scope control, or approval readiness.
    - Treat blocking issues and missing questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-10. Resolve all approval blockers before presenting the PRD for approval.
+11. Resolve all approval blockers before presenting the PRD for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `prd.md` after each answer.
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
    - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
    - Update the frontmatter `updated` field to the local date whenever the document changes.
-   - Rerun `prd-product-reviewer` and `document-reviewer` when an answer materially changes requirements, scope, acceptance criteria, risks, dependencies, or approval readiness.
+   - Rerun `plan-product-mind`, any previously invoked `plan-thinker`, `prd-product-reviewer`, and `document-reviewer` when an answer materially changes framing, hypothesis, success signals, requirements, scope, acceptance criteria, risks, dependencies, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the PRD not ready for approval.
-11. Tell the human the PRD path and that it is pending approval.
+12. Tell the human the PRD path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
 
 ## Runtime Compatibility
@@ -155,7 +166,7 @@ Use these sections when useful:
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `prd.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `prd-product-reviewer` and `document-reviewer` when the change materially affects product clarity or approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `prd.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `plan-product-mind`, any previously invoked `plan-thinker`, `prd-product-reviewer`, and `document-reviewer` when the change materially affects framing, hypothesis, success signals, product clarity, or approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 

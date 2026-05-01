@@ -69,11 +69,13 @@ Use these shared references when they apply:
    - Treat existing `task_N.md` documents as completed-work history. Do not repeat completed subtasks unless the human explicitly asks for a correction or resume.
    - Treat `status: partial` task documents as resumable only after confirming what remains and whether prior edits or verification can be safely reused. Treat `status: blocked` task documents as blocked until their recorded dependency, question, or verification failure is resolved.
    - If the plan context appears stale, ambiguous, or too thin for safe task assignment, use `codebase-researcher`, `docs-analyzer`, or `test-plan-architect` when available to refresh only the missing execution context before editing.
+   - When task sequencing, parallel-worker assignment, or merge ownership may be risky — for example shared files, migrations, feature flags, contracts, or test fixtures across selected tasks — record that execution-strategy review is required after the concrete task queue and proposed execution mode are known.
 3. Build the task queue.
    - If the human named task IDs, consider only those tasks and their unmet dependencies.
    - Otherwise choose the next ready task for `incremental task-by-task` plans.
    - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution, then assign production-code tasks to exact `implementation-agent` workers.
    - A task is ready only when its dependencies are complete, no open blocking questions affect it, and its ownership/files do not conflict with another selected task.
+   - Before launching workers, invoke `plan-execution-strategy-reviewer` when selected tasks, proposed parallel groups, shared write targets, migrations, feature flags, contracts, or test fixtures create sequencing or merge-risk uncertainty. Pass the approved plan, selected task IDs, existing `task_N.md` state, proposed execution mode, ownership/write sets, known conflicts, and unresolved blockers. Treat its `Blocker`-tier execution-strategy concerns as a stop until resolved.
    - If a selected task exposes approval-relevant uncertainty, apply the clarifying-questions reference and ask before assigning or editing. Record non-blocking uncertainty in the relevant `task_N.md`.
    - If the plan has no subtasks, fall back to a single focused implementation pass and note that the plan should be updated later if the work is medium-to-complex.
 4. Select execution mode.

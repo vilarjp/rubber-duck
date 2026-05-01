@@ -38,6 +38,7 @@ Use:
 
 - `../_shared/clarifying-questions.md` to protect human alignment during eval design.
 - `../_shared/project-rules-discovery.md` before assuming repository commands or generated artifact conventions.
+- `../_shared/agent-orchestration.md` for exact named-agent invocation, bounded launch prompts, read-only delegation, fallback behavior, and how agent questions flow back to this skill.
 
 ## Workflow
 
@@ -74,6 +75,7 @@ Use:
 7. Analyze results.
    - Use `skill-eval-analyzer` to identify patterns, variance, regressions, token/time tradeoffs, and improvements.
    - Prefer generalized prompt or workflow improvements over narrow wording that only fits one eval.
+   - When the evaluated target is a Rubber Duck skill or agent prompt, also invoke `agent-prompt-reviewer` after the analyzer pass to surface scope-clarity, confidence-anchor, severity-tier, output-schema, and when-NOT-to-invoke gaps before proposing prompt edits.
 8. Bring the human back in.
    - Present the outputs, grades, comparisons, and analyzer notes.
    - Ask for human feedback before making subjective quality changes or declaring a prompt better.
@@ -86,6 +88,15 @@ Use:
 - Include at least one case where asking a clarifying question is the correct behavior when that workflow depends on human alignment.
 - Do not leak the intended fix, desired winner, or suspected failure mode to executor or comparator agents unless the eval explicitly tests instruction-following.
 - Do not overfit. If one eval fails, ask what broader behavior it represents before editing the skill.
+
+## Specialist Invocation Contract
+
+- Invoke the exact pre-built agent names: `skill-eval-executor`, `skill-eval-grader`, `skill-eval-comparator`, `skill-eval-analyzer`, and conditionally `agent-prompt-reviewer`.
+- In Codex delegation APIs, select the exact agent type or custom-agent name. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
+- Omit `fork_context` or set `fork_context: false` for named eval agents. Pass only the bounded eval prompt, source paths, output directory, condition label, scoring rubric, and redaction constraints needed for that run.
+- Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck skill-eval-grader custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Keep reviewer and analyzer agents read-only. Only `skill-eval-executor` may write, and only inside the explicit eval output directory assigned by this skill.
+- If a named agent is unavailable, perform the smallest equivalent inline pass from the source-agent definition and record the independence gap in the eval notes.
 
 ## Final Response Requirements
 

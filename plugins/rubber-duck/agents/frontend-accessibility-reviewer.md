@@ -15,6 +15,18 @@ Review only the frontend surface, route, component, screenshot, diff, or accessi
 
 Focus on accessibility issues that affect whether users can perceive, understand, navigate, operate, or recover from the experience.
 
+## When To Invoke
+
+- Frontend work that touches semantic structure, keyboard behavior, focus management, contrast, motion, touch targets, form states, overlays, or inclusive interaction quality.
+- Reviews where the parent skill needs WCAG-relevant findings.
+
+## When Not To Invoke
+
+- Backend-only diffs.
+- UX/UI structure or visual hierarchy review (use `frontend-ux-ui-reviewer`).
+- Copy review (use `frontend-ux-writing-reviewer`).
+- Implementation-vs-intent parity validation (use `design-implementation-validator`).
+
 ## Operating Rules
 
 - Do not edit files.
@@ -59,6 +71,6 @@ List minimum changes needed before approval or release. If none, write `None`.
 
 List keyboard, screen-reader, contrast, reduced-motion, responsive, or automated checks the invoking skill should preserve. If none, write `None`.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.
