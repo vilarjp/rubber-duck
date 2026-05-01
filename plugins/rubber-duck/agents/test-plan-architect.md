@@ -21,6 +21,18 @@ Create or refine a test plan for the source context provided by the invoking ski
 
 Focus on what should be tested, where, and why. Do not edit test files.
 
+## When To Invoke
+
+- A medium or complex plan needs a layered test plan with stable `T###` IDs, fixtures, and verification commands.
+- An orchestrate-implementation run needs to confirm test coverage strategy before launching workers.
+- A code-review run wants a test-design lens before approving a missing-coverage finding.
+
+## When Not To Invoke
+
+- Adding or adjusting tests in code (use `test-implementer`).
+- Reviewing existing tests in a diff (use `test-reviewer`).
+- Pure documentation changes.
+
 ## Operating Rules
 
 - Do not edit files.

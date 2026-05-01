@@ -23,6 +23,17 @@ Treat the provided diff, changed-file list, relevant untracked files, or explici
 
 Focus on whether tests prove the behavior created or modified by the implementation and protect the highest-value regression risks.
 
+## When To Invoke
+
+- Code review of a diff with non-trivial behavior change, especially where tests are part of the same diff.
+- Code review where the parent skill needs to confirm test coverage matches the change.
+
+## When Not To Invoke
+
+- Pure documentation diffs.
+- Test-plan design before implementation (use `test-plan-architect`).
+- Coherence-only review.
+
 ## Operating Rules
 
 - Do not edit files.
@@ -68,21 +79,34 @@ Check whether the implementation:
 - Includes the full quality gate results when available: formatting checks, linting, type checks, builds or compilation, and the full automated test suite. Flag missing, stale, failed, or unavailable categories as residual uncertainty or a finding when they affect approval confidence.
 - Verifies workflow-document changes that affect generated documents: `updated` metadata, answered blocking questions, changelog entries, subtask strategy, and per-subtask progress docs.
 
+## Confidence Anchors
+
+- 100: test gap, weak assertion, or redundant coverage is mechanically reproducible from the diff and tests.
+- 75: regression path is traceable through changed code plus nearby tests or project conventions.
+- 50: pattern is present, but approval impact depends on context outside the diff (`needs_review`).
+- 25 or lower: suppress.
+
+## Severity Tiers
+
+- `Blocker`: missing or weak test coverage makes approval unsafe for the changed behavior.
+- `Friction`: coverage is usable but leaves a meaningful regression risk or verification gap.
+- `Optimization`: test clarity or maintenance improvement.
+
 ## Output
 
 Return a concise review with these sections:
 
 ### Missing Tests
 
-List missing tests ordered by severity. Include the scenario, evidence, exact file and line references when possible, and the regression or review-confidence impact. If no tests are missing, write `None`.
+List missing tests ordered by severity. Include `severity`, `confidence`, scenario, evidence, exact file and line references when possible, and the regression or review-confidence impact. If no tests are missing, write `None`.
 
 ### Weak Assertions
 
-List tests that exist but do not meaningfully prove the changed behavior, assert the wrong thing, over-mock the path under review, or are likely to be brittle. Include evidence and concrete impact. If there are no weak assertions, write `None`.
+List tests that exist but do not meaningfully prove the changed behavior, assert the wrong thing, over-mock the path under review, or are likely to be brittle. Include `severity`, `confidence`, evidence, and concrete impact. If there are no weak assertions, write `None`.
 
 ### Redundant Tests
 
-List tests that repeat existing coverage without adding meaningful confidence or that increase maintenance cost enough to obscure useful coverage. If there are no redundant tests, write `None`.
+List tests that repeat existing coverage without adding meaningful confidence or that increase maintenance cost enough to obscure useful coverage. Include `severity`, `confidence`, evidence, and concrete impact. If there are no redundant tests, write `None`.
 
 ### Recommended Focused Test Additions
 
@@ -91,3 +115,7 @@ List specific focused test additions or adjustments, including likely test file 
 ### Residual Uncertainty
 
 List assumptions, missing context, unavailable test results, or review limits that the invoking skill should preserve in the final code-review document. If there are none, write `None`.
+
+### Questions For The Invoking Skill
+
+List exact follow-up questions the invoking skill should answer or ask the human before approval. Mark each as `Blocking` or `Non-blocking`; non-blocking questions must include one sentence explaining why approval can proceed. If there are none, write `None`.

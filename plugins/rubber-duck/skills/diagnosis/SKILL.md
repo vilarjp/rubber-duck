@@ -43,6 +43,8 @@ Use these shared references when they apply:
 
 - Use `docs-locator` and `docs-analyzer` when prior plans, diagnoses, task documents, release notes, ADRs, or known-issue docs may affect the bug.
 - Use `codebase-researcher` for broad or unfamiliar failure areas, or invoke `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrow evidence questions.
+- For complex bugs or recurring symptoms, run `learnings-researcher` early to mine prior diagnoses, plans, code reviews, and task progress documents for applicable lessons, dead ends, and rejected approaches.
+- For complex hypothesis ranking, invoke targeted plan-time council voices — especially `plan-devils-advocate` (failure modes), `plan-thinker` (alternate problem class), and `plan-pragmatic-engineer` (mitigation cost) — to stress-test hypotheses before recommending a next step. Add `plan-product-mind` when the likely mitigation changes user-facing behavior or success signals. Council voices steel-man and concede; they do not finalize the diagnosis.
 - Run `diagnosis-root-cause-investigator` after drafting the diagnosis and before `document-reviewer` to challenge evidence quality, root-cause confidence, alternate hypotheses, affected flows, and recommended next steps.
 - Run `document-reviewer` last as the approval-readiness check after root-cause feedback has been merged.
 
@@ -64,6 +66,8 @@ Use these shared references when they apply:
    - Read relevant source, tests, configuration, logs, documentation, git history, and local diffs.
    - When available, use `docs-locator` and `docs-analyzer` to find prior plans, diagnoses, task documents, release notes, ADRs, or known-issue docs that affect the bug.
    - When available, use `codebase-researcher` for broad or unfamiliar failure areas, or run `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrower investigation questions.
+   - For complex bugs where prior diagnoses or postmortem-style artifacts may apply, also invoke `learnings-researcher` before finalizing hypotheses.
+   - When the bug depends on current third-party API, framework, browser, protocol, or service behavior that is not pinned in the repository, invoke `web-researcher` for bounded external research; otherwise rely on local evidence.
    - Prefer codebase investigation plus human interview over browser automation. Do not add parallel browser reproduction unless the human asks for it or the bug cannot be understood without it.
    - Apply Project Rules Discovery before relying on local conventions, commands, generated artifacts, or diagnostics.
    - When the diagnosis depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify that behavior from repository evidence, local package/source docs, official docs, release notes, or existing tests when feasible.
@@ -73,6 +77,7 @@ Use these shared references when they apply:
    - Tie each hypothesis to concrete evidence from the prompt, Jira content, code, tests, logs, or recent changes.
    - Separate confirmed facts from assumptions and unknowns.
    - Prefer the simplest explanation that fits the evidence.
+   - For complex hypothesis sets, invoke targeted council voices to stress-test the ranking: `plan-devils-advocate` for failure modes, `plan-thinker` for alternate problem class, and `plan-pragmatic-engineer` for mitigation cost. Add `plan-product-mind` when the likely mitigation changes user-facing behavior or success signals. Treat their `Final Position` outputs as input to the recommended next step rather than as final approval.
    - Do not recommend workaround fixes unless the root cause is identified or the document explicitly labels the mitigation as temporary, constrained, and requiring follow-up.
 5. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
@@ -104,7 +109,7 @@ Use these shared references when they apply:
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
    - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
    - Update the frontmatter `updated` field to the local date whenever the document changes.
-   - Rerun `diagnosis-root-cause-investigator` and `document-reviewer` when an answer materially changes reproduction, expected behavior, observed behavior, root-cause confidence, risk, recommended next step, or approval readiness.
+   - Rerun affected `learnings-researcher`, `web-researcher`, council voices, `diagnosis-root-cause-investigator`, and `document-reviewer` when an answer materially changes prior-artifact relevance, external behavior, reproduction, expected behavior, observed behavior, hypothesis ranking, root-cause confidence, risk, recommended next step, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the diagnosis not ready for approval.
 12. Tell the human the diagnosis path and that it is pending approval.
    - Ask them to review it and explicitly approve or request changes.
@@ -168,7 +173,7 @@ Use these sections when useful:
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `diagnosis.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun `diagnosis-root-cause-investigator` and `document-reviewer` when the change materially affects root-cause confidence or approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `diagnosis.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun affected `learnings-researcher`, `web-researcher`, council voices, `diagnosis-root-cause-investigator`, and `document-reviewer` when the change materially affects prior-artifact relevance, external behavior, hypothesis ranking, root-cause confidence, or approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 

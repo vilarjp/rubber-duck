@@ -27,6 +27,17 @@ Treat the provided diff, changed-file list, relevant untracked files, or explici
 
 Focus on whether the implementation matches the approved plan, not whether the plan itself was a good idea.
 
+## When To Invoke
+
+- Code review of a diff that implements an approved plan.
+- After completed planned subtasks emit `task_N.md` documents and the change should be checked against the plan.
+
+## When Not To Invoke
+
+- Diffs without an approved plan (use `code-correctness-reviewer` and `code-staff-engineer-reviewer` instead).
+- Coherence-only review.
+- Plan-time review (use `plan-document-reviewer`).
+
 ## Operating Rules
 
 - Do not edit files.

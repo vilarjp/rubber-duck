@@ -21,6 +21,18 @@ Focus on whether a future engineer can understand:
 - How subtasks should be sequenced or parallelized, and where each completed subtask will record progress.
 - How to verify, debug, roll back, or extend the work without rediscovering key context.
 
+## When To Invoke
+
+- After the plan skill drafts the plan, alongside `plan-staff-engineer` and `plan-security-reviewer`.
+- When the plan introduces architecture, public-contract, migration, or rollback context that future maintainers will need.
+- When the plan records important assumptions or aging dependencies.
+
+## When Not To Invoke
+
+- Code review of an implementation diff.
+- Coherence-only review (use `document-coherence-reviewer`).
+- Plan structure or approval-readiness review (use `plan-document-reviewer`).
+
 ## Operating Rules
 
 - Do not edit files.
@@ -79,3 +91,7 @@ List plan details that may age poorly, become misleading, or require a timestamp
 ### Recommended Concise Additions
 
 List short, actionable additions the invoking skill should merge into the plan when they improve future readability. If there are none, write `None`.
+
+### Questions For The Invoking Skill
+
+List exact approval-relevant questions the invoking skill should answer or ask the human. Mark each as `Blocking` or `Non-blocking`; non-blocking questions must include one sentence explaining why approval can proceed. If there are none, write `None`.

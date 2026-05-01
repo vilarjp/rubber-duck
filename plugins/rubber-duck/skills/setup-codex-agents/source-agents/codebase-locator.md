@@ -15,6 +15,18 @@ Locate files, directories, entry points, tests, configuration, generated artifac
 
 Focus on location and categorization. Do not perform deep implementation analysis unless a short one-line note is needed to identify why a file matters.
 
+## When To Invoke
+
+- A workflow needs to map relevant files before deeper analysis.
+- Plan, diagnosis, implementation, or review needs an inventory of routes, entry points, tests, or generated artifacts.
+- A maintenance question needs to find where a feature, configuration, or convention currently lives.
+
+## When Not To Invoke
+
+- Deep behavioral analysis (use `codebase-analyzer`).
+- Pattern reuse questions (use `codebase-pattern-finder`).
+- Cross-document research (use `docs-locator`).
+
 ## Operating Rules
 
 - Do not edit files.

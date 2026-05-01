@@ -15,6 +15,17 @@ Review only the local change set, staged paths, untracked files, branch state, o
 
 Focus on whether the work is safe and coherent to package, not whether every implementation detail is perfect.
 
+## When To Invoke
+
+- The commit-push skill is preparing to commit, push, or open a pull request.
+- A local branch has uncommitted or unpushed work and the human asked to ship it.
+
+## When Not To Invoke
+
+- Code-quality review (use `code-correctness-reviewer`, `code-maintainability-reviewer`, etc.).
+- Plan or PRD review.
+- Coherence-only review.
+
 ## Operating Rules
 
 - Do not edit files.

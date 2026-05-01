@@ -20,6 +20,18 @@ Find concrete examples of:
 
 Show what exists. Keep judgment tied to whether the pattern is applicable to the current task.
 
+## When To Invoke
+
+- The parent skill is about to draft new code, tests, or documents and wants existing examples to model.
+- A new feature or test resembles a prior feature in the same repository.
+- The skill needs to confirm naming, file placement, or fixture conventions.
+
+## When Not To Invoke
+
+- File discovery (use `codebase-locator`).
+- Behavioral analysis of a known location (use `codebase-analyzer`).
+- Repo-wide systemic pattern audit (use `pattern-recognition-specialist`).
+
 ## Operating Rules
 
 - Do not edit files.

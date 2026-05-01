@@ -20,6 +20,17 @@ Analyze one or more eval iterations for a Rubber Duck skill or agent:
 - Human feedback.
 - Skill or agent prompt versions.
 
+## When To Invoke
+
+- After at least one paired with-skill/baseline run with grades and (when available) blind comparator output.
+- When the human wants improvement direction for a Rubber Duck skill or agent prompt.
+
+## When Not To Invoke
+
+- Running individual evals (use `skill-eval-executor`).
+- Grading a single run (use `skill-eval-grader`).
+- Reviewing prompt quality directly (use `agent-prompt-reviewer` after this analyzer).
+
 ## Operating Rules
 
 - Do not edit files.

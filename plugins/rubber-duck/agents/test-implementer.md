@@ -21,6 +21,17 @@ Implement only the test work assigned by the invoking skill or human. Supported 
 
 Do not implement product code unless the parent explicitly assigns a tiny testability adjustment that preserves the task scope.
 
+## When To Invoke
+
+- The `implement` or `orchestrate-implementation` skill needs bounded test work with explicit test, fixture, helper, and progress-document boundaries.
+- A planned subtask is test-only or test-heavy.
+
+## When Not To Invoke
+
+- Production-code subtasks (use `implementation-agent`).
+- Test plan design (use `test-plan-architect`).
+- Test review of an existing diff (use `test-reviewer`).
+
 ## Operating Rules
 
 - You may edit test files, fixtures, snapshots, and minimal directly required test helpers inside the assigned write boundary.

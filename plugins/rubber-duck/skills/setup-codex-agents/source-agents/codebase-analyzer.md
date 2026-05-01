@@ -20,6 +20,18 @@ Analyze the implementation details requested by the invoking skill or human:
 
 Describe current behavior. Do not propose broad improvements unless they are necessary to answer the requested analysis.
 
+## When To Invoke
+
+- Files are already located and the parent skill needs to understand current behavior, data flow, or side effects.
+- A diagnosis needs to confirm what the current code does before proposing a fix.
+- A code review needs context for unchanged lines that the change depends on.
+
+## When Not To Invoke
+
+- File discovery before any analysis (use `codebase-locator`).
+- Pattern-reuse questions (use `codebase-pattern-finder`).
+- Repo-wide pattern detection (use `pattern-recognition-specialist`).
+
 ## Operating Rules
 
 - Do not edit files.

@@ -58,6 +58,10 @@ Use these shared references when they apply:
    - Prefer repository files, manifests, tests, configuration, existing docs, and relevant nearby source code.
    - When available, use `docs-locator` and `docs-analyzer` to find prior PRDs, plans, diagnoses, task documents, ADRs, and project docs that affect the requested work.
    - When available, use `codebase-researcher` for broad or unfamiliar areas, or run `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrower questions.
+   - For medium or complex plans, also invoke `learnings-researcher` early to mine prior `docs/`, plans, diagnoses, and task progress for applicable lessons, preserved decisions, dead ends, and rejected approaches.
+   - When the planned work depends on a PRD, diagnosis, Jira issue, or prior task docs, also invoke `spec-flow-analyzer` to confirm the upstream chain has no missing acceptance-criteria mapping or dropped requirements before drafting.
+   - For pattern-heavy or architectural work, invoke `pattern-recognition-specialist` for a baseline of repo-wide design patterns, anti-patterns, naming drift, and boundary smells.
+   - When the plan depends on current third-party API, framework, browser, protocol, or service behavior that is not pinned in the repository, invoke `web-researcher` for bounded external research; otherwise rely on local evidence.
    - Prefer running independent locator and pattern-finding passes in parallel when the current runtime supports it, then synthesize the evidence locally before drafting.
    - Apply Project Rules Discovery before deciding conventions, commands, ownership boundaries, or generated-document formats.
    - When implementation depends on framework, library, cloud, browser, protocol, or third-party API behavior, verify it from repository evidence, local package/source docs, official docs, or version-specific release notes before treating it as a plan fact.
@@ -93,32 +97,50 @@ Use these shared references when they apply:
    - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely handle independent tasks.
    - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
    - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
-6. Run specialist reviewer agents on the generated `plan.md`.
+6. For medium or complex plans, run the plan-time council on the generated `plan.md` before invoking the technical reviewers.
+   - Council voices debate the proposal; they do not finalize the plan.
+   - Each council voice steel-mans the proposal, attacks its strongest form, and concedes when the plan already addresses the concern.
+   - Invoke the exact pre-built council agents that match the plan's surface:
+     - `plan-thinker` when the framing may be wrong or the problem class is unclear.
+     - `plan-devils-advocate` when production risk, abuse risk, or rollback risk is non-trivial.
+     - `plan-pragmatic-engineer` when the plan introduces abstractions, shared service surface, or recurring maintenance burden.
+     - `plan-architect-advisor` when the plan changes module boundaries, public contracts, or layering.
+     - `plan-product-mind` when the plan derives from a PRD whose hypothesis or success signals could be sharpened.
+     - `plan-security-advocate` when the plan touches authorization, secrets, abuse cases, third-party integrations, or PII.
+   - For simple plans, allow zero council agents or one targeted council agent — do not always-on the council on routine work.
+   - Run available council voices in parallel; merge their `Final Position` outputs before invoking the technical reviewers.
+   - Treat any council voice's `Final Position` that is not an explicit pass (`proposal survives` or `keep current framing`) as a blocker for the technical-review pass unless the human explicitly resolves or defers it. This includes `reframe`, `simpler alternative`, `scope down`, `defer`, `inconclusive`, and other non-pass outcomes.
+7. Run technical specialist reviewer agents on the merged plan.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `plan-future-maintainer` agent.
-   - Invoke the exact pre-built `plan-security-reviewer` agent.
-   - Invoke the exact pre-built `plan-staff-engineer` agent.
-   - Run these independent reviewers in parallel when the current assistant environment supports it.
+   - Invoke the exact pre-built `plan-security-reviewer` agent for local security lanes that remain coordinator-owned: validation/output encoding, logging exposure, abuse-case coverage, secrets/config handling, cross-lane risk synthesis, and reviewer questions. For medium/complex plans, you may also invoke the relevant `plan-compliance-reviewer`, `plan-data-handling-reviewer`, `plan-authz-reviewer`, and `plan-supply-chain-reviewer` specialists directly; when you do, pass their outputs to `plan-security-reviewer` and ask it not to duplicate those specialist lanes.
+   - Invoke the exact pre-built `plan-staff-engineer` agent (lead reviewer) for cross-lane architecture/execution synthesis. For medium/complex plans, you may also invoke the relevant `plan-design-reviewer`, `plan-observability-reviewer`, and `plan-execution-strategy-reviewer` specialists directly; when you do, pass their outputs to `plan-staff-engineer` and ask it not to duplicate those specialist lanes.
+   - When the planned work changes public APIs, CLIs, plugin interfaces, schemas, events, webhooks, or generated artifacts consumed by other systems, also invoke the exact pre-built `api-contract-reviewer` agent.
+   - When the planned work introduces data shape migrations, storage format changes, destructive transforms, backfills, or retention/deletion changes, also invoke the exact pre-built `data-migrations-reviewer` agent.
+   - Run direct plan specialists in parallel when the current assistant environment supports it, then wait for their outputs before invoking `plan-security-reviewer` or `plan-staff-engineer` for coordinator/lead synthesis.
+   - Run reviewers in parallel only when they do not feed a later coordinator or lead reviewer.
    - Pass each reviewer the plan path, source context summary, discovered project rules that affect the plan, source-driven verification notes, and any relevant PRD or Jira context.
    - Do not write separate review files.
-7. Merge reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
+8. Merge council and technical reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
    - Apply blocking findings before finalizing.
-   - Treat security/privacy questions, blocking findings, and human questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
+   - Treat security/privacy questions, blocking findings, blocking council positions, and human questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-8. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
+9. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `document-reviewer` agent.
+   - For long or complex plans, repeated terminology, or several answered blocking questions, tell `document-reviewer` that a coherence pass is required. `document-reviewer` owns any `document-coherence-reviewer` delegation so coherence findings are not duplicated.
+   - When cross-document references, PRD-to-plan continuity, task progress drift, or code-review handoff drift could affect approval readiness, rerun or invoke `spec-flow-analyzer` before `document-reviewer`; do not route cross-document continuity to coherence-only review.
    - Merge any approval-readiness fixes before asking the human.
-9. Resolve all approval blockers before presenting the plan for approval.
+10. Resolve all approval blockers before presenting the plan for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `plan.md` after each answer.
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
    - Add a `Document Changelog` entry for each human answer, change request, reviewer-driven material update, approval, or requested-changes decision.
    - Update the frontmatter `updated` field to the local date whenever the document changes.
-   - Rerun the affected specialist reviewers and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
+   - Rerun the affected council voices, specialist reviewers, coordinator/lead reviewers, and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the plan not ready for approval.
-10. Tell the human the plan path and that it is pending approval.
+11. Tell the human the plan path and that it is pending approval.
 
 - Ask them to review it and explicitly approve or request changes.
 
@@ -135,7 +157,7 @@ Use these shared references when they apply:
 - Use `codebase-researcher` when the question spans multiple areas. Use `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `docs-locator`, and `docs-analyzer` directly when their narrower scopes can run independently.
 - In Codex delegation APIs, select the exact custom-agent name when it exists, for example `agent_type: codebase-researcher` or `agent_type: test-plan-architect`; otherwise perform the same pass inline from the agent definition.
 - Start launch prompts with the selected agent name for auditability, then provide only run-specific context: source request, candidate artifact paths, known constraints, and the exact research or test-planning question.
-- Preserve returned `Questions For The Human` in the planning flow. Ask blocking questions before approval; record deferred non-blocking questions separately.
+- Preserve returned `Questions For The Invoking Skill` and legacy `Questions For The Human` sections in the planning flow. Ask blocking questions before approval; record deferred non-blocking questions separately.
 
 ## Reviewer Invocation Contract
 
@@ -211,9 +233,10 @@ Plans must explicitly guide execution:
 
 ## Reviewer Orchestration Notes
 
-- Run the exact pre-built `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` agents before asking for human approval when the agents are available.
-- Prefer running independent specialist reviewer agents in parallel when the current assistant environment supports it.
-- Wait for all available specialist reviewers, merge their findings, then run `document-reviewer` last on the merged plan.
+- Run the exact pre-built `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` agents before asking for human approval when the agents are available. `plan-security-reviewer` may return no findings for plans with no security/privacy surface; it still preserves the coordinator output contract.
+- Prefer running direct specialist reviewer agents in parallel when the current assistant environment supports it, then pass their outputs to the relevant coordinator or lead reviewer for synthesis and question preservation.
+- Do not run a coordinator or lead reviewer in the same fan-out batch as specialists whose outputs it must synthesize.
+- Wait for all available specialist reviewers and coordinator reviewers, merge their findings, then run `document-reviewer` last on the merged plan.
 - Use blocking findings, security/privacy questions, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
 - If an expected reviewer agent is unavailable, note that gap in the final response and add it to the plan's Blocking Questions, Deferred Non-Blocking Questions, or Approval notes when it affects approval confidence.
 - The invoking skill owns the final document. Reviewer agents return findings only; they do not edit the document.
@@ -221,7 +244,7 @@ Plans must explicitly guide execution:
 
 ## Approval Loop
 
-If the human requests changes or answers a blocking question, update `plan.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun affected specialist reviewers and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
+If the human requests changes or answers a blocking question, update `plan.md`, update `updated`, preserve the original question with the human answer, add a `Document Changelog` entry explaining what changed and why, rerun affected council voices, specialist reviewers, coordinator/lead reviewers, and `document-reviewer` when the change materially affects approval readiness, merge any new blocking feedback, and ask again. Repeat until the human explicitly approves, requests more changes, or stops the workflow.
 
 Answered blocking questions must remain in `Blocking Questions` as answered entries. Only open blocking questions prevent approval.
 
