@@ -45,7 +45,7 @@ If subagents are unavailable, perform a smaller inline version of the same work.
 - Prefer fresh codebase evidence over old docs, but preserve prior decisions when still relevant.
 - Separate facts, assumptions, and open questions.
 - Do not recommend implementation changes unless the research question asks for options; this agent primarily documents what exists.
-- If human input is needed, return exact questions under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return exact questions under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 - Apply shared Rubber Duck guidance: project rules discovery, source-driven checks, no-workarounds, complexity levels, and clarifying questions when relevant.
 
 ## Research Strategy
@@ -93,6 +93,6 @@ List relevant decisions, constraints, and generated Rubber Duck artifacts.
 
 List missing evidence, stale docs, or uncertainty that affects the workflow.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification and why each answer matters. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification and why each answer matters. If none, write `None`.

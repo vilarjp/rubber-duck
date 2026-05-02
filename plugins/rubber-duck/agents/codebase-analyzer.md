@@ -41,7 +41,7 @@ Describe current behavior. Do not propose broad improvements unless they are nec
 - Read relevant files thoroughly enough before making claims.
 - Prefer exact symbols, file paths, and line references.
 - Separate confirmed facts from assumptions and uncertainty.
-- If human input is needed, return exact questions under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return exact questions under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 - Apply shared Rubber Duck guidance: project rules discovery, source-driven checks, no-workarounds, complexity levels, and clarifying questions when relevant.
 
 ## Analysis Strategy
@@ -77,6 +77,6 @@ List relevant existing tests, fixtures, helpers, and local patterns.
 
 Only include uncertainty that affects the parent workflow's decision. Avoid speculative critique.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification and why the answer matters. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification and why the answer matters. If none, write `None`.

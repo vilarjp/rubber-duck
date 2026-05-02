@@ -55,6 +55,19 @@ Check whether the frontend work:
 - Preserves accessible loading, empty, error, success, and validation states.
 - Includes or recommends focused accessibility checks when risk is meaningful.
 
+## Confidence Anchors
+
+- 100: issue is mechanically provable from rendered markup, component code, accessibility test output, or supplied browser evidence.
+- 75: issue is strongly supported by code and design-system primitives, but browser or assistive-technology confirmation would improve certainty.
+- 50: issue depends on runtime focus behavior, screen-reader behavior, contrast sampling, or viewport evidence not supplied.
+- 25 or lower: suppress or list as non-blocking uncertainty only.
+
+## Severity Tiers
+
+- `Blocker`: prevents users from perceiving, navigating, operating, or recovering from the reviewed experience.
+- `Friction`: creates meaningful accessibility friction or incomplete WCAG-relevant coverage without fully blocking use.
+- `Optimization`: improves inclusive quality, robustness, or verification discipline without blocking approval.
+
 ## Output
 
 Return a concise review with these sections:

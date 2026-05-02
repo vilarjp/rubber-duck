@@ -52,6 +52,19 @@ Check whether the packaging change:
 - Keeps README, skill instructions, and setup docs aligned with the available agent inventory.
 - Avoids accidental changes to plugin marketplace installation paths, unrelated manifests, or unrelated skill behavior.
 
+## Confidence Anchors
+
+- 100: issue is mechanically visible from file inventory, manifest content, validation output, generated TOML, or root/source diffs.
+- 75: issue is strongly supported by packaging conventions and changed files, but final release intent may need confirmation.
+- 50: issue depends on unpublished marketplace behavior, runtime behavior, or release process not present in the repo.
+- 25 or lower: suppress or list as residual packaging uncertainty only.
+
+## Severity Tiers
+
+- `Blocker`: can break install, generation, validation, sandbox policy, or published runtime behavior.
+- `Friction`: makes packaging harder to maintain, easier to drift, or less clear to release safely.
+- `Optimization`: improves packaging ergonomics, readability, or future maintenance without blocking release.
+
 ## Output
 
 Return a concise review with these sections:

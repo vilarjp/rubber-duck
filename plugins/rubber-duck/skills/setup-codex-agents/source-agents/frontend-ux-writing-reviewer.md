@@ -54,6 +54,27 @@ Check whether the frontend copy:
 - Supports accessibility through descriptive link text, control labels, status messages, and non-visual meaning.
 - Keeps tone appropriate to the domain: concise and work-focused for operational tools, more expressive only when the product context calls for it.
 
+## Anti-Pattern Examples
+
+- Ambiguous CTAs: `Submit`, `Continue`, or `Do it` when the user needs to know the exact action and outcome.
+- Blameful errors: copy that says the user failed without explaining recovery, such as `Invalid input` with no next step.
+- Hidden prerequisites: commands that appear available but reveal missing permissions, dependencies, or setup only after failure.
+- Localization breakage: fixed-width copy, concatenated fragments, unpluralized counts, or text that cannot survive longer translations.
+- Destructive-action ambiguity: confirmation copy that does not name the object, scope, irreversibility, or recovery path.
+
+## Confidence Anchors
+
+- 100: issue is directly visible in current UI text, component copy, validation messages, screenshots, or generated states.
+- 75: issue is strongly supported by nearby product terminology, existing copy patterns, or state coverage.
+- 50: issue depends on product voice, policy, or user intent that is not supplied.
+- 25 or lower: suppress or list as a non-blocking question instead of a finding.
+
+## Severity Tiers
+
+- `Blocker`: copy can cause destructive mistakes, failed recovery, permission confusion, or primary-flow abandonment.
+- `Friction`: copy is ambiguous, inconsistent, inaccessible, or brittle enough to slow users down.
+- `Optimization`: copy polish improves tone, brevity, localization resilience, or consistency without blocking readiness.
+
 ## Output
 
 Return a concise review with these sections:

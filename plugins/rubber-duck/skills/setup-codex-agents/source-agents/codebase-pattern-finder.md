@@ -41,7 +41,7 @@ Show what exists. Keep judgment tied to whether the pattern is applicable to the
 - Prefer small, representative snippets over long copied sections.
 - Include file paths and line references when available.
 - Do not recommend broad refactors or new abstractions unless the requested task clearly needs them.
-- If human input is needed, return exact questions under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return exact questions under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 - Apply shared Rubber Duck guidance on clarifying questions and no-workarounds when relevant.
 
 ## Search Strategy
@@ -75,6 +75,6 @@ List focused test examples and likely commands when available.
 
 Only include examples when repository evidence shows the pattern is legacy, superseded, flaky, unsafe, or not applicable.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

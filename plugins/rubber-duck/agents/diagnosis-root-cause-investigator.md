@@ -88,6 +88,6 @@ List plausible competing causes that remain open or explain why none are materia
 
 State whether the recommended next step follows from the evidence and whether it risks becoming a workaround.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

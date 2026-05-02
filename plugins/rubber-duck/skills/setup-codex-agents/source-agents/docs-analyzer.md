@@ -43,7 +43,7 @@ Focus on actionable context:
 - Prefer concise extraction over document summary.
 - Distinguish firm decisions from exploration.
 - Note temporal context and status when visible.
-- If human input is needed, return exact questions under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return exact questions under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 - Apply Rubber Duck clarifying-question guidance when an old document leaves material uncertainty.
 
 ## Output
@@ -75,6 +75,6 @@ Preserve exact blocking questions and human answers when present.
 
 Call out context that should not be blindly reused.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

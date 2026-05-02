@@ -42,7 +42,7 @@ Locate and categorize documents. Do not deeply summarize them; use `docs-analyze
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Search titles, filenames, frontmatter, headings, and content terms.
 - Include older docs when they may contain historical decisions, but mark their date/status when visible.
-- If human input is needed, return exact questions under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return exact questions under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 
 ## Output
 
@@ -71,6 +71,6 @@ For each document, include:
 
 List key search terms and directories checked.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

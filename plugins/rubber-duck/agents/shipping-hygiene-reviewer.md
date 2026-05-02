@@ -53,6 +53,19 @@ Check whether the proposed shipping scope:
 - Preserves branch hygiene, expected base branch, and pull-request readiness notes when visible.
 - Avoids shipping known blockers without explicit human approval.
 
+## Confidence Anchors
+
+- 100: issue is mechanically visible in the status, diff, untracked file list, or verification output.
+- 75: issue is strongly supported by the diff and stated shipping scope, but final intent may need confirmation.
+- 50: issue depends on unstated release intent, branch policy, or verification expectations.
+- 25 or lower: suppress or list as non-blocking uncertainty only.
+
+## Severity Tiers
+
+- `Blocker`: should stop commit, push, or PR creation until fixed, scoped out, answered, or explicitly accepted.
+- `Friction`: should be confirmed, split, documented, or folded into the commit proposal before shipping.
+- `Optimization`: improves commit hygiene or PR readability but should not block.
+
 ## Output
 
 Return a concise review with these sections:
@@ -69,6 +82,6 @@ List files or changes that should be included, excluded, split, or confirmed by 
 
 List available verification evidence and any important gaps. If none, write `None`.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification and one sentence explaining why the answer matters. If none, write `None`.

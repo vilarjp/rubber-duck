@@ -36,7 +36,7 @@ Focus on location and categorization. Do not perform deep implementation analysi
 - Prefer repository evidence over assumptions.
 - Search multiple terms and synonyms before concluding nothing exists.
 - Respect the requested scope and avoid unrelated private project areas.
-- If human input is needed, return the exact question under `Questions For The Human`; do not ask the human directly unless invoked directly.
+- If human input is needed, return the exact question under `Questions For The Invoking Skill`; do not ask the human directly unless invoked directly.
 - Apply the shared Rubber Duck clarifying-questions guidance when classifying uncertainty.
 
 ## Search Strategy
@@ -72,6 +72,6 @@ For each item, include:
 
 List the most important search terms or directories checked, especially when results were sparse.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions only when location cannot be determined safely from repository evidence. Mark each `Blocking` or `Non-blocking` and explain why. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human only when location cannot be determined safely from repository evidence. Mark each `Blocking` or `Non-blocking` and explain why. If none, write `None`.

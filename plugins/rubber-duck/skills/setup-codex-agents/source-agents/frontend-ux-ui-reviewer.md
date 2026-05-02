@@ -56,6 +56,19 @@ Check whether the frontend work:
 - Avoids marketing-like hero layouts, decorative clutter, and one-note palettes when the target is an application workflow.
 - Preserves inspectable product, place, object, data, state, or gameplay visuals when those are central to the experience.
 
+## Confidence Anchors
+
+- 100: issue is directly visible in provided screenshots, rendered browser observations, or concrete component/code evidence.
+- 75: issue is strongly supported by the reviewed code plus local design-system or comparable-screen evidence.
+- 50: issue depends on missing viewport, content, state, or user-workflow evidence.
+- 25 or lower: suppress or list as a non-blocking question instead of a finding.
+
+## Severity Tiers
+
+- `Blocker`: prevents users from completing the primary workflow or creates a serious comprehension, layout, or trust failure.
+- `Friction`: makes the workflow harder, less consistent, less responsive, or less scannable but does not block completion.
+- `Optimization`: raises craft, consistency, or polish without changing readiness.
+
 ## Output
 
 Return a concise review with these sections:

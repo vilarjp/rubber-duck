@@ -14,10 +14,21 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import {
+  AGENT_NAME_PATTERN,
+  DEFAULT_MODEL as EXPECTED_MODEL,
+  DEFAULT_REASONING as EXPECTED_REASONING,
+  EXPECTED_SOURCE_MODEL,
+  MUTATING_TOOLS,
+  REQUIRED_AGENT_FIELDS,
+  VALID_AGENT_COLORS,
+  VALID_SANDBOXES,
+  parseFrontmatterFields as parseFrontmatter,
+  parseToolList,
+  renderDeveloperInstructions,
+  stripQuotes,
+} from "./agent-contracts.mjs";
 
-const EXPECTED_MODEL = "gpt-5.5";
-const EXPECTED_REASONING = "medium";
-const EXPECTED_SOURCE_MODEL = "sonnet";
 const EXPECTED_AGENT_NAMES = [
   "agent-packaging-reviewer",
   "agent-prompt-reviewer",
@@ -82,32 +93,10 @@ const EXPECTED_AGENT_NAMES = [
   "web-researcher",
 ];
 const EXPECTED_AGENT_COUNT = EXPECTED_AGENT_NAMES.length;
-const AGENT_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const REQUIRED_AGENT_FIELDS = ["name", "description", "model", "tools", "color", "sandbox"];
-const VALID_SANDBOXES = new Set(["read-only", "workspace-write"]);
-const VALID_AGENT_COLORS = new Set([
-  "blue",
-  "cyan",
-  "green",
-  "orange",
-  "pink",
-  "purple",
-  "red",
-  "yellow",
-]);
-const VALID_SOURCE_TOOLS = new Set([
-  "Agent",
-  "Bash",
-  "Edit",
-  "Glob",
-  "Grep",
-  "Read",
-  "WebFetch",
-  "WebSearch",
-  "Write",
-]);
 const HOST_GATED_TOOLS = new Set(["Agent", "WebFetch", "WebSearch"]);
-const MUTATING_TOOLS = new Set(["Edit", "Write"]);
+const RETIRED_LIVE_REFERENCE_PATTERN =
+  /\bskill-eval\b|\bskill evaluation\b|\bskill evaluations\b/i;
+const EXPECTED_IMPLICIT_SKILLS = new Set(["frontend-design"]);
 const EXPECTED_WORKSPACE_WRITE = new Set([
   "implementation-agent",
   "test-implementer",
@@ -120,6 +109,7 @@ const repoRoot = path.resolve(pluginRoot, "..", "..");
 const rootAgentsDir = path.join(pluginRoot, "agents");
 const bundledAgentsDir = path.join(skillDir, "source-agents");
 const setupScript = path.join(scriptDir, "install-codex-agents.mjs");
+const syncScript = path.join(scriptDir, "sync-source-agents.mjs");
 
 function fail(message) {
   throw new Error(message);
@@ -148,29 +138,6 @@ async function listFilesRecursive(dir, predicate) {
   return files.sort();
 }
 
-function parseFrontmatter(content, filePath) {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-  if (!match) fail(`Missing frontmatter: ${filePath}`);
-
-  const fields = {};
-  for (const line of match[1].split(/\r?\n/)) {
-    const fieldMatch = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!fieldMatch) continue;
-    fields[fieldMatch[1]] = stripQuotes(fieldMatch[2].trim());
-  }
-  return fields;
-}
-
-function stripQuotes(value) {
-  if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  ) {
-    return value.slice(1, -1);
-  }
-  return value;
-}
-
 function parseTomlScalar(content, key, filePath) {
   const matches = [...content.matchAll(new RegExp(`^${key}\\s*=\\s*(".*")$`, "gm"))];
   if (matches.length === 0) fail(`Missing TOML key ${key}: ${filePath}`);
@@ -178,37 +145,17 @@ function parseTomlScalar(content, key, filePath) {
   return JSON.parse(matches[0][1]);
 }
 
-function expectedDeveloperInstructions(sourceBody, sourceFileName, sourceTools) {
-  return `${sourceBody}
-
-## Codex Runtime Notes
-
-- This TOML file was generated from Rubber Duck Markdown agent source: ${sourceFileName}.
-- Source tools declared in the Markdown frontmatter: ${sourceTools}.
-- Respect this agent's declared scope and sandbox. Read-only agents must not edit files. Workspace-write agents may edit only within the ownership or output boundaries provided by the invoking skill.
-- Follow these full developer instructions even if the parent skill launches you with a brief run-specific prompt.
-- Treat short launch prompts as task context only, not as a replacement for this agent's scope, operating rules, checklist, or output format.
-- If the launch prompt names this already-selected agent, treat that as an audit label and continue following these full developer instructions.
-- The source tools comment in this generated TOML is informational. Only use tools the host runtime actually exposes to you.
-- Treat the source tools list as the allowed capability policy for this agent. Do not use additional host tools, connectors, external access, or mutating capabilities unless the source Markdown frontmatter includes them and the invoking skill explicitly asks for that behavior within this agent's scope.
-- If nested Agent, WebSearch, or WebFetch capabilities are unavailable, follow this agent's fallback behavior and make the review gap explicit instead of claiming that delegated or external research occurred.
-- Return findings, questions, and recommendations to the parent Rubber Duck skill.`;
-}
-
-function parseToolList(value, filePath) {
-  const tools = value
-    .split(",")
-    .map((tool) => tool.trim())
-    .filter(Boolean);
-  if (tools.length === 0) fail(`Empty tools list: ${filePath}`);
-  for (const tool of tools) {
-    if (!VALID_SOURCE_TOOLS.has(tool)) fail(`Invalid source tool ${tool}: ${filePath}`);
-  }
-  return tools;
-}
-
 function assertIncludes(content, needle, filePath) {
   if (!content.includes(needle)) fail(`Missing expected text in ${filePath}: ${needle}`);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function assertMarkdownSection(content, heading, filePath) {
+  const pattern = new RegExp(`^${escapeRegExp(heading)}\\s*$`, "m");
+  if (!pattern.test(content)) fail(`Missing Markdown section ${heading}: ${filePath}`);
 }
 
 function assertNotMatches(content, pattern, filePath, label) {
@@ -229,6 +176,26 @@ function findMarketplacePlugin(manifest, pluginName, manifestPath) {
   const plugin = manifest.plugins?.find((entry) => entry?.name === pluginName);
   if (!plugin) fail(`Missing marketplace entry ${pluginName}: ${manifestPath}`);
   return plugin;
+}
+
+function parseOpenAiSkillMetadata(content, filePath) {
+  const parsed = {};
+  let section = null;
+  for (const line of content.split(/\r?\n/)) {
+    const sectionMatch = line.match(/^([A-Za-z0-9_-]+):\s*$/);
+    if (sectionMatch) {
+      section = sectionMatch[1];
+      parsed[section] ??= {};
+      continue;
+    }
+    const fieldMatch = line.match(/^  ([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!fieldMatch || !section) continue;
+    parsed[section][fieldMatch[1]] = stripQuotes(fieldMatch[2].trim());
+  }
+  for (const sectionName of ["interface", "policy"]) {
+    if (!parsed[sectionName]) fail(`Missing ${sectionName}: in ${filePath}`);
+  }
+  return parsed;
 }
 
 async function pathExists(targetPath) {
@@ -358,6 +325,11 @@ async function assertSkillMetadata() {
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
     .map((entry) => path.join(pluginRoot, "skills", entry.name, "SKILL.md"))
     .sort();
+  const skillNames = new Set(
+    skillDirs
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
+      .map((entry) => entry.name),
+  );
 
   for (const skillFile of skillFiles) {
     const fields = parseFrontmatter(await readFile(skillFile, "utf8"), skillFile);
@@ -375,14 +347,28 @@ async function assertSkillMetadata() {
 
   for (const file of openaiFiles.sort()) {
     const content = await readFile(file, "utf8");
-    for (const required of [
-      "interface:",
-      "display_name:",
-      "short_description:",
-      "brand_color:",
-      "default_prompt:",
-    ]) {
-      if (!content.includes(required)) fail(`Missing ${required} in ${file}`);
+    const skillName = path.basename(path.dirname(path.dirname(file)));
+    const metadata = parseOpenAiSkillMetadata(content, file);
+    for (const required of ["display_name", "short_description", "brand_color", "default_prompt"]) {
+      if (typeof metadata.interface[required] !== "string" || metadata.interface[required].trim() === "") {
+        fail(`Missing interface.${required} in ${file}`);
+      }
+    }
+    if (metadata.policy.allow_implicit_invocation !== String(EXPECTED_IMPLICIT_SKILLS.has(skillName))) {
+      fail(`Unexpected allow_implicit_invocation for ${skillName}: ${file}`);
+    }
+    const defaultPrompt = metadata.interface.default_prompt;
+    if (defaultPrompt.includes("$")) {
+      fail(`OpenAI default_prompt must use the Rubber Duck skill naming convention, not $ syntax: ${file}`);
+    }
+    if (!defaultPrompt.toLowerCase().includes(`rubber duck ${skillName}`)) {
+      fail(`OpenAI default_prompt must name packaged skill ${skillName}: ${file}`);
+    }
+    for (const skill of defaultPrompt.matchAll(/\bRubber Duck\s+([A-Za-z0-9-]+)/g)) {
+      const mentionedSkill = skill[1].toLowerCase();
+      if (mentionedSkill !== "to" && !skillNames.has(mentionedSkill)) {
+        fail(`OpenAI default_prompt mentions missing skill ${mentionedSkill}: ${file}`);
+      }
     }
   }
 }
@@ -421,7 +407,7 @@ async function assertAgentSources() {
       "## Operating Rules",
       "## Output",
     ]) {
-      assertIncludes(body, section, rootPath);
+      assertMarkdownSection(body, section, rootPath);
     }
     if (!AGENT_NAME_PATTERN.test(fields.name)) {
       fail(`Invalid agent name ${fields.name}: ${rootPath}`);
@@ -465,6 +451,21 @@ async function assertAgentSources() {
   }
 
   assertSetEquals(workspaceWrite, EXPECTED_WORKSPACE_WRITE, "workspace-write source agents");
+}
+
+async function assertSourceAgentsSyncScript() {
+  const result = spawnSync(process.execPath, [syncScript, "--check"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    fail(`Source-agent sync check failed:\n${result.stderr || result.stdout}`);
+  }
+  assertIncludes(
+    result.stdout,
+    `source-agents mirror is current (${EXPECTED_AGENT_COUNT} agents).`,
+    "sync-source-agents mirror check",
+  );
 }
 
 async function assertAgentSemanticContracts() {
@@ -591,6 +592,20 @@ async function assertAgentSemanticContracts() {
     ]) {
       assertIncludes(content, needle, fullPath);
     }
+  }
+
+  const findingReviewersWithStandardDiscipline = [
+    "agent-packaging-reviewer",
+    "frontend-accessibility-reviewer",
+    "frontend-ux-ui-reviewer",
+    "frontend-ux-writing-reviewer",
+    "shipping-hygiene-reviewer",
+  ];
+  for (const agentName of findingReviewersWithStandardDiscipline) {
+    const fullPath = path.join(rootAgentsDir, `${agentName}.md`);
+    const content = await readFile(fullPath, "utf8");
+    assertMarkdownSection(content, "## Confidence Anchors", fullPath);
+    assertMarkdownSection(content, "## Severity Tiers", fullPath);
   }
 }
 
@@ -818,6 +833,8 @@ async function assertSkillRoutes() {
 async function assertLiveStaleReferences() {
   const liveFiles = [
     path.join(repoRoot, "README.md"),
+    path.join(repoRoot, ".agents", "plugins", "marketplace.json"),
+    path.join(repoRoot, ".claude-plugin", "marketplace.json"),
     ...await listFilesRecursive(
       pluginRoot,
       (file) =>
@@ -828,7 +845,9 @@ async function assertLiveStaleReferences() {
   const staleNamePattern =
     /(^|[^-])\bcoherence-reviewer\b|adversarial-reviewer|architecture-boundary-reviewer|code-simplicity-reviewer|reliability-reviewer/;
   for (const file of liveFiles) {
-    assertNotMatches(await readFile(file, "utf8"), staleNamePattern, file, "stale folded agent name");
+    const content = await readFile(file, "utf8");
+    assertNotMatches(content, staleNamePattern, file, "stale folded agent name");
+    assertNotMatches(content, RETIRED_LIVE_REFERENCE_PATTERN, file, "retired skill reference");
   }
 }
 
@@ -876,7 +895,7 @@ async function assertGeneratedAgents() {
       const sourceBody = sourceContent
         .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "")
         .trim();
-      const expectedInstructions = expectedDeveloperInstructions(sourceBody, `${name}.md`, sourceFields.tools);
+      const expectedInstructions = renderDeveloperInstructions(sourceBody, `${name}.md`, sourceFields.tools);
       if (developerInstructions !== expectedInstructions) {
         fail(`Generated developer_instructions differs from expected source body/runtime notes for ${name}: ${fullPath}`);
       }
@@ -1323,28 +1342,94 @@ function assertSetEquals(actual, expected, label) {
   }
 }
 
+const VALIDATION_CHECKS = [
+  ["manifests", assertJsonManifests],
+  ["skill-metadata", assertSkillMetadata],
+  ["agent-sources", assertAgentSources],
+  ["source-agents-sync-script", assertSourceAgentsSyncScript],
+  ["agent-contracts", assertAgentSemanticContracts],
+  ["packaged-safety-notes", assertPackagedSafetyNotes],
+  ["inventory-docs", assertInventoryDocumentation, { readsDocs: true }],
+  ["skill-routes", assertSkillRoutes],
+  ["live-stale-references", assertLiveStaleReferences],
+  ["generated-agents", assertGeneratedAgents],
+  ["dry-run", assertDryRun],
+  ["symlink-destination", assertRejectsSymlinkDestination],
+  ["symlink-target-directory", assertRejectsSymlinkTargetDirectory],
+  ["symlink-ancestor-directory", assertAllowsSymlinkAncestorDirectory],
+  ["directory-destination", assertRejectsDirectoryDestination],
+  ["rollback", assertRollsBackPartialGeneratedAgentCommit],
+  ["conflicting-target-flags", assertRejectsConflictingTargetFlags],
+  ["project-target", assertProjectTargetMode],
+  ["custom-model-reasoning", assertCustomModelAndReasoning],
+  ["stale-pruning", assertPrunesStaleGeneratedAgents],
+  ["unrelated-symlinked-toml", assertPreservesUnrelatedSymlinkedToml],
+];
+
+function usage() {
+  return `Usage: node validate-rubber-duck-plugin.mjs [options]
+
+Options:
+  --only <check>   Run one named check. May be repeated.
+  --skip-docs      Skip checks that read docs/ inventory artifacts.
+  --list-checks    Print available check names.
+  --help           Show this help
+`;
+}
+
+function parseArgs(argv) {
+  const options = {
+    help: false,
+    listChecks: false,
+    only: new Set(),
+    skipDocs: false,
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === "--help" || arg === "-h") {
+      options.help = true;
+    } else if (arg === "--list-checks") {
+      options.listChecks = true;
+    } else if (arg === "--skip-docs") {
+      options.skipDocs = true;
+    } else if (arg === "--only") {
+      const checkName = argv[++i];
+      if (!checkName || checkName.startsWith("--")) {
+        throw new Error("--only requires a check name");
+      }
+      if (!VALIDATION_CHECKS.some(([name]) => name === checkName)) {
+        throw new Error(`Unknown validation check: ${checkName}`);
+      }
+      options.only.add(checkName);
+    } else {
+      throw new Error(`Unknown argument: ${arg}`);
+    }
+  }
+
+  return options;
+}
+
 async function main() {
-  await assertJsonManifests();
-  await assertSkillMetadata();
-  await assertAgentSources();
-  await assertAgentSemanticContracts();
-  await assertPackagedSafetyNotes();
-  await assertInventoryDocumentation();
-  await assertSkillRoutes();
-  await assertLiveStaleReferences();
-  await assertGeneratedAgents();
-  await assertDryRun();
-  await assertRejectsSymlinkDestination();
-  await assertRejectsSymlinkTargetDirectory();
-  await assertAllowsSymlinkAncestorDirectory();
-  await assertRejectsDirectoryDestination();
-  await assertRollsBackPartialGeneratedAgentCommit();
-  await assertRejectsConflictingTargetFlags();
-  await assertProjectTargetMode();
-  await assertCustomModelAndReasoning();
-  await assertPrunesStaleGeneratedAgents();
-  await assertPreservesUnrelatedSymlinkedToml();
-  process.stdout.write("Rubber Duck plugin validation passed.\n");
+  const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write(usage());
+    return;
+  }
+  if (options.listChecks) {
+    process.stdout.write(`${VALIDATION_CHECKS.map(([name]) => name).join("\n")}\n`);
+    return;
+  }
+
+  const ranChecks = [];
+  for (const [name, check, metadata = {}] of VALIDATION_CHECKS) {
+    if (options.only.size > 0 && !options.only.has(name)) continue;
+    if (options.skipDocs && metadata.readsDocs) continue;
+    await check();
+    ranChecks.push(name);
+  }
+
+  process.stdout.write(`Rubber Duck plugin validation passed (${ranChecks.join(", ")}).\n`);
 }
 
 main().catch((error) => {

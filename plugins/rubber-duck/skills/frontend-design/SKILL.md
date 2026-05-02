@@ -8,6 +8,21 @@ argument-hint: "[brief | target route/path | redesign request]"
 
 Use this skill to design, build, or renovate frontend experiences that feel specific, polished, responsive, accessible, and maintainable. The output should be working code, not a mood board.
 
+## Inputs
+
+Accept a user brief, target route/path, component, screenshot, prototype, product surface, redesign request, or frontend audit request. When the target is ambiguous, inspect the local app structure and ask only for decisions that would change product identity, primary workflow, brand direction, or irreversible scope.
+
+## Output
+
+Return working frontend changes plus a concise summary of the design direction, changed files, verification performed, remaining limitations, and any specialist-review findings that were fixed or intentionally deferred. For audit-only requests, return prioritized findings with evidence and concrete remediation.
+
+## Artifact Ownership
+
+- May read app routes, components, styles, design-system tokens, assets, screenshots, product docs, prior generated artifacts, and relevant tests.
+- May edit frontend code, styles, assets, tests, and documentation only when they are directly required by the requested frontend change.
+- Must not rewrite unrelated backend behavior, broad product copy, global design tokens, generated assets, or project configuration unless the brief or local architecture makes that necessary.
+- Must preserve unrelated user changes and record verification gaps when browser, screenshot, responsive, accessibility, or automated checks cannot be completed.
+
 ## Core Stance
 
 - **Preserve identity, raise quality**: In existing products, keep the product's nouns, workflow shape, brand memory, and user muscle memory unless the user explicitly asks for a rebrand.
@@ -77,7 +92,7 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck frontend-ux-ui-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Pass the route, component paths, screenshots or observations, design brief, relevant constraints, acceptance criteria or UX intent when available, and exact review question. Keep reviewers read-only.
 - Invoke `design-implementation-validator` only after implementation and browser/screenshot verification evidence exists, and merge parity findings or questions before claiming the frontend is ready.
-- The parent skill owns all code and copy edits, visual iteration, validation, and user-facing summary. Specialist agents return findings, required fixes, optional polish, and questions only.
+- The parent skill owns all code and copy edits, visual iteration, validation, and user-facing summary. Specialist agents return their configured output sections; preserve `UX/UI Findings`, `Accessibility Findings`, `UX Writing Findings`, `Required Fixes`, `Required Copy Changes`, `Verification Notes`, `Parity Findings`, `Token / State / Responsive Gaps`, `Residual Risk`, and `Questions For The Invoking Skill` when those sections appear.
 - Treat blocking accessibility, usability, or copy findings as work to fix before claiming the frontend is ready unless the human explicitly accepts the risk or defers the issue.
 
 ## Design Laws

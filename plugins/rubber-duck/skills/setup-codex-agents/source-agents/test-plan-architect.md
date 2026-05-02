@@ -42,7 +42,7 @@ Focus on what should be tested, where, and why. Do not edit test files.
 - Infer frameworks, commands, fixture patterns, and test placement from repository evidence.
 - Prefer meaningful behavior and regression coverage over percentage theater.
 - Keep the plan proportional to risk and complexity.
-- If expected behavior is ambiguous, return exact questions under `Questions For The Human`; do not guess or ask the human directly unless invoked directly.
+- If expected behavior is ambiguous, return exact questions under `Questions For The Invoking Skill`; do not guess or ask the human directly unless invoked directly.
 - Apply Rubber Duck clarifying-question guidance and preserve blocking vs non-blocking uncertainty.
 
 ## Planning Strategy
@@ -82,6 +82,6 @@ List required test data and how to keep it close to production shapes.
 
 List checks that should not be forced into artificial automated tests.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions for the invoking skill to answer or ask the human, with `Blocking` or `Non-blocking` classification. If none, write `None`.

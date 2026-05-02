@@ -111,8 +111,8 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Invoke the exact pre-built `shipping-hygiene-reviewer` agent.
    - Pass the target branch, `git status` summary, proposed included and excluded paths, staged and unstaged diff summaries, untracked-file notes, verification evidence so far, and any scope constraints from the human.
    - Do not allow the reviewer to stage, commit, push, or edit files.
-   - If it returns shipping blockers, stop before staging, committing, or pushing. Report the blockers and ask whether to fix, change scope, or proceed with explicit known risk.
-   - Merge scope notes and verification notes into the commit proposal when they are not blockers.
+   - If it returns shipping blockers, blocking `Questions For The Invoking Skill`, or legacy blocking `Questions For The Human`, stop before staging, committing, or pushing. Report the blockers/questions and ask whether to fix, change scope, answer the question, or proceed with explicit known risk.
+   - Merge non-blocking scope notes, verification notes, and non-blocking reviewer questions into the commit proposal with their rationale.
 9. Run the final verification gate.
    - Run this gate after identifying the intended commit scope and before asking for final commit/push confirmation.
    - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
@@ -127,7 +127,7 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - For each proposed commit, list the conventional commit message and included paths.
    - List excluded local changes when they exist.
    - List any pre-commit scope or hygiene concerns found, including relevant coverage gaps or the explicit reason coverage was not added.
-   - Include `shipping-hygiene-reviewer` blockers, scope notes, verification notes, or state that it found no blockers.
+   - Include `shipping-hygiene-reviewer` blockers, blocking or non-blocking reviewer questions, scope notes, verification notes, or state that it found no blockers or open questions.
    - List the final verification gate commands and results, including unavailable categories.
 11. Ask for final confirmation.
    - Use the required phrase `yes, commit and push`.
