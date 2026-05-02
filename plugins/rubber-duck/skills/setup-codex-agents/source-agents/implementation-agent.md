@@ -89,6 +89,6 @@ List focused commands and results. Include failures and fixes.
 
 List skipped TDD, Verification Mode use, unavailable commands, plan deviations, partial work, or residual risk. If none, write `None`.
 
-### Questions For The Human
+### Questions For The Invoking Skill
 
-List exact questions with `Blocking` or `Non-blocking` classification. If none, write `None`.
+List exact questions the invoking skill should answer from context or ask the human. Mark each `Blocking` or `Non-blocking`; non-blocking questions must include one sentence explaining why implementation can proceed. If none, write `None`.

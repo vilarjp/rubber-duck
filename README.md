@@ -46,7 +46,6 @@ Start a new session or reload plugins, then invoke Rubber Duck with the plugin n
 /rubber-duck:implement
 /rubber-duck:frontend-design
 /rubber-duck:code-review
-/rubber-duck:skill-eval
 /rubber-duck:commit-push
 ```
 
@@ -73,7 +72,7 @@ Install the Codex custom agents for the current project:
 /rubber-duck:setup-codex-agents
 ```
 
-This generates 65 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
+This generates 61 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
 
 Upgrade note for `0.4.0`: setup now refuses to write through symlinked agents directories, symlinked Rubber Duck target TOML files, or non-file Rubber Duck target destinations, and it prunes stale Rubber Duck generated TOML files that carry the Rubber Duck generated header. Unrelated custom TOML files, including symlinked dotfiles-managed agents, are preserved.
 
@@ -89,7 +88,6 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 /rubber-duck:implement
 /rubber-duck:frontend-design
 /rubber-duck:code-review
-/rubber-duck:skill-eval
 /rubber-duck:commit-push
 ```
 
@@ -104,7 +102,6 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Implementation     | Guides scoped, test-first changes against an approved artifact or direct request, including planned task progress and bounded agent delegation. |
 | Frontend design    | Creates or renovates polished, responsive, accessible frontend experiences with UX/UI, accessibility, and UX-writing specialist review when useful. |
 | Code review        | Reviews local diffs or PRs with specialist agents for correctness, security, tests, patterns, and plan alignment.  |
-| Skill evaluation   | Tests Rubber Duck skills and agent prompts with baseline runs, grading, blind comparison, and analyzer notes.      |
 | Commit and push    | Checks shipping hygiene, proposes conventional commit splits, blocks protected branches, asks for explicit confirmation, and pushes safely. |
 
 ## Skill Menu
@@ -118,21 +115,20 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | `/rubber-duck:implement`                  | You are ready to make a scoped code change.                            | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug.     | Code/tests changed; planned subtasks emit `task_N.md` progress docs.                         |
 | `/rubber-duck:frontend-design`            | You need a greenfield UI or existing frontend renovation.              | Product brief, target route/path, screenshot context, or redesign request.         | Working frontend code with design-system, responsive, accessibility, and polish guidance.     |
 | `/rubber-duck:code-review`                | You want a structured review of a local diff or GitHub PR.             | Empty input for local changes, GitHub PR link, or plan/source hint.                | `docs/yyyy-mm-dd-{slug}/code-review.md` pending approval.                                    |
-| `/rubber-duck:skill-eval`                 | You want to test Rubber Duck's own skills or agent prompts.            | Skill path, agent path, eval prompt set, or improvement goal.                      | Optional eval artifacts with baseline outputs, grades, comparisons, and recommendations.      |
 | `/rubber-duck:commit-push`                | You want to ship local work deliberately.                              | Optional branch or commit-intent hint.                                             | One or more conventional commits pushed to a non-protected branch.                           |
-| `/rubber-duck:setup-codex-agents`         | You installed or upgraded Rubber Duck in Codex and want custom agents available. | Optional `--global`, `--project`, `--agents-dir`, `--model`, `--reasoning`, or `--dry-run` flags. | 65 generated Codex custom agents in `.codex/agents/`, `~/.codex/agents/`, or a custom agents directory. |
+| `/rubber-duck:setup-codex-agents`         | You installed or upgraded Rubber Duck in Codex and want custom agents available. | Optional `--global`, `--project`, `--agents-dir`, `--model`, `--reasoning`, or `--dry-run` flags. | 61 generated Codex custom agents in `.codex/agents/`, `~/.codex/agents/`, or a custom agents directory. |
 
 ## Agent Orchestration Model
 
 Rubber Duck skills are the orchestrators. They gather source context, choose scope, ask the human focused questions, edit final artifacts, and run verification. Agents are named specialists that return evidence, critique, candidate questions, or bounded implementation changes inside an assigned scope.
 
-Every workflow skill now declares at least one specialist agent crew. `skill-eval` remains intentionally eval-specific: it keeps its executor, grader, comparator, and analyzer flow, and conditionally adds `agent-prompt-reviewer` when evaluating Rubber Duck skills or agent prompts.
+Every workflow skill declares at least one specialist agent crew.
 
 Skills invoke exact pre-built agent names when those agents exist. Claude Code installs Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Launch prompts should provide only run-specific context such as document paths, diffs, source summaries, assigned tasks, ownership boundaries, and verification results; they should not replace the full agent definition with a compressed generic role prompt.
 
-Agent usage scales by complexity: simple work stays local or uses one narrow specialist, medium work uses research or review agents when risk warrants it, and complex work uses explicit fan-out/fan-in across independent questions or disjoint write sets. Read-only agents inspect and advise. Workspace-write agents are limited to `implementation-agent`, `test-implementer`, and `skill-eval-executor`; they require explicit ownership boundaries and are inspected by the invoking skill before completion.
+Agent usage scales by complexity: simple work stays local or uses one narrow specialist, medium work uses research or review agents when risk warrants it, and complex work uses explicit fan-out/fan-in across independent questions or disjoint write sets. Read-only agents inspect and advise. Workspace-write agents are limited to `implementation-agent` and `test-implementer`; they require explicit ownership boundaries and are inspected by the invoking skill before completion.
 
-## Research, Implementation, And Eval Crew
+## Research And Implementation Crew
 
 | Agent                     | Used by                                                                 | Helps with                                                                                          |
 | ------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -145,10 +141,6 @@ Agent usage scales by complexity: simple work stays local or uses one narrow spe
 | `implementation-agent`    | `implement`, `orchestrate-implementation`                               | Implements bounded production-code subtasks inside explicit write ownership and no-touch boundaries. |
 | `test-plan-architect`     | `plan`, `orchestrate-implementation`                                    | Designs layered test plans with stable `T###` IDs, fixtures, commands, and manual checks.            |
 | `test-implementer`        | `implement`, `orchestrate-implementation`                               | Adds or adjusts bounded test coverage inside explicit test, fixture, helper, and task-doc boundaries. |
-| `skill-eval-executor`     | `skill-eval`                                                            | Runs isolated with-skill or baseline eval prompts and saves outputs, metrics, and notes.             |
-| `skill-eval-grader`       | `skill-eval`                                                            | Grades eval outputs against explicit expectations and checks evidence quality.                       |
-| `skill-eval-comparator`   | `skill-eval`                                                            | Performs blind A/B comparisons between baseline and changed outputs.                                 |
-| `skill-eval-analyzer`     | `skill-eval`                                                            | Analyzes eval result patterns, regressions, variance, and prompt/workflow improvement options.       |
 | `learnings-researcher`    | `plan`, `diagnosis`                                                     | Searches prior `docs/`, plans, diagnoses, and reviews for applicable lessons before drafting.        |
 | `web-researcher`          | `plan`, `diagnosis`, `code-review`                                      | Bounded external research via WebSearch/WebFetch when current third-party behavior shapes the work.  |
 | `pattern-recognition-specialist` | `plan`                                                          | Repo-wide design patterns, anti-patterns, duplication, naming drift, and boundary smells.            |
@@ -208,7 +200,7 @@ The plan-time council is a set of debate voices invoked before the formal techni
 | `test-reviewer`                | `code-review`                             | Meaningful coverage, edge cases, weak assertions, redundant tests, and recommended focused tests.                    |
 | `shipping-hygiene-reviewer`    | `commit-push`                             | Commit scope, secrets, debug artifacts, unrelated files, verification notes, and safe commit splitting.              |
 | `agent-packaging-reviewer`     | `setup-codex-agents`                      | Root/source mirror consistency, sandbox declarations, generated TOML behavior, setup scripts, and validation risks.  |
-| `agent-prompt-reviewer`        | `skill-eval`                              | Rubber Duck agent and skill prompt quality: scope clarity, confidence anchors, severity tiers, output schema discipline. |
+| `agent-prompt-reviewer`        | `setup-codex-agents` (conditional)        | Rubber Duck agent and skill prompt quality: scope clarity, confidence anchors, severity tiers, output schema discipline. |
 | `agent-runtime-parity-reviewer` | `setup-codex-agents`                     | Cross-runtime parity: mirror drift, generated TOML behavior, sandbox parity, model/reasoning defaults, fallback declarations. |
 | `api-contract-reviewer`        | `code-review`, `plan` (conditional)       | Public API/CLI/plugin/event/webhook contract changes; backward compatibility, deprecation discipline, consumer impact. |
 | `data-migrations-reviewer`     | `code-review`, `plan` (conditional)       | Data shape migrations, storage format changes, destructive transforms, backfills, retention/deletion, rollback safety.  |
@@ -299,4 +291,4 @@ node plugins/rubber-duck/skills/setup-codex-agents/scripts/validate-rubber-duck-
 node plugins/rubber-duck/skills/setup-codex-agents/scripts/install-codex-agents.mjs --dry-run
 ```
 
-The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the exact expected 65 root/source/generated agents, required agent frontmatter, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.
+The validator checks marketplace and plugin manifests, skill metadata, root/source agent mirroring, the exact expected 61 root/source/generated agents, required agent frontmatter, generated Codex defaults, and sandbox policy. Generated Codex agents should default to `gpt-5.5` with medium reasoning. Only `implementation-agent` and `test-implementer` are expected to use `workspace-write`; other agents are read-only unless a future approved plan changes the policy and validator together.

@@ -32,7 +32,7 @@ If the invoking skill does not name the chain, ask for the artifact paths instea
 
 - Simple ad-hoc fixes with no upstream PRD, diagnosis, or plan.
 - Pure exploratory research where no downstream artifact will be approved.
-- Skill-eval, frontend-design polish, or commit-push runs that do not depend on PRD/plan continuity.
+- Frontend-design polish or commit-push runs that do not depend on PRD/plan continuity.
 
 ## Operating Rules
 

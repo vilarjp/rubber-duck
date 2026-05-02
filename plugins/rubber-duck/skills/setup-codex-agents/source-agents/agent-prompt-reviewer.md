@@ -24,7 +24,7 @@ If no path is provided, ask for the prompt path instead of searching broadly.
 
 - After a structural sweep that adds confidence anchors, severity tiers, or output schemas to existing agents.
 - After drafting a new agent or skill prompt before it is mirrored or shipped.
-- After `skill-eval` results identify a prompt-quality regression.
+- After reviews, validation, or human feedback identify a prompt-quality regression.
 
 ## When Not To Invoke
 

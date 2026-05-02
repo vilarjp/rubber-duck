@@ -74,10 +74,6 @@ const EXPECTED_AGENT_NAMES = [
   "prd-product-reviewer",
   "project-patterns-reviewer",
   "shipping-hygiene-reviewer",
-  "skill-eval-analyzer",
-  "skill-eval-comparator",
-  "skill-eval-executor",
-  "skill-eval-grader",
   "spec-flow-analyzer",
   "task-progress-document-reviewer",
   "test-implementer",
@@ -114,7 +110,6 @@ const HOST_GATED_TOOLS = new Set(["Agent", "WebFetch", "WebSearch"]);
 const MUTATING_TOOLS = new Set(["Edit", "Write"]);
 const EXPECTED_WORKSPACE_WRITE = new Set([
   "implementation-agent",
-  "skill-eval-executor",
   "test-implementer",
 ]);
 
@@ -462,7 +457,11 @@ async function assertAgentSources() {
     if (sandbox === "read-only" && mutatingTools.length > 0) {
       fail(`Read-only agent ${fields.name} declares mutating tools [${mutatingTools.join(", ")}]`);
     }
-    if (sandbox === "workspace-write") workspaceWrite.add(fields.name);
+    if (sandbox === "workspace-write") {
+      workspaceWrite.add(fields.name);
+      assertIncludes(body, "### Questions For The Invoking Skill", rootPath);
+      assertNotMatches(body, /### Questions For The Human/, rootPath, "workspace-write human-question output section");
+    }
   }
 
   assertSetEquals(workspaceWrite, EXPECTED_WORKSPACE_WRITE, "workspace-write source agents");
@@ -599,7 +598,7 @@ async function assertPackagedSafetyNotes() {
   const readmePath = path.join(repoRoot, "README.md");
   assertIncludes(
     await readFile(readmePath, "utf8"),
-    "Only `implementation-agent`, `test-implementer`, and `skill-eval-executor` are expected to use `workspace-write`",
+    "Only `implementation-agent` and `test-implementer` are expected to use `workspace-write`",
     readmePath,
   );
 
@@ -611,8 +610,50 @@ async function assertPackagedSafetyNotes() {
   );
 }
 
+async function assertInventoryDocumentation() {
+  const checks = [
+    {
+      path: "docs/2026-05-01-agent-army-merged-implementation-plan/plan.md",
+      includes: [
+        `active inventory is now ${EXPECTED_AGENT_COUNT} agents`,
+        "The `skill-eval` skill and its four eval agents were intentionally retired",
+      ],
+    },
+    {
+      path: "docs/2026-05-01-agent-army-merged-implementation-plan/task_1.md",
+      includes: [
+        `active inventory is now ${EXPECTED_AGENT_COUNT} agents`,
+        `Workspace-write allowlist frozen at ${EXPECTED_WORKSPACE_WRITE.size} names`,
+      ],
+    },
+    {
+      path: "docs/2026-05-01-agent-army-merged-implementation-plan/task_12.md",
+      includes: [
+        `Generated TOML count: ${EXPECTED_AGENT_COUNT}.`,
+        `Active post-retirement inventory: ${EXPECTED_AGENT_COUNT} agents.`,
+        "The `skill-eval` skill and four eval agents were intentionally retired",
+      ],
+    },
+  ];
+
+  for (const check of checks) {
+    const fullPath = path.join(repoRoot, check.path);
+    if (!(await pathExists(fullPath))) continue;
+    const content = await readFile(fullPath, "utf8");
+    for (const needle of check.includes) assertIncludes(content, needle, check.path);
+  }
+}
+
 async function assertSkillRoutes() {
   const skillChecks = [
+    {
+      path: "plugins/rubber-duck/skills/implement/SKILL.md",
+      includes: [
+        "choose and record the execution mode",
+        "`local sequential`, `implementation-agent`, `test-implementer`, or `mixed`",
+        "Execution mode used and why",
+      ],
+    },
     {
       path: "plugins/rubber-duck/skills/prd/SKILL.md",
       includes: [
@@ -678,20 +719,20 @@ async function assertSkillRoutes() {
         "selected task IDs",
         "proposed execution mode",
         "ownership/write sets",
+        "record the execution mode decision",
         "Treat its `Blocker`-tier execution-strategy concerns as a stop until resolved",
       ],
     },
     {
       path: "plugins/rubber-duck/skills/setup-codex-agents/SKILL.md",
       includes: [
+        "agent-prompt-reviewer",
+        "prompt-quality risk",
+        "agent_type: agent-prompt-reviewer",
         "agent-runtime-parity-reviewer",
         "For `--dry-run`",
         "agent_type: agent-runtime-parity-reviewer",
       ],
-    },
-    {
-      path: "plugins/rubber-duck/skills/skill-eval/SKILL.md",
-      includes: ["agent-prompt-reviewer"],
     },
   ];
 
@@ -1288,6 +1329,7 @@ async function main() {
   await assertAgentSources();
   await assertAgentSemanticContracts();
   await assertPackagedSafetyNotes();
+  await assertInventoryDocumentation();
   await assertSkillRoutes();
   await assertLiveStaleReferences();
   await assertGeneratedAgents();

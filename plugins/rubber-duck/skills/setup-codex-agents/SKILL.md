@@ -1,13 +1,13 @@
 ---
 name: setup-codex-agents
-description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, eval, and review agents.
+description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, and review agents.
 disable-model-invocation: true
 argument-hint: "[--project path | --global | --agents-dir path | --model model-id | --reasoning low|medium|high|xhigh | --dry-run]"
 ---
 
 # Setup Codex Agents Skill
 
-Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, eval, and review agents.
+Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, and review agents.
 
 Claude Code loads the Markdown files in the plugin root `agents/` directory directly. Codex custom agents use TOML files under `.codex/agents/` for a project or `~/.codex/agents/` globally. This skill bridges that packaging difference.
 
@@ -34,6 +34,8 @@ Use `../_shared/agent-orchestration.md` for exact named-agent invocation, read-o
 
 - Use `agent-packaging-reviewer` when validating or changing Rubber Duck agent packaging, mirrored source agents, sandbox declarations, generated TOML behavior, setup scripts, validation counts, or README/setup expectations.
 - Do not invoke `agent-packaging-reviewer` for a routine local install when no packaging behavior changed and validation is not being assessed.
+- Use `agent-prompt-reviewer` when changing Rubber Duck Markdown agent prompts, mirrored source-agent prompts, skill workflow prompts, shared prompt references, prompt-quality validator checks, or prompt-routing documentation.
+- Do not invoke `agent-prompt-reviewer` for routine local installs, generated TOML inspection, or non-prompt packaging-only changes.
 - Use `agent-runtime-parity-reviewer` alongside `agent-packaging-reviewer` when packaging changes add/remove agents, change agent definitions, generated TOML behavior, sandbox parity, default model/reasoning, or cross-runtime tool fallbacks (`Agent`, `WebSearch`, `WebFetch`).
 
 ## Workflow
@@ -58,17 +60,24 @@ Use `../_shared/agent-orchestration.md` for exact named-agent invocation, read-o
    - Do not allow the reviewer to edit files or write separate reports.
    - Treat mirror drift, sandbox mismatches, generated-agent count mismatches, stale validation expectations, or missing required frontmatter as blockers before calling packaging ready.
    - When packaging changes add/remove agents, change agent definitions, or affect generated Codex TOML behavior, sandbox parity, default model/reasoning, or cross-runtime tool availability (`Agent`, `WebSearch`, `WebFetch`), also invoke the exact pre-built `agent-runtime-parity-reviewer` agent in parallel and merge its findings before declaring the change ready.
-6. If setup succeeds, report based on mode:
+6. When validating prompt-definition changes or investigating prompt-quality risk, run the `agent-prompt-reviewer` agent.
+   - Follow the Specialist Invocation Contract below.
+   - Invoke the exact pre-built `agent-prompt-reviewer` agent.
+   - Pass only the changed Rubber Duck prompt paths, source/mirror context, relevant validation output, expected downstream skill contract, and the prompt-quality question under review.
+   - Do not allow the reviewer to edit files or write separate reports.
+   - Treat Blocker-tier prompt findings, missing invocation gates, output schema drift, unsafe context-copying, or stale exact-agent references as blockers before calling prompt changes ready.
+7. If setup succeeds, report based on mode:
    - For normal installs, tell the human which agents directory was updated and list the generated TOML files.
    - For `--dry-run`, tell the human which agents directory would be targeted, list the planned TOML files, and state that no files were written.
-7. Tell the human to restart Codex or start a new thread if the new agents do not appear immediately.
+8. Tell the human to restart Codex or start a new thread if the new agents do not appear immediately.
 
 ## Specialist Invocation Contract
 
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke the exact pre-built `agent-packaging-reviewer` agent for packaging validation review.
+- Invoke the exact pre-built `agent-prompt-reviewer` agent for prompt-quality review of changed Rubber Duck agent, skill, or shared prompt files.
 - Invoke the exact pre-built `agent-runtime-parity-reviewer` agent when packaging changes add/remove agents, change agent definitions, or affect generated TOML behavior, sandbox parity, default model/reasoning, or cross-runtime tool fallbacks.
-- In Codex delegation APIs, select the exact agent name, for example `agent_type: agent-packaging-reviewer` or `agent_type: agent-runtime-parity-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
+- In Codex delegation APIs, select the exact agent name, for example `agent_type: agent-packaging-reviewer`, `agent_type: agent-prompt-reviewer`, or `agent_type: agent-runtime-parity-reviewer`. Do not use `default`, `worker`, or a compressed role prompt when the named reviewer exists.
 - In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for setup reviewers. Pass only the bounded packaging paths, validation output, generation settings, runtime/tool-fallback context, and release-risk question under review.
 - Start the launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck agent-runtime-parity-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Keep the reviewer read-only. It returns packaging findings, required fixes, generated-agent notes, and questions; the parent skill owns edits, validation commands, install commands, and the final user summary.

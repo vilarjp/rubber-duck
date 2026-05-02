@@ -46,6 +46,8 @@ Status: completed | partial | blocked
 
 ## Blocking Questions
 
+- This section is decision history, not the first place the human should see task-blocking questions.
+- Ask blocking questions in the live session before marking the task completed. If any remain open, the task is partial/blocked and the final response must ask those questions directly.
 - Keep every blocking question that was raised during this subtask, including questions the human has answered.
 - Open questions block marking the task complete; answered questions remain as decision history when the answer and task impact are recorded.
 - Use this shape:

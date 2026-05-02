@@ -110,6 +110,8 @@ One short paragraph describing the intended technical change and the outcome it 
 
 ## Blocking Questions
 
+- This section is decision history, not the first place the human should see approval-blocking questions.
+- Ask blocking questions in the live session before presenting the plan for approval. If any remain open, the plan remains pending and not approval-ready, and the final response must ask those questions directly.
 - Keep every blocking question that was raised, including questions the human has answered.
 - Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
 - Use this shape:

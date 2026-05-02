@@ -50,7 +50,7 @@ Check whether the packaging change:
 - Preserves default generated model and reasoning values unless a plan or human instruction approved a change.
 - Avoids duplicate agent names, ambiguous responsibilities, stale descriptions, broken file naming, or inconsistent invocation names.
 - Keeps README, skill instructions, and setup docs aligned with the available agent inventory.
-- Avoids accidental changes to plugin marketplace installation paths, unrelated manifests, or skill-eval behavior.
+- Avoids accidental changes to plugin marketplace installation paths, unrelated manifests, or unrelated skill behavior.
 
 ## Output
 

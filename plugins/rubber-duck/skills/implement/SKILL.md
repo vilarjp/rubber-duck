@@ -52,6 +52,7 @@ Use these shared references when they apply:
 - Use `codebase-researcher` for broad or unfamiliar implementation areas, or invoke `codebase-locator`, `codebase-analyzer`, and `codebase-pattern-finder` directly for narrow file, behavior, or pattern questions before editing.
 - Use the exact pre-built `implementation-agent` only for bounded production-code delegation with explicit write ownership, especially parallel-safe planned subtasks or sidecar work that will not block the parent skill's next local step.
 - Use the exact pre-built `test-implementer` for bounded test-only or test-heavy work with explicit test, fixture, helper, and progress-document boundaries.
+- Before editing or delegating, choose and record the execution mode: `local sequential`, `implementation-agent`, `test-implementer`, or `mixed`. Include the rationale in the final summary and in `task_N.md` when a planned subtask is being completed.
 - Do not run reviewer agents from this skill. Reviewer agents are invoked by `code-review`.
 
 ## Workflow
@@ -77,6 +78,7 @@ Use these shared references when they apply:
    - If no subtask is named, choose the next ready subtask from the plan: the first uncompleted sequential task whose dependencies are complete, or the next independent task from the recommended parallel group.
    - For `incremental task-by-task` plans, complete one planned subtask per run unless the human explicitly asks for a larger batch.
    - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, only coordinate multiple `implementation-agent` delegations when the runtime supports safe workspace-write agents, the plan marks tasks as parallel-safe with disjoint ownership, and the current request authorizes implementing more than one task. Otherwise proceed with one ready task and note the parallel recommendation in the final summary.
+   - Select the execution mode before editing: use `local sequential` for direct, simple, dependent, or critical-path work; use `implementation-agent` for bounded production-code delegation with explicit write ownership; use `test-implementer` for bounded test-only or test-heavy work; use `mixed` only when ownership is clearly split. Record why this mode is safer or higher-quality than the alternatives for this run.
    - When delegating production-code subtasks, select the exact pre-built `implementation-agent` and give it an explicit task ID, write ownership/files, read-only context, generated-artifact boundaries, no-touch boundaries, dependencies, expected tests, and progress-document path; tell it that other agents may be editing disjoint tasks and it must not revert others' work.
    - Keep the change scoped to the requested behavior, bug, or review adjustment.
    - Treat the requested behavior, approved artifact, review comment, or changed-file scope as the boundary for edits; do not modify unrelated files just because they are nearby.
@@ -217,6 +219,7 @@ Answered blocking questions must remain in `Blocking Questions` as answered entr
 The final response must include:
 
 - What changed.
+- Execution mode used and why.
 - Which files changed.
 - Which planned subtask or subtasks were completed, which `task_N.md` documents were created or updated, and which planned task should run next when applicable.
 - Which focused tests ran, which full quality gate commands ran, and any verification categories that were unavailable or skipped.

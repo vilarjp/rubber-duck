@@ -54,6 +54,7 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - Run independent agents in parallel when the runtime supports it and the next local step is not blocked by one result.
 - Do not duplicate the same unresolved question across agents unless the plan intentionally asks for contrasting specialist perspectives.
 - Fan in by waiting for the needed results, comparing evidence, applying blocking findings, preserving every `Questions For The Invoking Skill` item, preserving legacy `Questions For The Human` items as human-facing questions, recording deferred non-blocking issues with rationale, and escalating true conflicts as human questions.
+- After fan-in, ask blocking human-facing questions in the session before finalizing, approving, assigning, or presenting an artifact. Do not leave agent-raised blocking questions only inside a generated document or final approval note.
 - Reviewer agents do not edit the artifact under review. Merge only feedback that improves correctness, safety, maintainability, testability, approval readiness, or implementation clarity.
 
 ## Fallback Behavior

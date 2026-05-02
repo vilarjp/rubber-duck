@@ -51,6 +51,7 @@ Use these shared references when they apply:
 - Use one exact pre-built `implementation-agent` per parallel-safe production-code task with disjoint write ownership.
 - Use the exact pre-built `test-implementer` for bounded test-only or test-heavy tasks with explicit test, fixture, helper, and progress-document boundaries.
 - The orchestrator owns task selection, worker assignment, fan-in, conflict handling, verification, and progress-document completeness.
+- Before editing or launching workers, record the execution mode decision: `local sequential`, `implementation-agent`, `test-implementer`, or `mixed`, plus the concrete safety/quality rationale.
 
 ## Workflow
 
@@ -82,6 +83,7 @@ Use these shared references when they apply:
    - Use sequential execution when the plan recommends a single focused pass or incremental task-by-task execution.
    - Use sequential execution when tasks share files, migrations, feature flags, public contracts, test fixtures, release steps, or security-sensitive state.
    - Use parallel subagents only when the plan explicitly marks tasks as parallel-safe, selected tasks have disjoint write sets, each task has clear acceptance checks, and the current runtime supports exact `implementation-agent` workers that can edit files inside explicit ownership boundaries.
+   - Record the selected mode and why it is safer or higher-quality than the alternatives in each selected `task_N.md` document and the final summary.
    - If parallel execution was requested but unsafe, explain the specific dependency or conflict and run the next ready task sequentially unless the human asks to stop.
 5. Execute selected tasks.
    - For sequential execution, implement one selected task at a time with scoped edits, TDD when feasible, focused tests, full quality gate, and `task_N.md` progress documentation.
