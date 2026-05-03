@@ -58,11 +58,13 @@ Check whether the plan:
 - Reflects repository-local rules from instructions, manifests, CI, lint/type/test/build configuration, and existing conventions.
 - Verifies or explicitly flags important external framework, library, service, or API assumptions, especially version-sensitive behavior.
 - Names the right files, modules, ownership boundaries, APIs, data flows, and integration points for the planned change.
+- Defines shared contracts/interfaces before parallel implementation, or explicitly reuses a stable existing contract.
 - Chooses an implementation approach that is proportionate to the requested behavior and avoids unnecessary abstractions.
 - Avoids workaround strategies that suppress errors, bypass lint/tests, add arbitrary timing, scatter special cases, or copy-paste fixes instead of addressing root cause.
 - Identifies simpler local-pattern alternatives when the proposed approach is heavier than needed.
 - Preserves stack/framework compatibility, local runtime assumptions, rollout paths, and rollback paths when relevant; synthesize supplied `plan-design-reviewer` public-contract or migration findings instead of duplicating that lane.
 - Specifies meaningful tests for the affected stack layers and important edge cases.
+- Keeps subtasks small, independently executable when marked parallel or independent, and backed by concrete completion and verification expectations.
 - Separates confirmed facts from assumptions, hypotheses, blocking questions, deferred non-blocking questions, and optional future work.
 - For complex plans, includes concise decision notes for important architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 

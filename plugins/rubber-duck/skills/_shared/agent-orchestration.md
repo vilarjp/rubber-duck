@@ -8,6 +8,7 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - Agents return findings, questions, proposed changes, or changed files inside their assigned scope. They do not decide approval, broaden scope, or ask the human directly unless the human invoked that agent directly.
 - Treat agent output as evidence to synthesize, not as an automatic patch to accept. Resolve conflicts locally or convert approval-relevant conflicts into human questions.
 - Keep launch prompts self-contained: source request, artifact paths, constraints, discovered rules, relevant evidence, exact question or task, and expected output.
+- Skills stay at the orchestration layer whenever a named specialist exists: delegate bounded research, review, implementation, test, execution-strategy, document-readiness, and commit-organization work to exact agents, then synthesize and verify locally.
 
 ## Exact Named-Agent Invocation
 
@@ -56,6 +57,30 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - Fan in by waiting for the needed results, comparing evidence, applying blocking findings, preserving every `Questions For The Invoking Skill` item, preserving legacy `Questions For The Human` items as human-facing questions, recording deferred non-blocking issues with rationale, and escalating true conflicts as human questions.
 - After fan-in, ask blocking human-facing questions in the session before finalizing, approving, assigning, or presenting an artifact. Do not leave agent-raised blocking questions only inside a generated document or final approval note.
 - Reviewer agents do not edit the artifact under review. Merge only feedback that improves correctness, safety, maintainability, testability, approval readiness, or implementation clarity.
+
+## Contract-First Parallelization
+
+- Define the contract or interface before assigning parallel implementation: public API, CLI, plugin surface, schema, event shape, generated artifact format, component props, storage contract, or internal module boundary.
+- If no contract changes, say which existing contract the subtasks consume.
+- Treat contract/interface definition as a first-class planned task when the boundary is new, unstable, or shared by more than one implementation task.
+- Parallel subtasks must name the contract they consume, the files they own, the files they may read, acceptance checks, and what output proves they are complete.
+- Do not mark a subtask parallel-safe when it shares writable contracts, migrations, manifests, snapshots, generated outputs, or test fixtures with another selected task.
+- Prefer small tasks that end in an observable state: one contract decision, one bounded implementation surface, one test slice, one generated-artifact update, or one integration adjustment. Avoid subtasks that require broad rediscovery before the worker can finish.
+
+## Integration Coordination
+
+- The invoking skill remains the integration coordinator after parallel work fans in.
+- After workers return, compare contract assumptions, changed files, generated artifacts, test fixtures, task documents, and verification results before starting dependent tasks.
+- If implementation reveals a contract/interface shift, stop parallel assignment for dependent work and create one explicit integration adjustment: update the contract source of truth, affected task documents, acceptance checks, and any bounded adapter changes.
+- Use `plan-execution-strategy-reviewer` when merge ownership, task sequencing, contract drift, or cross-task integration risk is uncertain.
+- Assign integration adjustment edits to one bounded owner at a time. Do not let multiple workers patch the same contract drift independently.
+
+## Commit Organization
+
+- Commit grouping is part of orchestration, not an afterthought.
+- Use a dedicated commit-organization pass when the change set spans multiple related concerns, generated artifacts, mirrored agent prompts, docs, tests, or validation updates.
+- Group commits by related change and rollback boundary. Keep source and required mirrors or generated-count updates together unless there is a concrete review or rollback reason to split them.
+- Treat unrelated user changes as protected and outside the commit plan until the human confirms intent.
 
 ## Fallback Behavior
 

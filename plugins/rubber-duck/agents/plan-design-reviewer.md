@@ -50,6 +50,7 @@ Check whether the plan:
 
 - States the chosen architecture in one or two sentences and explains why other shapes were rejected.
 - Names the public contracts (APIs, CLI, plugin interfaces, event schemas, file paths) that the plan preserves, extends, or breaks.
+- Defines new or changed contracts/interfaces before dependent implementation tasks consume them.
 - Specifies migration and compatibility behavior for storage, schema, public contracts, feature flags, and rollout when relevant.
 - Identifies any new abstraction, layer, or shared infrastructure and explains why it is load-bearing.
 - Avoids speculative abstractions, broad refactors, or generality that the requested behavior does not require.

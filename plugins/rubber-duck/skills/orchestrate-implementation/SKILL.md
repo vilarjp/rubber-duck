@@ -44,6 +44,7 @@ Use these shared references when they apply:
 - `../_shared/no-workarounds.md` before accepting task implementations or temporary mitigations.
 - `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only vs workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - `../_shared/clarifying-questions.md` when selected tasks expose behavior, ownership, dependency, or verification uncertainty.
+- `../_shared/artifact-quality-gates.md` before finalizing `task_N.md` progress documents or orchestration summaries.
 
 ## Agent Crew
 
@@ -51,6 +52,7 @@ Use these shared references when they apply:
 - Use one exact pre-built `implementation-agent` per parallel-safe production-code task with disjoint write ownership.
 - Use the exact pre-built `test-implementer` for bounded test-only or test-heavy tasks with explicit test, fixture, helper, and progress-document boundaries.
 - The orchestrator owns task selection, worker assignment, fan-in, conflict handling, verification, and progress-document completeness.
+- The orchestrator is the integration coordinator after parallel work fans in. It reconciles contract assumptions, generated artifacts, task documents, verification results, and any cross-task adapter work before dependent tasks begin.
 - Before editing or launching workers, record the execution mode decision: `local sequential`, `implementation-agent`, `test-implementer`, or `mixed`, plus the concrete safety/quality rationale.
 
 ## Workflow
@@ -62,7 +64,8 @@ Use these shared references when they apply:
    - If no plan matches, ask for the plan path or slug.
    - Require `status: approved` before orchestrating implementation. If the plan is `pending-approval` or `requested-changes`, ask the human whether to stop, approve/update the plan first, or proceed with explicit risk acceptance.
 2. Read orchestration context.
-   - Read `Implementation Surface`, `Implementation Strategy`, `Implementation Subtasks`, `Decision Notes`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Read `Contract / Interface Definition`, `Implementation Surface`, `Implementation Strategy`, `Implementation Subtasks`, `Decision Notes`, `Blocking Questions`, `Deferred Non-Blocking Questions`, `Test Plan`, `Files / Modules To Touch`, and any security, rollout, migration, or plan-approval notes.
+   - Treat `Contract / Interface Definition` as the source of truth for shared boundaries that parallel tasks consume. If a selected parallel task depends on a missing, unstable, or contradictory contract, stop and ask before assigning workers.
    - Use `Implementation Surface` as the primary source for write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
    - When an older approved plan lacks `Implementation Surface`, derive temporary boundaries from `Files / Modules To Touch`, `Test Plan`, security/rollout notes, and subtask ownership. If those boundaries are ambiguous or approval-relevant, stop and ask the human before assigning work.
    - Treat the plan's `simple`, `medium`, or `complex` classification as execution guidance: simple plans should normally run as one focused pass, medium plans should follow subtasks, and complex plans require extra care around sequencing, rollback, security, and decision context.
@@ -75,14 +78,14 @@ Use these shared references when they apply:
    - If the human named task IDs, consider only those tasks and their unmet dependencies.
    - Otherwise choose the next ready task for `incremental task-by-task` plans.
    - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution, then assign production-code tasks to exact `implementation-agent` workers.
-   - A task is ready only when its dependencies are complete, no open blocking questions affect it, and its ownership/files do not conflict with another selected task.
+   - A task is ready only when its dependencies are complete, no open blocking questions affect it, the contract/interface it consumes is stable, and its ownership/files do not conflict with another selected task.
    - Before launching workers, invoke `plan-execution-strategy-reviewer` when selected tasks, proposed parallel groups, shared write targets, migrations, feature flags, contracts, or test fixtures create sequencing or merge-risk uncertainty. Pass the approved plan, selected task IDs, existing `task_N.md` state, proposed execution mode, ownership/write sets, known conflicts, and unresolved blockers. Treat its `Blocker`-tier execution-strategy concerns as a stop until resolved.
    - If a selected task exposes approval-relevant uncertainty, apply the clarifying-questions reference and ask before assigning or editing. Record non-blocking uncertainty in the relevant `task_N.md`.
    - If the plan has no subtasks, fall back to a single focused implementation pass and note that the plan should be updated later if the work is medium-to-complex.
 4. Select execution mode.
    - Use sequential execution when the plan recommends a single focused pass or incremental task-by-task execution.
    - Use sequential execution when tasks share files, migrations, feature flags, public contracts, test fixtures, release steps, or security-sensitive state.
-   - Use parallel subagents only when the plan explicitly marks tasks as parallel-safe, selected tasks have disjoint write sets, each task has clear acceptance checks, and the current runtime supports exact `implementation-agent` workers that can edit files inside explicit ownership boundaries.
+   - Use parallel subagents only when the plan explicitly marks tasks as parallel-safe, selected tasks have disjoint write sets, each task names the stable contract/interface it consumes, each task has clear acceptance checks, and the current runtime supports exact `implementation-agent` workers that can edit files inside explicit ownership boundaries.
    - Record the selected mode and why it is safer or higher-quality than the alternatives in each selected `task_N.md` document and the final summary.
    - If parallel execution was requested but unsafe, explain the specific dependency or conflict and run the next ready task sequentially unless the human asks to stop.
 5. Execute selected tasks.
@@ -95,6 +98,7 @@ Use these shared references when they apply:
      - Approved plan path and relevant plan excerpts.
      - Exact task ID and task text.
      - Ownership/files and explicit write boundaries.
+     - Contract/interface produced or consumed by the task, including compatibility or migration expectations.
      - Read-only context, generated-artifact boundaries, and no-touch boundaries from the plan's `Implementation Surface`.
      - Dependencies and already completed `task_N.md` docs.
      - Required focused tests, including any known focused command and expected result.
@@ -109,13 +113,17 @@ Use these shared references when they apply:
 6. Fan in and integrate.
    - Wait for every launched `implementation-agent` or `test-implementer` before finalizing orchestration.
    - Review each worker's changed files, tests, and `task_N.md` document before starting another dependent task.
+   - Compare each worker's contract/interface assumptions against the plan and against other completed tasks.
+   - Run the plan's integration checkpoint after every parallel group: reconcile generated artifacts, manifests, snapshots, test fixtures, task documents, focused verification, and full quality-gate readiness before selecting dependent tasks.
    - Reject worker changes that rely on untracked workaround smells unless the worker records a constrained temporary mitigation and required follow-up.
    - Resolve non-overlapping worker changes together only after confirming they stayed within ownership boundaries.
    - If workers conflict, stop and ask the human before resolving by dropping or overwriting another worker's changes.
-   - If any task reveals a material plan gap, stop and ask before changing the approved plan or continuing with a different scope.
+   - If any task reveals a material plan gap, contract/interface change, or integration adjustment that affects another selected task, stop parallel assignment and create one explicit integration adjustment. The adjustment must name the contract source of truth, affected tasks, owner/write set, verification, task-document updates, and whether human approval is needed before continuing.
+   - Use `plan-execution-strategy-reviewer` when contract drift, merge ownership, generated-artifact reconciliation, or sequencing risk is unclear after fan-in.
 7. Verify the run.
    - Ensure each completed selected task has a completed `task_N.md` progress document.
    - Ensure each task document includes source plan task, implementation summary, changed files, tests/verification, delegated-agent ownership when applicable, TDD or Verification Mode notes, deviations/follow-ups, blocking questions, deferred non-blocking questions, `Document Changelog`, and next task.
+   - Run the artifact quality gate on every completed or partial `task_N.md`: required structure, evidence-grounded changed-file and verification notes, recorded contract/interface impact, open-question handling, changelog, and next-task recommendation.
    - If a selected task ends partial or blocked, ensure its `task_N.md` records reusable work, remaining work, blockers, and what must happen before completion.
    - Run focused tests for each completed task.
    - Run the full quality gate before final summary unless the plan or human explicitly scoped the run to discovery only.
@@ -137,7 +145,8 @@ Parallel execution is allowed only when all of these are true:
 - The approved plan recommends parallel `implementation-agent` / `test-implementer` delegation or explicitly marks the selected tasks as parallel-safe for exact agent delegation.
 - Selected tasks have disjoint ownership/files.
 - No selected task depends on another selected task's unfinished output.
-- Selected tasks do not share migrations, data model changes, generated files, snapshots, package manifests, release steps, or public contracts.
+- Selected tasks consume a stable contract/interface that is already defined or unchanged.
+- Selected tasks do not share migrations, data model changes, generated files, snapshots, package manifests, release steps, public contracts, or test fixtures.
 - Security-sensitive tasks do not require ordering or a shared threat-model decision.
 - Each task has a clear `task_N.md` output path and acceptance checks, including focused verification commands and expected results when known.
 - The current runtime can run exact `implementation-agent` or `test-implementer` workers with write access and clear ownership boundaries.
@@ -157,6 +166,7 @@ If any condition is false, run sequentially.
 - In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for named implementation agents. Pass only the approved plan excerpts, ownership boundaries, and run-specific context needed for the task.
 - Start each launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck implementation-agent custom agent. Use your configured agent instructions; this message only provides run-specific context.`
 - Pass the approved plan path, task ID, task text, write targets, read-only context, generated-artifact boundaries, no-touch boundaries, dependencies, prior task documents, required focused checks, full quality gate expectations, and required `task_N.md` path.
+- Include the contract/interface the task produces or consumes and any integration checkpoint expectations.
 - Assign one write-capable agent per disjoint write set. Do not assign overlapping files, migrations, generated artifacts, snapshots, manifests, or shared public contracts to parallel agents.
 - Tell every write-capable agent that it is not alone in the codebase, must preserve unrelated human and worker edits, and must adapt to concurrent changes instead of reverting them.
 - If `implementation-agent` is unavailable, run selected production-code tasks sequentially in the parent skill or ask the human before changing an approved parallel execution strategy. Do not replace it with a generic worker when the named agent exists.

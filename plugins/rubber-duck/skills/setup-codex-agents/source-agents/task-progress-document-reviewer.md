@@ -52,6 +52,7 @@ Check whether the task progress document:
 - Recommends the next task or explicitly states none.
 - Avoids unsupported claims about future tasks, downstream impact, or unrelated work.
 - Does not silently expand scope beyond the task's planned ownership.
+- Passes the artifact quality gate: concrete changed paths, command results, contract/interface impact, reusable partial-work notes, blockers, open-question handling, changelog, and next-task recommendation.
 
 ## Anti-Pattern Examples
 

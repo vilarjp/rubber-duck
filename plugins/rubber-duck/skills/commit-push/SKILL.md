@@ -40,6 +40,9 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 - Run `shipping-hygiene-reviewer` after inspecting the intended change scope and before proposing commits or asking for final confirmation.
 - Pass branch state, included paths, excluded paths, staged/unstaged/untracked scope, relevant diffs or summaries, verification evidence, and any known human intent.
 - Treat returned shipping blockers as blockers before staging, committing, or pushing unless the human explicitly accepts the risk after seeing the finding.
+- Run `commit-organization-reviewer` after the intended scope is known and before the final commit proposal whenever the local work spans multiple files, generated artifacts, mirrored prompts, docs, tests, or possible logical units.
+- Pass branch state, included and excluded paths, staged/unstaged/untracked scope, diff summaries, verification evidence, source/mirror/generated relationships, and any known human commit intent.
+- Treat returned Blocker-tier split/fold concerns or blocking questions as blockers before proposing final commit messages unless the human explicitly accepts the grouping risk.
 
 ## Required Confirmations
 
@@ -113,7 +116,14 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Do not allow the reviewer to stage, commit, push, or edit files.
    - If it returns shipping blockers, blocking `Questions For The Invoking Skill`, or legacy blocking `Questions For The Human`, stop before staging, committing, or pushing. Report the blockers/questions and ask whether to fix, change scope, answer the question, or proceed with explicit known risk.
    - Merge non-blocking scope notes, verification notes, and non-blocking reviewer questions into the commit proposal with their rationale.
-9. Run the final verification gate.
+9. Run the `commit-organization-reviewer` agent when the intended scope has more than one logical unit or the split is not obvious.
+   - Follow the Specialist Invocation Contract below.
+   - Invoke the exact pre-built `commit-organization-reviewer` agent.
+   - Pass the target branch, `git status` summary, proposed included and excluded paths, staged and unstaged diff summaries, untracked-file notes, verification evidence so far, source/mirror/generated parity notes, and any scope constraints or commit intent from the human.
+   - Do not allow the reviewer to stage, commit, push, or edit files.
+   - If it returns Blocker-tier split/fold concerns, blocking `Questions For The Invoking Skill`, or grouping uncertainty that affects safe rollback, stop before staging, committing, or pushing. Report the concerns/questions and ask whether to fix, change scope, answer the question, or proceed with explicit known risk.
+   - Merge proposed commit groups, dependency notes, excluded-work notes, and non-blocking questions into the commit proposal. The parent skill owns the final commit plan.
+10. Run the final verification gate.
    - Run this gate after identifying the intended commit scope and before asking for final commit/push confirmation.
    - Discover repository-native verification commands from package manifests, lockfiles, task runners, CI workflows, Makefiles, and project documentation.
    - Run every available non-mutating command that checks formatting, linting, type checking, builds or compilation, and the full automated test suite.
@@ -121,27 +131,28 @@ Do not force push a protected branch. Do not force push any branch unless the hu
    - Prefer a single repo-native `check`, `verify`, `ci`, or equivalent command only when repository evidence shows that it covers the relevant formatting, linting, type checking, build, and test categories; otherwise run the individual commands.
    - Do not run formatters, linters, generators, snapshots, or other tools in write/fix/update mode unless the human explicitly asks for it.
    - If any important verification command fails, is unavailable, too expensive, blocked, or cannot be inferred safely, stop before staging, committing, or pushing. Report the exact command or category and ask whether to fix the issue, change the scope, or proceed with explicit known risk.
-10. Propose the commit plan.
+11. Propose the commit plan.
    - Split commits only when there are clear logical units that can be understood and reverted independently.
    - Prefer a single commit when the work is one coherent change.
    - For each proposed commit, list the conventional commit message and included paths.
    - List excluded local changes when they exist.
    - List any pre-commit scope or hygiene concerns found, including relevant coverage gaps or the explicit reason coverage was not added.
    - Include `shipping-hygiene-reviewer` blockers, blocking or non-blocking reviewer questions, scope notes, verification notes, or state that it found no blockers or open questions.
+   - Include `commit-organization-reviewer` proposed groups, split/fold concerns, commit dependencies, excluded-work notes, blocking or non-blocking grouping questions, or state that a single coherent commit is recommended.
    - List the final verification gate commands and results, including unavailable categories.
-11. Ask for final confirmation.
+12. Ask for final confirmation.
    - Use the required phrase `yes, commit and push`.
    - Do not commit or push until the human responds with that exact confirmation.
-12. Create commits after confirmation.
+13. Create commits after confirmation.
    - Stage only the files for the current commit.
    - Preserve unrelated working tree and index changes.
    - Use conventional commit messages.
    - If a commit command fails, stop and report the failure instead of trying broad recovery commands.
-13. Push after successful commits.
+14. Push after successful commits.
     - Push the selected branch to the configured remote.
     - Use upstream setup for new branches, usually `git push -u origin <branch>`.
     - Do not force push unless explicitly approved and non-protected.
-14. Summarize the result.
+15. Summarize the result.
     - Include the branch, commit SHA or SHAs, commit messages, pushed remote, and any excluded local changes.
     - Include pre-commit scope and hygiene check results, including `shipping-hygiene-reviewer` notes.
     - Include the final verification gate commands and results, including unavailable categories.
@@ -151,10 +162,14 @@ Do not force push a protected branch. Do not force push any branch unless the hu
 
 - Follow `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, and fallback behavior.
 - Invoke the exact pre-built `shipping-hygiene-reviewer` agent for commit/push readiness review.
+- Invoke the exact pre-built `commit-organization-reviewer` agent for related-change commit grouping when the change set is multi-part or the split is uncertain.
 - In Codex delegation APIs, select `agent_type: shipping-hygiene-reviewer`. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
+- In Codex delegation APIs, select `agent_type: commit-organization-reviewer` for commit grouping. Do not use `default`, `worker`, or a newly-created generic subagent when the named reviewer exists.
 - In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for `shipping-hygiene-reviewer`. Pass only the bounded status, diff summary, intended scope, verification notes, and files under consideration.
+- In Codex delegation APIs, omit `fork_context` or set `fork_context: false` for `commit-organization-reviewer`. Pass only bounded branch, status, diff summary, intended scope, verification, source/mirror/generated parity notes, and human commit intent.
 - Start the launch prompt with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck shipping-hygiene-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
-- Keep the reviewer read-only. It may inspect local status and diffs through read-only commands, but must not edit, stage, unstage, commit, push, branch, or mutate remotes.
+- Start commit-organization prompts with the selected agent name for auditability, for example: `You are the already-selected Rubber Duck commit-organization-reviewer custom agent. Use your configured agent instructions; this message only provides run-specific context.`
+- Keep reviewers read-only. They may inspect local status and diffs through read-only commands, but must not edit, stage, unstage, commit, push, branch, or mutate remotes.
 - The parent skill owns scope decisions, human questions, final confirmation, staging, committing, pushing, and final summary.
 
 ## Conventional Commit Rules

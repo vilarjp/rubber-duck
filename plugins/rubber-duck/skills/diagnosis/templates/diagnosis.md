@@ -38,7 +38,7 @@ One short paragraph describing the bug, affected behavior, and current confidenc
 
 ## Probable Root Cause
 
-Evidence-backed explanation of why the bug is happening. Include confidence level and any competing hypotheses that remain plausible.
+Evidence-backed explanation of why the bug is happening. Include confidence level, cited evidence, and any competing hypotheses that remain plausible.
 
 ## Affected Files / Flows
 
@@ -52,7 +52,7 @@ Evidence-backed explanation of why the bug is happening. Include confidence leve
 
 ## Recommended Next Step
 
-The recommended implementation or follow-up action, with the reason it is preferred.
+The recommended implementation or follow-up action, with the reason it is preferred and the evidence that supports it.
 
 ## Verification Plan
 

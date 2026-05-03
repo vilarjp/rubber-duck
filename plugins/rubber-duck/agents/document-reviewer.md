@@ -43,7 +43,7 @@ Supported document types:
 - Delegate to exactly one type-specific reviewer for the detected type. Optionally delegate to `document-coherence-reviewer` in parallel for long or complex documents.
 - Merge specialist findings into the historical `document-reviewer` output schema; do not invent new section names.
 - Preserve answered blocking questions exactly as the type-specific reviewer reports them.
-- Apply shared Rubber Duck guidance: clarifying-question pattern, answered-question preservation, document changelog discipline.
+- Apply shared Rubber Duck guidance: clarifying-question pattern, answered-question preservation, document changelog discipline, artifact quality gates.
 
 ## Routing Table
 

@@ -49,6 +49,7 @@ const EXPECTED_AGENT_NAMES = [
   "codebase-locator",
   "codebase-pattern-finder",
   "codebase-researcher",
+  "commit-organization-reviewer",
   "data-migrations-reviewer",
   "design-implementation-validator",
   "diagnosis-document-reviewer",

@@ -23,6 +23,7 @@ Status: pending-approval
 
 - Severity: critical | high | medium | low
   File: `path/to/file:line`
+  Evidence: Changed line, hunk, command output, related plan/task document, or other review evidence.
   Issue: Concise description of the bug, regression, plan drift, security risk, test gap, or maintainability issue.
   Impact: Concrete user-facing, production, security, review-confidence, or maintenance impact.
   Recommendation: Smallest useful fix or question.

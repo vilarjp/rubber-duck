@@ -39,6 +39,14 @@ One short paragraph describing the intended technical change and the outcome it 
 - Important decisions, tradeoffs, dependencies, and rejected heavier alternatives.
 - Root-cause path for bug fixes; avoid workaround strategies unless they are explicitly temporary, constrained, and tracked.
 
+## Contract / Interface Definition
+
+- New or changed contracts/interfaces: public APIs, CLI commands, plugin interfaces, generated artifact formats, schemas, events, component props, storage shape, module boundaries, or test fixture contracts.
+- Existing stable contracts consumed by this work.
+- Contract owner and first task that establishes or confirms the contract before downstream implementation.
+- Compatibility expectations, versioning, migration, or deprecation notes.
+- Write `No contract change; implementation consumes the existing <surface> contract` when applicable.
+
 ## Implementation Surface
 
 - Write targets: files, modules, generated artifacts, configuration, data stores, or external systems that implementation may change.
@@ -55,6 +63,7 @@ One short paragraph describing the intended technical change and the outcome it 
 - Rationale: why this mode is safer or faster for this work.
 - Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely implement independent subtasks.
 - Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
+- Integration checkpoint: how the orchestrator will reconcile contract assumptions, generated artifacts, task documents, and verification after any parallel group before dependent work begins.
 
 ## Decision Notes
 
@@ -71,9 +80,12 @@ One short paragraph describing the intended technical change and the outcome it 
 - Task 1: Short task title.
   Status: planned
   Execution: sequential first | sequential after Task N | parallel group A | independent
+  Contract / interface: contract produced, contract consumed, or `No contract impact`
   Ownership / files: `path/to/file`, `path/to/other`
+  Read-only context: `path/to/context` or `None`
   Dependencies: Task IDs, human answers, migrations, feature flags, or `None`
-  Acceptance: Observable completion criteria and focused tests/checks.
+  Acceptance: Observable completion criteria, focused tests/checks, expected command results, and stop condition.
+  Integration notes: merge boundary, generated artifacts, task-document updates, or `None`
   Progress document: `task_1.md`
 - For simple work that does not need breakdown, write `Not applicable: single focused pass is recommended`.
 

@@ -35,6 +35,7 @@ What user or business problem this solves, with only the context needed for plan
 ## Requirements
 
 - Functional and product requirements stated as verifiable behavior.
+- For each material requirement, note whether it comes from the prompt, Jira/source artifact, repository context, or an explicit human answer when that distinction affects approval.
 
 ## Acceptance Criteria
 
@@ -48,6 +49,7 @@ What user or business problem this solves, with only the context needed for plan
 ## Risks / Dependencies
 
 - Material dependencies, assumptions, constraints, or known risks.
+- Keep confirmed risks separate from assumptions and unknowns.
 
 ## Blocking Questions
 

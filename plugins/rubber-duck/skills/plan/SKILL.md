@@ -41,6 +41,7 @@ Use these shared references when they apply:
 - `../_shared/prd-plan-alignment.md` when planning from a PRD.
 - `../_shared/decision-notes.md` for optional mini-ADR-style decision notes in complex plans.
 - `../_shared/clarifying-questions.md` to keep human questions focused on approval-relevant uncertainty after investigation.
+- `../_shared/artifact-quality-gates.md` before reviewer invocation and approval handoff.
 
 ## Workflow
 
@@ -83,6 +84,8 @@ Use these shared references when they apply:
    - If the source is a PRD, run the PRD-to-Plan Alignment check before reviewer invocation: map PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into plan sections, tests, rollout notes, or explicit out-of-scope rationale.
    - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
    - Include an `Implementation Surface` section for every plan. This section defines where implementation may happen before describing how it will happen.
+   - Include a `Contract / Interface Definition` section before `Implementation Surface` when the work creates, changes, or consumes a shared public or internal boundary. If no contract changes are needed, name the existing stable contract or write `No contract change; subtasks consume the existing <surface> contract`.
+   - Define contracts before parallel work: public APIs, CLI commands, plugin interfaces, generated artifact formats, schemas, event shapes, component props, storage shape, module boundaries, or test fixture contracts that multiple tasks depend on.
    - In `Implementation Surface`, separate write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
    - Keep `Implementation Surface` focused on ownership and coordination boundaries. Keep `Files / Modules To Touch` as the concise per-file change list.
    - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
@@ -90,13 +93,17 @@ Use these shared references when they apply:
    - For medium-to-complex plans, risky behavior changes, or unclear verification strategy, use `test-plan-architect` when available to draft layered test cases with stable `T###` IDs, fixtures, commands, and manual checks.
    - Classify implementation complexity as `simple`, `medium`, or `complex`.
    - Use the shared complexity reference to scale detail: simple plans stay single-pass when possible, medium plans include clear subtasks, and complex plans include full sequencing, rollout, rollback, and decision context.
-   - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into named tasks with dependencies, ownership/files, acceptance checks, execution mode, and expected `task_N.md` progress document names.
+   - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into small named tasks with dependencies, ownership/files, acceptance checks, execution mode, consumed or produced contract/interface, and expected `task_N.md` progress document names.
+   - Shape subtasks as concrete implementation units: one primary outcome, one bounded write set, explicit read-only context, known dependencies, observable completion checks, and a clear stop condition. Split broad tasks that would require the worker to rediscover scope or return for multiple follow-up fixes.
+   - When a new or changed contract enables parallel work, make the contract/interface task sequential first, then make downstream tasks consume that stable contract in named parallel groups only when their write sets are disjoint.
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
    - For complex plans, include `Decision Notes` when architecture, public contracts, data migrations, security, third-party integrations, or intentionally avoided heavier alternatives matter to future implementers.
    - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation.
    - Evaluate orchestration needs in the plan: state whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely handle independent tasks.
-   - Only recommend parallel implementation when subtasks have disjoint ownership, clear interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, or test fixtures.
+   - Only recommend parallel implementation when subtasks have disjoint ownership, clear stable interfaces, no unresolved blockers, and low merge risk. Mark sequential dependencies when tasks share files, migrations, feature flags, public contracts, manifests, generated artifacts, snapshots, or test fixtures.
+   - Add an integration checkpoint after every parallel group. Name who owns contract/interface reconciliation, generated-artifact updates, task-document consistency, verification fan-in, and follow-up adapter changes if implementation reveals drift.
    - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
+   - Run the artifact quality gate on the draft before council or reviewer invocation: verify required structure, evidence grounding, explicit assumptions, contract/interface clarity, focused acceptance checks, open-question handling, and changelog readiness.
 6. For medium or complex plans, run the plan-time council on the generated `plan.md` before invoking the technical reviewers.
    - Council voices debate the proposal; they do not finalize the plan.
    - Each council voice steel-mans the proposal, attacks its strongest form, and concedes when the plan already addresses the concern.
@@ -200,6 +207,7 @@ Use these sections when useful:
 - PRD Alignment
 - Current System Notes
 - Proposed Approach
+- Contract / Interface Definition
 - Implementation Surface
 - Implementation Strategy
 - Implementation Subtasks
@@ -220,16 +228,19 @@ Use these sections when useful:
 Plans must explicitly guide execution:
 
 - Every plan must include an `Implementation Surface` section before `Implementation Strategy`.
+- Plans that create, change, or depend on shared boundaries must include `Contract / Interface Definition` before `Implementation Surface`. Plans with no contract change must explicitly name the existing stable interface the implementation will use.
 - `Implementation Surface` must identify write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Use `Not applicable` only for categories that truly do not apply.
 - `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
 - `medium` and `complex` plans must include implementation subtasks.
 - `complex` plans should include decision notes for important architecture, public-contract, data, migration, security, or third-party integration decisions.
-- Each subtask must include task number, short title, status, execution mode, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
+- Each subtask must include task number, short title, status, execution mode, consumed or produced contract/interface, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
 - When a focused command is known, acceptance checks should include the command and the expected result instead of only saying "add tests" or "verify behavior".
 - Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.
 - The strategy must recommend incremental task-by-task execution or parallel execution across exact `implementation-agent` / `test-implementer` workers, with rationale.
 - The strategy must recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
 - Parallel implementation must only be recommended when tasks can be assigned disjoint write sets and merged without cross-task ordering risk.
+- Subtasks should be small, concrete, independently executable when marked parallel or independent, and complete enough that their `task_N.md` can truthfully mark the task done after its acceptance and verification checks pass.
+- Every parallel group must name its integration checkpoint, including contract drift handling, generated-artifact reconciliation, shared verification, and task-document consistency checks.
 
 ## Reviewer Orchestration Notes
 

@@ -46,7 +46,7 @@ Check whether the code-review document:
 - Has valid YAML frontmatter (`type: code-review`, `slug`, `status`, `created`, `updated`, `source`).
 - Includes a visible `Status:` line consistent with frontmatter.
 - Names the reviewed diff scope: PR link, branch, or explicit file/patch list.
-- Lists findings ordered by severity, with each finding including evidence, exact file and line references when possible, and the concrete impact.
+- Lists findings ordered by severity, with each finding including an `Evidence` field, exact file and line references when possible, and the concrete impact.
 - Distinguishes blocking findings from non-blocking suggestions.
 - Pins findings to changed hunks/lines, new files, or unchanged lines that the changed code newly exposes; flags any finding that targets unrelated code.
 - Includes test, security, and plan-alignment notes when those domains were reviewed; states explicitly when a domain was out of scope.
@@ -55,6 +55,7 @@ Check whether the code-review document:
 - Preserves every answered blocking question with original text, human answer, answer date, and document impact.
 - Includes a `Document Changelog` when the document has been updated.
 - Keeps `updated` aligned with the latest material change.
+- Passes the artifact quality gate: explicit review scope, changed-line evidence, severity ordering, test/security/plan-alignment notes, residual uncertainty, open-question handling, and approval framing that does not require rediscovery.
 
 ## Anti-Pattern Examples
 

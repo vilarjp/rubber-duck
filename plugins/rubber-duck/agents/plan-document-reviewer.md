@@ -46,8 +46,10 @@ Check whether the plan:
 - Has valid YAML frontmatter (`type: plan`, `slug`, `status`, `created`, `updated`, `source`).
 - Includes a visible `Status:` line consistent with frontmatter.
 - Includes `Implementation Surface` before `Implementation Strategy`, separating write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
+- Includes `Contract / Interface Definition` before `Implementation Surface` when shared boundaries are created, changed, or consumed; otherwise explicitly names the existing stable contract.
 - Includes a clear approach, files to touch, tests, rollout, rollback, and security/privacy notes proportional to complexity.
 - For medium-to-complex plans, includes `Implementation Strategy` and `Implementation Subtasks` with execution mode, dependencies, ownership/files, acceptance checks, and expected `task_N.md` progress documents.
+- For medium-to-complex plans, keeps subtasks small and implementation-ready: one primary outcome, explicit consumed or produced contract/interface, bounded write set, read-only context, dependencies, concrete stop condition, and focused verification.
 - Strategy recommends `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent`/`test-implementer` delegation, with explanation, and recommends whether `/rubber-duck:orchestrate-implementation` should coordinate.
 - For complex plans, includes concise decision notes for important architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 - When the source is a PRD, maps PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into planned work, tests, rollout notes, or explicit out-of-scope rationale.
@@ -57,12 +59,14 @@ Check whether the plan:
 - Keeps `updated` aligned with the latest material change.
 - Captures the smallest useful scope without smuggling in unrelated work.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, or user intent.
+- Passes the artifact quality gate: evidence grounding, explicit assumptions, contract-first task shape, open-question handling, changelog readiness, and enough implementation detail to avoid repeated revisitation.
 
 ## Anti-Pattern Examples
 
 - Approval-status drift: frontmatter says `approved` while unresolved blocking questions remain.
 - Hidden scope expansion: a subtask writes outside the stated `Implementation Surface` without explanation.
 - Verification gap: the plan names risky behavior but has no focused test or manual check for it.
+- Aspirational parallelism: tasks are called parallel-safe but share contracts, generated artifacts, manifests, snapshots, or test fixtures without an integration checkpoint.
 
 ## Confidence Anchors
 

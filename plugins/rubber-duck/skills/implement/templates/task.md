@@ -19,12 +19,14 @@ Status: completed | partial | blocked
 - Plan path: `docs/yyyy-mm-dd-{slug}/plan.md`
 - Planned task: Task N from Implementation Subtasks.
 - Planned execution: sequential first | sequential after Task N | parallel group A | independent
+- Contract / interface: contract produced, contract consumed, or `No contract impact`
 - Dependencies: Task IDs, human answers, migrations, feature flags, or `None`
 
 ## Implementation Summary
 
 - What changed for this subtask and why it satisfies the planned acceptance criteria.
 - Note whether this was implemented sequentially or in parallel with other planned subtasks.
+- Record any contract/interface effect, compatibility note, generated-artifact reconciliation, or reason later tasks can safely depend on this work.
 - If delegated, record the assigned `implementation-agent` or `test-implementer`, its write ownership, read-only context, generated-artifact boundaries, and no-touch boundaries.
 - For `partial` or `blocked` status, summarize completed work, remaining work, blockers, and whether any edits or verification results can be safely reused.
 
@@ -37,6 +39,7 @@ Status: completed | partial | blocked
 - Focused tests and checks run for this task.
 - Full quality gate commands run, deferred, unavailable, or blocked.
 - External framework, library, service, or API behavior verified when it shaped implementation.
+- Contract/interface verification, integration checkpoint, or downstream compatibility check when relevant.
 - Any temporary workaround that remains, including why it was necessary, how it is constrained, and what follow-up removes it.
 
 ## Deviations / Follow-Ups

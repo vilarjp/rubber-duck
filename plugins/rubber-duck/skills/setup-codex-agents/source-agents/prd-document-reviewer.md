@@ -54,6 +54,7 @@ Check whether the PRD:
 - Has acceptance criteria a future plan or implementation can verify.
 - Names material risks and dependencies that affect approval.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, or user intent.
+- Passes the artifact quality gate: evidence-backed requirements, explicit assumptions, concrete acceptance criteria, open-question handling, and enough structure for the plan workflow to consume without rediscovery.
 
 ## Anti-Pattern Examples
 

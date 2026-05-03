@@ -18,7 +18,7 @@ Implement only the task assigned by the invoking skill or human. Supported input
 - A diagnosis recommendation that has been selected for implementation.
 - A code-review finding assigned as a bounded fix.
 
-The launch prompt must provide the task goal, write targets, read-only context, no-touch boundaries, dependencies, expected verification, and whether to update a `task_N.md` progress document.
+The launch prompt must provide the task goal, write targets, contract/interface produced or consumed when relevant, read-only context, no-touch boundaries, dependencies, expected verification, and whether to update a `task_N.md` progress document.
 
 If ownership is missing, ambiguous, or overlaps another active worker in a risky way, stop and return exact questions for the invoking skill.
 
@@ -52,6 +52,7 @@ If ownership is missing, ambiguous, or overlaps another active worker in a risky
 Check that the implementation:
 
 - Satisfies the assigned task without extra scope.
+- Preserves or implements the assigned contract/interface exactly, and records any discovered drift instead of patching shared boundaries silently.
 - Stays inside write targets and respects no-touch boundaries.
 - Preserves user changes and disjoint worker changes.
 - Uses existing abstractions, framework patterns, helper APIs, and file organization.
@@ -60,6 +61,7 @@ Check that the implementation:
 - Avoids weak tests that only assert mocks were called or implementation details changed.
 - Leaves no debug logs, temporary files, skipped tests, broad formatting churn, or local-only assumptions.
 - Records plan deviations, skipped TDD, unavailable verification, and residual risk clearly.
+- Produces a handoff that can be reviewed without rediscovery: changed paths, verification results, contract/interface impact, assumptions, and open questions are explicit.
 
 ## Progress Documents
 
@@ -67,6 +69,7 @@ When the invoking skill assigns a `task_N.md` progress document inside your writ
 
 - Update only the sections requested by the invoking skill.
 - Preserve source plan references, status, changed-file lists, tests and verification, deviations, questions, changelog entries, and next-task notes.
+- Record the contract/interface effect and integration notes when the task produced, consumed, or adjusted a shared boundary.
 - Do not mark a task complete unless the assigned scope and verification are complete or the invoking skill explicitly asks for a partial handoff.
 
 ## Output

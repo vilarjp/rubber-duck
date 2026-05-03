@@ -37,6 +37,8 @@ Use `../_shared/agent-orchestration.md` for skill-owned orchestration, exact nam
 
 Use `../_shared/clarifying-questions.md` to keep product questions focused on approval-relevant uncertainty after checking available context.
 
+Use `../_shared/artifact-quality-gates.md` before product review, document review, and approval handoff.
+
 ## Agent Crew
 
 - Use `docs-locator` and `docs-analyzer` when prior product docs, generated artifacts, decisions, or project context may shape requirements.
@@ -74,6 +76,7 @@ Use `../_shared/clarifying-questions.md` to keep product questions focused on ap
    - Prefer evidence over speculation.
    - Use clear acceptance criteria that a future plan or implementation can verify.
    - Make goals, non-goals, risks, dependencies, and answered blocking questions concrete enough for a future PRD-to-plan alignment check.
+   - Run the artifact quality gate before PRD council or reviewer invocation: required structure, evidence-grounded requirements, clear acceptance criteria, explicit assumptions, open-question handling, and changelog readiness.
 6. Run PRD council voices on medium or complex PRDs.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `plan-product-mind` agent.

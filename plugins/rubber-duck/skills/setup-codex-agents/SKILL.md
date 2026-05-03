@@ -1,13 +1,13 @@
 ---
 name: setup-codex-agents
-description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, and review agents.
+description: Install Codex custom-agent TOML files generated from Rubber Duck research, docs, implementation, frontend, product, diagnosis, commit-organization, shipping, packaging, test, and review agents.
 disable-model-invocation: true
 argument-hint: "[--project path | --global | --agents-dir path | --model model-id | --reasoning low|medium|high|xhigh | --dry-run]"
 ---
 
 # Setup Codex Agents Skill
 
-Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck research, docs, implementation, frontend, product, diagnosis, shipping, packaging, test, and review agents.
+Use this skill after installing Rubber Duck in Codex to generate Codex-native custom agents from Rubber Duck research, docs, implementation, frontend, product, diagnosis, commit-organization, shipping, packaging, test, and review agents.
 
 Claude Code loads the Markdown files in the plugin root `agents/` directory directly. Codex custom agents use TOML files under `.codex/agents/` for a project or `~/.codex/agents/` globally. This skill bridges that packaging difference.
 

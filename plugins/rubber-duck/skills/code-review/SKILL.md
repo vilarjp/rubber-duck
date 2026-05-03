@@ -39,6 +39,7 @@ Use these shared references when they apply:
 - `../_shared/no-workarounds.md` when evaluating fixes, mitigations, tests, and review adjustments.
 - `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, context minimization, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` when review scope, plan alignment, security posture, or expected behavior is unclear.
+- `../_shared/artifact-quality-gates.md` before reviewer fan-out, final document review, and approval handoff.
 
 ## Workflow
 
@@ -91,6 +92,7 @@ Use these shared references when they apply:
    - If there are no findings in a section, write `None`.
    - Preserve uncertainty when evidence is unavailable instead of inventing intent, production behavior, compliance scope, or test results.
    - Include workflow compliance notes when generated documents, answered blocking questions, changelogs, plan subtasks, execution strategy, or `task_N.md` progress documents are part of the reviewed change.
+   - Run the artifact quality gate before code-focused reviewer invocation: reviewed scope, changed-line evidence, severity ordering, test/security/plan-alignment notes, residual uncertainty, open-question handling, and changelog readiness.
 7. Run code-focused reviewer agents on the generated `code-review.md` and reviewed scope.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `project-patterns-reviewer` agent.
@@ -191,6 +193,7 @@ Use this shape for each finding:
 ```text
 - Severity: critical | high | medium | low
   File: path/to/file:line
+  Evidence: Changed line, hunk, command output, related plan/task document, or other review evidence.
   Issue: What is wrong.
   Impact: Why it matters to users, production behavior, security, tests, or maintainability.
   Recommendation: The smallest useful fix or question.

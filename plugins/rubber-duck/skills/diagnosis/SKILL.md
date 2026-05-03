@@ -38,6 +38,7 @@ Use these shared references when they apply:
 - `../_shared/no-workarounds.md` when evaluating solution options and recommended next steps.
 - `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` to ask only diagnosis-shaping questions that code and evidence cannot answer.
+- `../_shared/artifact-quality-gates.md` before root-cause review, document review, and approval handoff.
 
 ## Agent Crew
 
@@ -87,6 +88,7 @@ Use these shared references when they apply:
    - Use `templates/diagnosis.md` from this skill folder as the default structure.
    - Include only sections that help decide the next implementation or product action.
    - Do not implement fixes, edit tests, update configuration, or change source code.
+   - Run the artifact quality gate before root-cause or document reviewer invocation: required structure, reproduction evidence, hypothesis ranking, confirmed facts versus assumptions, recommended-next-step support, open-question handling, and changelog readiness.
 7. Run the `diagnosis-root-cause-investigator` agent on the generated `diagnosis.md`.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `diagnosis-root-cause-investigator` agent.

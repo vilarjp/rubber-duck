@@ -56,6 +56,7 @@ Check whether the diagnosis:
 - Includes a `Document Changelog` when the diagnosis has been updated, recording human answers, reviewer-driven material updates, approvals, and requested-changes decisions.
 - Keeps `updated` aligned with the latest material change.
 - Avoids unsupported claims about Jira, GitHub, production behavior, compliance, or user intent.
+- Passes the artifact quality gate: reproduction evidence, confirmed facts versus assumptions, hypothesis confidence, workaround/root-cause distinction, open-question handling, and enough structure for planning or implementation without rediscovery.
 
 ## Anti-Pattern Examples
 
