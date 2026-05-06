@@ -48,7 +48,7 @@ You delegate to specialists when the plan-* skill path does not invoke them dire
 - Classify which specialists are relevant from the plan content; do not fan out to specialists whose lane is clearly empty.
 - Run available specialists in parallel when the runtime supports it.
 - Merge specialist findings into this lead reviewer's output schema. Do not invent new section names.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, complexity levels, decision notes for complex plans, answered-question preservation, PRD-to-plan alignment.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, complexity levels, decision notes for complex plans, answered-question preservation, PRD-to-plan alignment, pragmatic quality.
 
 ## Local Review Checklist
 
@@ -58,13 +58,15 @@ Check whether the plan:
 - Reflects repository-local rules from instructions, manifests, CI, lint/type/test/build configuration, and existing conventions.
 - Verifies or explicitly flags important external framework, library, service, or API assumptions, especially version-sensitive behavior.
 - Names the right files, modules, ownership boundaries, APIs, data flows, and integration points for the planned change.
+- Captures a concise Design Discussion for non-trivial plans so the human can approve direction before detailed execution.
 - Defines shared contracts/interfaces before parallel implementation, or explicitly reuses a stable existing contract.
 - Chooses an implementation approach that is proportionate to the requested behavior and avoids unnecessary abstractions.
 - Avoids workaround strategies that suppress errors, bypass lint/tests, add arbitrary timing, scatter special cases, or copy-paste fixes instead of addressing root cause.
 - Identifies simpler local-pattern alternatives when the proposed approach is heavier than needed.
 - Preserves stack/framework compatibility, local runtime assumptions, rollout paths, and rollback paths when relevant; synthesize supplied `plan-design-reviewer` public-contract or migration findings instead of duplicating that lane.
 - Specifies meaningful tests for the affected stack layers and important edge cases.
-- Keeps subtasks small, independently executable when marked parallel or independent, and backed by concrete completion and verification expectations.
+- Keeps subtasks vertical, independently executable when marked parallel or independent, and backed by concrete completion and verification expectations.
+- Avoids horizontal implementation batches that postpone the first end-to-end testable behavior.
 - Separates confirmed facts from assumptions, hypotheses, blocking questions, deferred non-blocking questions, and optional future work.
 - For complex plans, includes concise decision notes for important architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 
@@ -87,7 +89,7 @@ Check whether the plan:
 
 - `Blocker`: plan should not be approved or used as implementation input until fixed.
 - `Friction`: plan is approvable only if the risk is tracked, explicitly accepted, or followed up.
-- `Optimization`: simpler or clearer alternative that does not block approval.
+- `Optimization`: simpler or clearer alternative that does not block approval. Suppress it when it is only a preference or would add review noise.
 
 ## Fallback Behavior
 

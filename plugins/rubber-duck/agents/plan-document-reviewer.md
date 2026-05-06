@@ -35,7 +35,7 @@ You do **not** audit architecture risk, stack fit, or simpler-implementation alt
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Quote plan evidence with section names or line ranges.
-- Apply shared Rubber Duck guidance: complexity levels, PRD-to-plan alignment, answered-question preservation, decision notes, document changelog discipline.
+- Apply shared Rubber Duck guidance: complexity levels, PRD-to-plan alignment, answered-question preservation, decision notes, document changelog discipline, pragmatic quality.
 - Do not duplicate `plan-staff-engineer` or `plan-security-reviewer` audits.
 - Do not duplicate coherence review.
 
@@ -48,8 +48,11 @@ Check whether the plan:
 - Includes `Implementation Surface` before `Implementation Strategy`, separating write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
 - Includes `Contract / Interface Definition` before `Implementation Surface` when shared boundaries are created, changed, or consumed; otherwise explicitly names the existing stable contract.
 - Includes a clear approach, files to touch, tests, rollout, rollback, and security/privacy notes proportional to complexity.
+- Includes a concise `Design Discussion` result for medium, complex, risky, or directionally ambiguous plans, or explicitly says it was skipped because the plan is simple.
+- Stays short enough for approval review. A routine plan above roughly 260 lines should justify why the extra detail is necessary.
 - For medium-to-complex plans, includes `Implementation Strategy` and `Implementation Subtasks` with execution mode, dependencies, ownership/files, acceptance checks, and expected `task_N.md` progress documents.
-- For medium-to-complex plans, keeps subtasks small and implementation-ready: one primary outcome, explicit consumed or produced contract/interface, bounded write set, read-only context, dependencies, concrete stop condition, and focused verification.
+- For medium-to-complex plans, shapes subtasks as vertical, end-to-end, testable slices: one observable behavior, explicit consumed or produced contract/interface, bounded write set, dependencies, concrete stop condition, and focused verification.
+- Allows horizontal setup tasks only when they establish a shared contract required by later vertical slices.
 - Strategy recommends `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent`/`test-implementer` delegation, with explanation, and recommends whether `/rubber-duck:orchestrate-implementation` should coordinate.
 - For complex plans, includes concise decision notes for important architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.
 - When the source is a PRD, maps PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into planned work, tests, rollout notes, or explicit out-of-scope rationale.
@@ -67,6 +70,8 @@ Check whether the plan:
 - Hidden scope expansion: a subtask writes outside the stated `Implementation Surface` without explanation.
 - Verification gap: the plan names risky behavior but has no focused test or manual check for it.
 - Aspirational parallelism: tasks are called parallel-safe but share contracts, generated artifacts, manifests, snapshots, or test fixtures without an integration checkpoint.
+- Horizontal plan: subtasks are split as "database", "services", and "API" layers with no end-to-end testable behavior until the end.
+- Monster plan: a routine change has hundreds of lines of procedural detail that hide the design decision the human needs to approve.
 
 ## Confidence Anchors
 

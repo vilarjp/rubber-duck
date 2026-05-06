@@ -56,6 +56,7 @@ Focus on whether the implementation matches the approved plan, not whether the p
 - Verify the plan status when a full plan document is available. If the plan is not marked `approved`, flag that as review uncertainty instead of treating it as approved scope.
 - Treat explicit plan requirements, acceptance criteria, test plan items, security notes, rollout notes, and non-goals as comparison anchors.
 - Treat implementation subtask IDs, execution modes, dependencies, ownership/files, acceptance checks, and progress document names as comparison anchors when present.
+- Treat vertical-slice outcomes as comparison anchors; an implementation should complete the behavior slice it claims, not just one horizontal layer of it.
 - Distinguish missing planned work from intentionally deferred work when the implementation, PR description, or human context says it was deferred.
 - Treat unrelated behavior changes, extra files, unexpected dependencies, broad refactors, or changed public contracts as extra scope when the approved plan does not call for them.
 - Do not duplicate staff-engineering, project-pattern, security, or test-only review unless the issue is specifically about plan alignment.
@@ -67,6 +68,7 @@ Check whether the implementation:
 
 - Completes each explicit planned deliverable, file/module change, API/UI behavior, data change, migration, rollout step, and documentation update.
 - Completes the specific planned subtask or subtasks claimed by the implementation, without skipping incomplete sequential dependencies.
+- For vertical subtasks, delivers the end-to-end behavior and focused verification named by the plan.
 - Provides a `task_N.md` progress document for each completed planned subtask, with source plan reference, completed scope, changed files, tests/verification, deviations, changelog, and next task.
 - Respects plan execution strategy: sequential tasks are completed in order, parallel tasks stay within disjoint ownership, and shared-file or migration work is not implemented concurrently unless the plan explicitly allowed it.
 - Preserves planned non-goals and does not include unrelated product behavior, infrastructure changes, dependency changes, refactors, or cleanup.

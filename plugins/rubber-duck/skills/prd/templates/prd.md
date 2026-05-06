@@ -14,50 +14,47 @@ Status: pending-approval
 
 ## Summary
 
-One short paragraph describing the product change and intended outcome.
+One short paragraph with the product change, target user, and intended outcome.
 
 ## Problem
 
-What user or business problem this solves, with only the context needed for planning.
+What problem this solves and why it matters now.
 
 ## Goals
 
-- Concrete outcomes this PRD is meant to achieve.
+- Outcome the user or business should get.
 
 ## Non-goals
 
-- Important boundaries that keep scope from expanding.
+- Boundaries that keep the first version focused.
 
-## Users / Use Cases
+## Users And Use Cases
 
-- Who benefits and the main situations they need supported.
+- Main users and the situations this change must support.
 
 ## Requirements
 
-- Functional and product requirements stated as verifiable behavior.
-- For each material requirement, note whether it comes from the prompt, Jira/source artifact, repository context, or an explicit human answer when that distinction affects approval.
+- Verifiable behavior only.
+- Include source notes only when they affect approval.
 
 ## Acceptance Criteria
 
-- Given/when/then or checklist-style criteria that can be tested or reviewed.
-- Criteria should be specific enough for a future implementation plan to map each one to planned work, tests, checks, or explicit out-of-scope rationale.
+- Criteria a future plan can map to work, tests, checks, or explicit out-of-scope rationale.
 
 ## Success Signals
 
-- Observable signals that the product change is working.
+- Observable signals that show the change is working.
 
 ## Risks / Dependencies
 
-- Material dependencies, assumptions, constraints, or known risks.
-- Keep confirmed risks separate from assumptions and unknowns.
+- Confirmed risks, dependencies, constraints, and assumptions.
 
 ## Blocking Questions
 
-- This section is decision history, not the first place the human should see approval-blocking questions.
-- Ask blocking questions in the live session before presenting the PRD for approval. If any remain open, the PRD remains pending and not approval-ready, and the final response must ask those questions directly.
-- Keep every blocking question that was raised, including questions the human has answered.
-- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
-- Use this shape:
+- Decision history for blocking questions already asked in chat.
+- Open questions keep this PRD pending and must also be asked in the final response.
+- Keep every blocking question that was raised, including answered ones.
+- Shape:
   - Status: open | answered
     Question: Original question text.
     Answer: Human answered on yyyy-mm-dd: answer text.
@@ -66,13 +63,13 @@ What user or business problem this solves, with only the context needed for plan
 
 ## Deferred Non-Blocking Questions
 
-- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Questions the human explicitly accepted as safe to defer, with the reason approval can continue.
 - Write `None` when there are no deferred questions.
 
 ## Document Changelog
 
 - yyyy-mm-dd: Created from prompt or Jira context.
-- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
+- Add one entry for each material human answer, reviewer-driven update, approval, or requested-changes decision.
 
 ## Approval
 

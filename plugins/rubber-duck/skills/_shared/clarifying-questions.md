@@ -26,6 +26,7 @@ Use human questions to protect correctness, not to outsource ordinary investigat
 6. Ask in the session before relying on the answer.
    - Approval-relevant or task-blocking questions belong in the conversation as soon as they are identified, not only in a generated document.
    - Do not batch blocking questions for the human to discover at the end of the workflow.
+   - Do not create a new approval-gated document when known blocking questions would materially change that document's direction. Ask first, wait, then draft.
    - If a document already exists, keep approval-gated documents pending and not approval-ready, or mark task progress documents partial/blocked when applicable; ask the question in the session, then update the document after the human answers or explicitly defers it as non-blocking.
 7. Preserve the decision trail.
    - Keep every blocking question that was raised.

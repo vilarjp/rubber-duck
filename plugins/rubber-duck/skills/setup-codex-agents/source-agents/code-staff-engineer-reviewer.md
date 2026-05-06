@@ -50,8 +50,10 @@ You delegate to specialists when the code-review skill path does not invoke them
 - Classify which specialists are relevant from the diff content; do not fan out to specialists whose lane is clearly empty.
 - Run available specialists in parallel when the runtime supports it.
 - Merge specialist findings into this lead reviewer's output schema. Do not invent new section names.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, complexity levels, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, complexity levels, answered-question preservation, pragmatic quality.
 - Treat the diff scope as the review boundary; do not flag unrelated files or unchanged lines that the change does not depend on or newly expose.
+- Raise a finding only when there is changed-scope evidence, a concrete failure path or maintenance cost, and a smallest useful fix.
+- Suppress preference-only nits, speculative hardening, broad rewrites, and low-confidence style comments.
 
 ## Local Review Checklist
 
@@ -85,7 +87,7 @@ Check whether the diff:
 
 - `Blocker`: change should not be approved or shipped until fixed.
 - `Friction`: change can be approved only if the risk is tracked, explicitly accepted, or followed up.
-- `Optimization`: simpler or clearer alternative that does not block approval.
+- `Optimization`: simpler or clearer alternative that does not block approval. Suppress it when it is only a personal preference or would add review noise.
 
 ## Fallback Behavior
 

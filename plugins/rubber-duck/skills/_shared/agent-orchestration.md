@@ -33,6 +33,7 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - `medium`: use relevant docs/codebase research agents when context spans multiple files or prior artifacts. Use specialist reviewers or test-planning agents when risk, ambiguity, or verification complexity warrants them.
 - `complex`: use explicit fan-out/fan-in. Assign independent research, planning, reviewer, or implementation agents to bounded questions or disjoint write sets, then synthesize their results before continuing.
 - Scale agent usage to risk and blast radius. More agents should add clearer evidence, safer ownership, or better verification, not ceremony.
+- If adding another agent or review pass would only create low-value commentary, skip it and preserve the reason in the workflow notes.
 
 ## Read-Only Delegation
 
@@ -65,7 +66,7 @@ Use this contract when a Rubber Duck skill invokes research, reviewer, planning,
 - Treat contract/interface definition as a first-class planned task when the boundary is new, unstable, or shared by more than one implementation task.
 - Parallel subtasks must name the contract they consume, the files they own, the files they may read, acceptance checks, and what output proves they are complete.
 - Do not mark a subtask parallel-safe when it shares writable contracts, migrations, manifests, snapshots, generated outputs, or test fixtures with another selected task.
-- Prefer small tasks that end in an observable state: one contract decision, one bounded implementation surface, one test slice, one generated-artifact update, or one integration adjustment. Avoid subtasks that require broad rediscovery before the worker can finish.
+- Prefer vertical tasks that end in an observable state: one user-visible behavior, one end-to-end workflow change, one contract decision that enables later vertical slices, one generated-artifact update with verification, or one integration adjustment. Avoid subtasks that require broad rediscovery before the worker can finish.
 
 ## Integration Coordination
 

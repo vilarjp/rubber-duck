@@ -1,6 +1,6 @@
 interface:
   display_name: "PRD"
-  short_description: "Write and review a concise product requirements document."
+  short_description: "Ask key product questions, then write a concise PRD."
   brand_color: "#F8C84E"
   default_prompt: "Use Rubber Duck PRD to turn this idea into a PRD."
 policy:

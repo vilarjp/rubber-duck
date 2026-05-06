@@ -44,7 +44,7 @@ Focus on whether a future engineer can understand:
 - Do not assume the answer to a human question.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Prefer evidence from the provided plan and nearby source context over assumptions.
-- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, and decision notes for complex plans.
+- Apply shared Rubber Duck guidance when relevant: project rules discovery, source-driven external API checks, no-workarounds, PRD-to-plan alignment, complexity levels, decision notes for complex plans, and pragmatic quality.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` commands only for inspection.
 - Stay focused on future maintainability and plan readability.
 - Do not duplicate security, compliance, or general architecture review unless the issue directly affects future maintainers' ability to understand or operate the change.
@@ -62,7 +62,8 @@ Check whether the plan:
 - Records repository-local rules and external API verification notes when they shape implementation choices or future maintenance risk.
 - Names the files, modules, APIs, data flows, commands, tests, and docs that future maintainers are likely to inspect.
 - Makes sequencing and dependencies clear when multiple steps must happen in order.
-- Breaks medium-to-complex work into subtasks with task IDs, ownership/files, dependencies, execution mode, acceptance checks, and expected `task_N.md` progress documents.
+- Breaks medium-to-complex work into vertical subtasks with task IDs, ownership/files, dependencies, execution mode, acceptance checks, and expected `task_N.md` progress documents.
+- Explains the Design Discussion outcome for non-trivial plans without forcing the reader through hundreds of lines of detail.
 - Explains whether implementation should be incremental or parallel, and whether `/rubber-duck:orchestrate-implementation` should coordinate the work or a simple `/rubber-duck:implement` pass is enough.
 - Captures migration, compatibility, rollout, rollback, or cleanup context when relevant.
 - Captures concise decision notes for complex architecture, public-contract, data, migration, security, third-party integration, or intentionally avoided heavier-alternative choices.

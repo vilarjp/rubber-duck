@@ -46,7 +46,7 @@ You do **not** audit secrets, input validation, abuse cases, or data exposure as
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not duplicate sibling `code-*` security specialists.
 
 ## Anti-Pattern Examples
@@ -84,7 +84,7 @@ Check whether the diff:
 
 - `Blocker`: change must not ship until the authz issue is resolved.
 - `Friction`: authz is correct but defense-in-depth is incomplete.
-- `Optimization`: hardening improvement.
+- `Optimization`: hardening improvement. Suppress it when it is speculative or unrelated to changed-scope authorization risk.
 
 ## Output
 

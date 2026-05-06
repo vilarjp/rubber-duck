@@ -48,8 +48,9 @@ You do **not** audit correctness or maintainability as primary lanes, and you do
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not duplicate `code-correctness-reviewer` or `code-maintainability-reviewer`.
+- Raise production-risk findings only when the changed scope creates a concrete incident, ordering, performance, idempotency, rollback, or diagnosability risk.
 
 ## Anti-Pattern Examples
 
@@ -88,7 +89,7 @@ Check whether the diff:
 
 - `Blocker`: change would cause an incident, data corruption, or rollback failure if shipped.
 - `Friction`: change is acceptable but observability or rollback discipline is incomplete.
-- `Optimization`: hardening improvement.
+- `Optimization`: hardening improvement. Suppress it when it is speculative or unrelated to rollout confidence.
 
 ## Output
 

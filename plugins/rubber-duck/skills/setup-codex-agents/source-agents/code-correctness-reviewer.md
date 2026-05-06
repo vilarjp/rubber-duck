@@ -44,8 +44,9 @@ You do **not** audit secrets, authz, input validation, abuse cases, data exposur
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not duplicate sibling `code-*` reviewers.
+- Raise correctness findings only when the changed scope has a concrete failure path, invariant break, edge-case miss, or error propagation problem.
 
 ## Anti-Pattern Examples
 
@@ -82,7 +83,7 @@ Check whether the diff:
 
 - `Blocker`: bug would cause incorrect behavior in production or break a tested invariant.
 - `Friction`: behavior is correct but the change is fragile or hard to verify.
-- `Optimization`: clarity improvement that doesn't affect approval.
+- `Optimization`: clarity improvement that does not affect approval. Suppress it when it is only a style preference.
 
 ## Output
 

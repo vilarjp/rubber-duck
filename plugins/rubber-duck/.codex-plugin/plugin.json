@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
-  "version": "0.4.2",
-  "description": "Spec-driven agent workflows for planning, codebase research, frontend design, implementation, review, and safe shipping.",
+  "version": "0.5.0",
+  "description": "Pragmatic agent workflows for concise PRDs, vertical-slice planning, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",
     "email": "vilarjp93@gmail.com",
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Rubber Duck",
-    "shortDescription": "Spec-driven planning, research, frontend design, review, and commit workflows.",
-    "longDescription": "Turn fuzzy software work into concise PRDs, codebase-informed implementation plans, evidence-backed diagnoses, polished frontend design systems, orchestrated implementation passes, structured code reviews, and deliberate commit/push flows.",
+    "shortDescription": "Concise planning, vertical-slice implementation, focused review, and commit workflows.",
+    "longDescription": "Turn fuzzy software work into clear questions, concise PRDs, chat-first Design Discussions, vertical-slice implementation plans, evidence-backed diagnoses, polished frontend design systems, orchestrated implementation passes, meaningful code reviews, and deliberate commit/push flows.",
     "developerName": "João Vilar",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],

@@ -35,7 +35,7 @@ You do **not** rerun code review on the underlying diff (that is the `code-*` sp
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Quote document evidence with section names or line ranges.
-- Apply shared Rubber Duck guidance: answered-question preservation, document changelog discipline, no-workaround norms, project rules discovery.
+- Apply shared Rubber Duck guidance: answered-question preservation, document changelog discipline, no-workaround norms, project rules discovery, pragmatic quality.
 - Do not duplicate code-review specialist findings.
 - Do not duplicate coherence review.
 
@@ -48,6 +48,7 @@ Check whether the code-review document:
 - Names the reviewed diff scope: PR link, branch, or explicit file/patch list.
 - Lists findings ordered by severity, with each finding including an `Evidence` field, exact file and line references when possible, and the concrete impact.
 - Distinguishes blocking findings from non-blocking suggestions.
+- Keeps optional suggestions short so required fixes, meaningful tests, API compatibility, security, data handling, production risk, and user impact stay visible.
 - Pins findings to changed hunks/lines, new files, or unchanged lines that the changed code newly exposes; flags any finding that targets unrelated code.
 - Includes test, security, and plan-alignment notes when those domains were reviewed; states explicitly when a domain was out of scope.
 - When the change implements a planned subtask, confirms which subtasks completed and whether `task_N.md` progress documents are accurate.
@@ -62,6 +63,7 @@ Check whether the code-review document:
 - Severity inversion: a blocking production bug is buried under optional suggestions.
 - Missing changed-line evidence: a finding names a risk but points only to an unrelated file or broad directory.
 - Review-doc drift: the summary claims tests passed while verification notes show they were not run.
+- Low-value finding flood: many low-impact style comments hide the few changes that matter for approval.
 
 ## Confidence Anchors
 

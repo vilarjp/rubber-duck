@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
-  "version": "0.4.2",
-  "description": "Spec-driven agent workflows for planning, codebase research, frontend design, implementation, review, and safe shipping.",
+  "version": "0.5.0",
+  "description": "Pragmatic agent workflows for concise PRDs, vertical-slice planning, implementation, review, and safe shipping.",
   "author": {
     "name": "João Vilar",
     "email": "vilarjp93@gmail.com"

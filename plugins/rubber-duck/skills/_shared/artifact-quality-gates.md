@@ -16,11 +16,12 @@ Use this reference before a Rubber Duck skill presents a generated artifact, del
 - Check that the artifact is usable by the next workflow without rediscovery: PRDs feed plans, plans feed implementation, task documents feed later tasks, diagnoses feed plans or fixes, and code reviews feed implementation or approval.
 - Remove or mark speculative details that are not needed for the next decision.
 - Keep scope boundaries explicit so later agents can tell what is in scope, out of scope, read-only, and safe to change.
+- Keep the artifact short enough to review. If it exceeds the default size target from `pragmatic-quality.md`, make the first page explain the decision, then cut lower-value detail.
 
 ## Acceptance And Verification
 
 - PRDs need acceptance criteria that a future plan can map to tests, checks, or explicit non-implementation rationale.
-- Plans need focused completion checks, full quality-gate commands when discoverable, and subtask completion criteria that are concrete enough for an implementer to stop without revisiting the plan.
+- Plans need vertical, end-to-end slices with focused completion checks, full quality-gate commands when discoverable, and subtask criteria concrete enough for an implementer to stop without revisiting the plan.
 - Diagnoses need reproduction evidence, hypothesis ranking, confidence, affected flows, and verification plans that distinguish confirmed facts from likely causes.
 - Code-review documents need changed-line evidence, severity ordering, test/security/plan-alignment notes, and explicit residual uncertainty.
 - Task progress documents need changed paths, verification commands and results, deviations, reusable partial work, blockers, and the next-task recommendation.
@@ -34,4 +35,5 @@ Before invoking final reviewers or presenting the artifact:
 3. Check every key claim against available evidence.
 4. Check every open question is either asked live, answered, or explicitly deferred as non-blocking.
 5. Check every acceptance or verification claim names an observable result, command, file, or manual check.
-6. Fix document drift before asking reviewers to approve it.
+6. Check plan subtasks are vertical slices unless a horizontal setup task is justified by a shared contract.
+7. Fix document drift and unnecessary length before asking reviewers to approve it.

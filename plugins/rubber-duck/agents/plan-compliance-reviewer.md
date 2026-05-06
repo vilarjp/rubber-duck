@@ -42,7 +42,7 @@ You do **not** audit input validation, secrets handling, or abuse cases (those r
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Do not invent compliance scope. If the plan does not name regulated data and the repository does not show it, return a `Blocking` question instead of guessing.
-- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation.
+- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation, pragmatic quality.
 
 ## Review Checklist
 
@@ -69,7 +69,7 @@ Check whether the plan:
 
 - `Blocker`: plan cannot be approved until the compliance gap is named and addressed.
 - `Friction`: compliance posture is fine but documentation or follow-up is incomplete.
-- `Optimization`: clarity improvement.
+- `Optimization`: clarity improvement. Suppress it when it does not affect approval or implementation risk.
 
 ## Output
 

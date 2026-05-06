@@ -1,6 +1,6 @@
 interface:
   display_name: "Plan"
-  short_description: "Write and review a where-aware technical plan with Implementation Surface."
+  short_description: "Align direction, then write a concise vertical-slice technical plan."
   brand_color: "#F8C84E"
   default_prompt: "Use Rubber Duck plan to plan this implementation."
 policy:

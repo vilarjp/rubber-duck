@@ -15,9 +15,8 @@ Status: pending-approval
 ## Scope
 
 - Review target: local diff or GitHub PR link.
-- Review boundary: changed hunks/lines, new files, commits, PR metadata, checks, comments, and relevant untracked files reviewed.
-- Context-only files or related plan, diagnosis, PRD, or code-review document used to understand the reviewed change, if any.
-- Project rules, conventions, and verification sources used when they affected review judgment.
+- Review boundary: changed hunks/lines, new files, commits, PR metadata, checks, comments, and relevant untracked files.
+- Context used: related plan, task docs, nearby source/tests, project rules, or `None`.
 
 ## Findings
 
@@ -30,12 +29,13 @@ Status: pending-approval
 
 Write `None` when there are no findings.
 
-If reviewer agents use `Blocker`, `Friction`, and `Optimization`, map them before finalizing: `Blocker` becomes `critical` or `high` based on impact, `Friction` becomes `medium`, and `Optimization` becomes `low` or a non-finding note.
+Finding bar: changed-scope evidence, concrete impact, and a smallest useful fix. Preference-only nits and broad rewrites stay out.
+
+Reviewer taxonomy mapping: `Blocker` becomes `critical` or `high` based on impact, `Friction` becomes `medium`, and `Optimization` becomes `low` or a non-finding note.
 
 ## Security / Privacy Notes
 
-- Security, privacy, compliance, authorization, validation, secrets, logging, dependency, data exposure, or abuse-case risks introduced or changed by the reviewed work.
-- Risk classification and residual uncertainty when relevant.
+- Material security, privacy, compliance, auth, validation, secrets, logging, dependency, data exposure, or abuse-case notes.
 
 Write `None` when there are no material notes.
 
@@ -49,9 +49,7 @@ Write `None` when there are no material notes.
 
 ## Project Convention Notes
 
-- Alignment or mismatch with local naming, layering, file organization, templates, manifests, generated documents, tests, and existing project patterns.
-- Evidence from directly related context files when a convention drives a recommendation.
-- Unrelated nearby files and unchanged lines in touched files are not review targets.
+- Material local pattern or workflow mismatches with changed-scope evidence.
 
 Write `None` when there are no material notes.
 
@@ -69,9 +67,8 @@ Write `None` when there are no material notes.
 - Matched plan items.
 - Missing plan items.
 - Extra implementation scope.
-- Planned subtask or subtasks represented by the reviewed changes.
-- Related `task_N.md` progress documents and whether completed subtasks have corresponding docs.
-- Sequential or parallel orchestration constraints from the plan and whether the reviewed work respected them.
+- Planned vertical slices represented by the reviewed changes.
+- Related `task_N.md` documents and sequencing/parallel constraints.
 
 Write `No related plan found` when no applicable plan is available.
 
@@ -86,11 +83,10 @@ Write `None` when there are no material workflow notes.
 
 ## Blocking Questions
 
-- This section is decision history, not the first place the human should see approval-blocking questions.
-- Ask blocking questions in the live session before presenting the review for approval. If any remain open, the review remains pending and not approval-ready, and the final response must ask those questions directly.
-- Keep every blocking question that was raised, including questions the human has answered.
-- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
-- Use this shape:
+- Decision history for blocking questions already asked in chat.
+- Open questions keep this review pending and must also be asked in the final response.
+- Keep every blocking question that was raised, including answered ones.
+- Shape:
   - Status: open | answered
     Question: Original question text.
     Answer: Human answered on yyyy-mm-dd: answer text.
@@ -105,7 +101,7 @@ Write `None` when there are no material workflow notes.
 ## Document Changelog
 
 - yyyy-mm-dd: Created from local diff or GitHub PR context.
-- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
+- Add one entry for each material human answer, reviewer-driven update, approval, or requested-changes decision.
 
 ## Approval
 

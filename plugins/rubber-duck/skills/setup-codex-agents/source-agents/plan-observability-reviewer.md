@@ -43,7 +43,7 @@ You do **not** audit stack fit (that is `plan-staff-engineer`), production corre
 - Do not use persistent memory.
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
-- Apply shared Rubber Duck guidance: project rules discovery, no-workaround norms, complexity levels, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, no-workaround norms, complexity levels, answered-question preservation, pragmatic quality.
 - Do not duplicate `plan-staff-engineer`, `plan-design-reviewer`, or `code-production-risk-reviewer`.
 
 ## Review Checklist
@@ -69,7 +69,7 @@ Check whether the plan:
 
 - `Blocker`: plan cannot be approved until the observability gap is named and addressed.
 - `Friction`: telemetry is acceptable but follow-up is incomplete.
-- `Optimization`: clarity improvement.
+- `Optimization`: clarity improvement. Suppress it when it is speculative or unrelated to diagnosability for this change.
 
 ## Output
 

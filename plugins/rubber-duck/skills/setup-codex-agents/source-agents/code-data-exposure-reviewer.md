@@ -46,7 +46,7 @@ You do **not** audit secrets (`code-secrets-reviewer`), authz (`code-authz-revie
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not invent compliance scope; if regulated-data handling is unclear, return a question.
 - Do not duplicate sibling `code-*` security specialists.
 
@@ -83,7 +83,7 @@ Check whether the diff:
 
 - `Blocker`: change must not ship until the exposure is resolved.
 - `Friction`: data handling is acceptable but defense-in-depth is incomplete.
-- `Optimization`: hardening improvement.
+- `Optimization`: hardening improvement. Suppress it when it is speculative or unrelated to changed-scope data exposure risk.
 
 ## Output
 

@@ -43,7 +43,7 @@ Supported document types:
 - Delegate to exactly one type-specific reviewer for the detected type. Optionally delegate to `document-coherence-reviewer` in parallel for long or complex documents.
 - Merge specialist findings into the historical `document-reviewer` output schema; do not invent new section names.
 - Preserve answered blocking questions exactly as the type-specific reviewer reports them.
-- Apply shared Rubber Duck guidance: clarifying-question pattern, answered-question preservation, document changelog discipline, artifact quality gates.
+- Apply shared Rubber Duck guidance: clarifying-question pattern, answered-question preservation, document changelog discipline, artifact quality gates, pragmatic quality.
 
 ## Routing Table
 
@@ -61,7 +61,7 @@ If the document's frontmatter `type` does not match any of the above and the pat
 
 Invoke `document-coherence-reviewer` in parallel with the type-specific reviewer when:
 
-- The document is long (more than ~600 lines) or has many sections.
+- The document is long enough to reduce review quality (roughly PRD >140 lines, plan >260 lines, code review >160 lines, or any document with many sections).
 - The document repeats domain terminology that may have drifted.
 - The document has multiple answered blocking questions.
 - The invoking skill explicitly requested coherence review.

@@ -39,6 +39,7 @@ Use these shared references when they apply:
 - `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` to ask only diagnosis-shaping questions that code and evidence cannot answer.
 - `../_shared/artifact-quality-gates.md` before root-cause review, document review, and approval handoff.
+- `../_shared/pragmatic-quality.md` for asking before direction-setting assumptions and keeping diagnosis documents short and clear.
 
 ## Agent Crew
 
@@ -62,6 +63,7 @@ Use these shared references when they apply:
    - Ask the human for missing facts when they would materially change the investigation path, root-cause confidence, risk, recommended next step, or approval readiness.
    - Apply the clarifying-questions reference: investigate first when possible, ask 1-2 focused questions at a time, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Ask as many times as necessary until approval-relevant bug context and root-cause uncertainty are resolved.
+   - Stop before creating `diagnosis.md` when an unanswered blocking question would materially change the root-cause direction. Ask in chat, wait for the answer or explicit non-blocking deferral, then draft.
    - Do not ask for facts that the human explicitly accepts as deferred and non-blocking.
 3. Inspect the codebase and evidence without changing project files.
    - Read relevant source, tests, configuration, logs, documentation, git history, and local diffs.

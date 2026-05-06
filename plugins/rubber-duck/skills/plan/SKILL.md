@@ -42,6 +42,7 @@ Use these shared references when they apply:
 - `../_shared/decision-notes.md` for optional mini-ADR-style decision notes in complex plans.
 - `../_shared/clarifying-questions.md` to keep human questions focused on approval-relevant uncertainty after investigation.
 - `../_shared/artifact-quality-gates.md` before reviewer invocation and approval handoff.
+- `../_shared/pragmatic-quality.md` for pre-plan Design Discussion, short clear document style, vertical slices, and review discipline.
 
 ## Workflow
 
@@ -71,31 +72,38 @@ Use these shared references when they apply:
    - Apply the clarifying-questions reference: investigate first, ask 1-2 focused questions at a time when possible, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Treat questions returned by research, docs, test, or reviewer agents as candidate questions for the parent skill to ask; specialist agents do not ask the human directly unless invoked directly.
    - Ask as many times as necessary until approval-relevant ambiguity is resolved.
+   - Stop before creating `plan.md` when an unanswered blocking question would materially change the technical direction. Ask in chat, wait for the answer or explicit non-blocking deferral, then draft.
    - Do not ask about details that the human explicitly accepts as deferred and non-blocking.
-4. Derive the output folder.
+4. Run a concise Design Discussion before drafting when the work is medium, complex, risky, or directionally ambiguous.
+   - Present the discussion in chat, not as a large document.
+   - Keep it short: intended outcome, current evidence, simplest viable design, rejected heavier option, proposed vertical slices, key verification, and open direction-setting choices.
+   - Ask for alignment or the missing choices, then wait for the human answer before writing or finalizing the implementation plan.
+   - Skip this stage only for simple, low-risk plans where local evidence makes the direction obvious; note that it was skipped because the plan is simple.
+5. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
    - Use a human-provided slug or matched PRD slug when available.
    - Otherwise derive a short kebab-case slug from the requested feature, bug, or technical change.
-5. Draft a concise implementation plan.
+6. Draft a concise implementation plan.
    - Use `templates/plan.md` from this skill folder as the default structure.
    - Include only sections that help implementation, review, approval, rollback, or later maintenance.
+   - Target 100-220 lines. Do not produce 500-1000 line plans by default; if the plan must exceed the target, add a short note explaining why and remove lower-value detail first.
+   - Write plain English with short sentences and concrete bullets so a non-native English reader can scan the plan quickly.
    - Keep confirmed facts, assumptions, decisions, risks, non-goals, blocking questions, and deferred non-blocking questions distinct.
    - Prefer evidence from the repository over speculation.
    - If the source is a PRD, run the PRD-to-Plan Alignment check before reviewer invocation: map PRD goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions into plan sections, tests, rollout notes, or explicit out-of-scope rationale.
-   - Make the plan specific enough that a future implementer can follow it without rediscovering the same context.
-   - Include an `Implementation Surface` section for every plan. This section defines where implementation may happen before describing how it will happen.
-   - Include a `Contract / Interface Definition` section before `Implementation Surface` when the work creates, changes, or consumes a shared public or internal boundary. If no contract changes are needed, name the existing stable contract or write `No contract change; subtasks consume the existing <surface> contract`.
-   - Define contracts before parallel work: public APIs, CLI commands, plugin interfaces, generated artifact formats, schemas, event shapes, component props, storage shape, module boundaries, or test fixture contracts that multiple tasks depend on.
-   - In `Implementation Surface`, separate write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
-   - Keep `Implementation Surface` focused on ownership and coordination boundaries. Keep `Files / Modules To Touch` as the concise per-file change list.
-   - Include a full quality gate in the Test Plan: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
-   - When known, name the focused verification command and expected result for important behavior or regression coverage.
+   - Make the plan specific enough to start implementation without rediscovering context, but not so detailed that the human must approve it on faith.
+   - Include the aligned Design Discussion outcome for medium or complex plans; record `Skipped: simple plan` when it was intentionally skipped.
+   - Include `Contract / Interface Definition` before `Implementation Surface` when shared boundaries are created, changed, or consumed. If no contract changes are needed, name the existing stable contract.
+   - Include `Implementation Surface` for every plan: write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes.
+   - Include a focused Test Plan with expected command results and the full quality gate when commands are discoverable.
    - For medium-to-complex plans, risky behavior changes, or unclear verification strategy, use `test-plan-architect` when available to draft layered test cases with stable `T###` IDs, fixtures, commands, and manual checks.
    - Classify implementation complexity as `simple`, `medium`, or `complex`.
-   - Use the shared complexity reference to scale detail: simple plans stay single-pass when possible, medium plans include clear subtasks, and complex plans include full sequencing, rollout, rollback, and decision context.
-   - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections that break the plan into small named tasks with dependencies, ownership/files, acceptance checks, execution mode, consumed or produced contract/interface, and expected `task_N.md` progress document names.
-   - Shape subtasks as concrete implementation units: one primary outcome, one bounded write set, explicit read-only context, known dependencies, observable completion checks, and a clear stop condition. Split broad tasks that would require the worker to rediscover scope or return for multiple follow-up fixes.
-   - When a new or changed contract enables parallel work, make the contract/interface task sequential first, then make downstream tasks consume that stable contract in named parallel groups only when their write sets are disjoint.
+   - Use the shared complexity reference to scale detail: simple plans stay single-pass when possible, medium plans use clear vertical slices, and complex plans add sequencing, rollout, rollback, security, and decision context.
+   - For medium-to-complex work, include `Implementation Strategy` and `Implementation Subtasks` sections built around vertical, end-to-end, testable slices.
+   - Shape each subtask around one observable behavior or capability. The subtask may cross database, service, API, UI, tests, generated artifacts, or docs as needed to make that behavior complete.
+   - Avoid horizontal layer tasks like "all database work" or "all services" unless the task establishes a stable contract that later vertical slices consume.
+   - Each subtask must name dependencies, ownership/files, focused acceptance checks, execution mode, consumed or produced contract/interface, stop condition, and expected `task_N.md` progress document.
+   - When a new or changed contract enables parallel work, make the contract/interface task sequential first, then make downstream vertical slices consume that stable contract in named parallel groups only when their write sets are disjoint.
    - For simple work, either include one task or explicitly write that a single focused pass is recommended.
    - For complex plans, include `Decision Notes` when architecture, public contracts, data migrations, security, third-party integrations, or intentionally avoided heavier alternatives matter to future implementers.
    - Recommend one execution strategy: `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation.
@@ -104,7 +112,7 @@ Use these shared references when they apply:
    - Add an integration checkpoint after every parallel group. Name who owns contract/interface reconciliation, generated-artifact updates, task-document consistency, verification fan-in, and follow-up adapter changes if implementation reveals drift.
    - Do not approve or preserve workaround strategies unless the plan explicitly names the root cause, why a temporary mitigation is necessary, how it is constrained, and what follow-up removes it.
    - Run the artifact quality gate on the draft before council or reviewer invocation: verify required structure, evidence grounding, explicit assumptions, contract/interface clarity, focused acceptance checks, open-question handling, and changelog readiness.
-6. For medium or complex plans, run the plan-time council on the generated `plan.md` before invoking the technical reviewers.
+7. For medium or complex plans, run the plan-time council on the generated `plan.md` before invoking the technical reviewers.
    - Council voices debate the proposal; they do not finalize the plan.
    - Each council voice steel-mans the proposal, attacks its strongest form, and concedes when the plan already addresses the concern.
    - Invoke the exact pre-built council agents that match the plan's surface:
@@ -117,7 +125,7 @@ Use these shared references when they apply:
    - For simple plans, allow zero council agents or one targeted council agent — do not always-on the council on routine work.
    - Run available council voices in parallel; merge their `Final Position` outputs before invoking the technical reviewers.
    - Treat any council voice's `Final Position` that is not an explicit pass (`proposal survives` or `keep current framing`) as a blocker for the technical-review pass unless the human explicitly resolves or defers it. This includes `reframe`, `simpler alternative`, `scope down`, `defer`, `inconclusive`, and other non-pass outcomes.
-7. Run technical specialist reviewer agents on the merged plan.
+8. Run technical specialist reviewer agents on the merged plan.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `plan-future-maintainer` agent.
    - Invoke the exact pre-built `plan-security-reviewer` agent for local security lanes that remain coordinator-owned: validation/output encoding, logging exposure, abuse-case coverage, secrets/config handling, cross-lane risk synthesis, and reviewer questions. For medium/complex plans, you may also invoke the relevant `plan-compliance-reviewer`, `plan-data-handling-reviewer`, `plan-authz-reviewer`, and `plan-supply-chain-reviewer` specialists directly; when you do, pass their outputs to `plan-security-reviewer` and ask it not to duplicate those specialist lanes.
@@ -128,18 +136,18 @@ Use these shared references when they apply:
    - Run reviewers in parallel only when they do not feed a later coordinator or lead reviewer.
    - Pass each reviewer the plan path, source context summary, discovered project rules that affect the plan, source-driven verification notes, and any relevant PRD or Jira context.
    - Do not write separate review files.
-8. Merge council and technical reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
+9. Merge council and technical reviewer feedback into `plan.md` when it improves correctness, security, maintainability, testability, rollout safety, or approval readiness.
    - Apply blocking findings before finalizing.
    - Treat security/privacy questions, blocking findings, blocking council positions, and human questions as approval blockers unless the reviewer explicitly marks them non-blocking with rationale or the human explicitly defers them.
    - Preserve reviewer conflicts as questions for the human instead of guessing.
    - Keep non-blocking style preferences out unless they remove real ambiguity.
-9. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
+10. Run `document-reviewer` on the merged `plan.md` as the final approval-readiness pass.
    - Follow the Reviewer Invocation Contract below.
    - Invoke the exact pre-built `document-reviewer` agent.
    - For long or complex plans, repeated terminology, or several answered blocking questions, tell `document-reviewer` that a coherence pass is required. `document-reviewer` owns any `document-coherence-reviewer` delegation so coherence findings are not duplicated.
    - When cross-document references, PRD-to-plan continuity, task progress drift, or code-review handoff drift could affect approval readiness, rerun or invoke `spec-flow-analyzer` before `document-reviewer`; do not route cross-document continuity to coherence-only review.
    - Merge any approval-readiness fixes before asking the human.
-10. Resolve all approval blockers before presenting the plan for approval.
+11. Resolve all approval blockers before presenting the plan for approval.
    - Ask the human follow-up questions as many times as necessary.
    - Update `plan.md` after each answer.
    - Preserve the original blocking question, mark it `answered`, record the human's answer with the local date, and summarize the document impact. Do not remove answered blocking questions during updates.
@@ -147,7 +155,7 @@ Use these shared references when they apply:
    - Update the frontmatter `updated` field to the local date whenever the document changes.
    - Rerun the affected council voices, specialist reviewers, coordinator/lead reviewers, and `document-reviewer` when an answer materially changes scope, architecture, data handling, security, rollout, tests, or approval readiness.
    - Do not leave an approval-relevant question only in the document. Either answer it, record the human's explicit non-blocking deferral, or keep the plan not ready for approval.
-11. Tell the human the plan path and that it is pending approval.
+12. Tell the human the plan path and that it is pending approval.
 
 - Ask them to review it and explicitly approve or request changes.
 
@@ -204,6 +212,7 @@ Use these sections when useful:
 
 - Summary
 - Source Context
+- Design Discussion
 - PRD Alignment
 - Current System Notes
 - Proposed Approach
@@ -227,31 +236,21 @@ Use these sections when useful:
 
 Plans must explicitly guide execution:
 
-- Every plan must include an `Implementation Surface` section before `Implementation Strategy`.
-- Plans that create, change, or depend on shared boundaries must include `Contract / Interface Definition` before `Implementation Surface`. Plans with no contract change must explicitly name the existing stable interface the implementation will use.
-- `Implementation Surface` must identify write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Use `Not applicable` only for categories that truly do not apply.
-- `simple` plans may recommend `single focused pass` and use `Not applicable` for subtasks when a breakdown would add noise.
-- `medium` and `complex` plans must include implementation subtasks.
-- `complex` plans should include decision notes for important architecture, public-contract, data, migration, security, or third-party integration decisions.
-- Each subtask must include task number, short title, status, execution mode, consumed or produced contract/interface, ownership/files, dependencies, acceptance checks, and progress document name such as `task_1.md`.
-- When a focused command is known, acceptance checks should include the command and the expected result instead of only saying "add tests" or "verify behavior".
-- Execution mode must say whether the task is sequential, dependent on another task, in a named parallel group, or independent.
-- The strategy must recommend incremental task-by-task execution or parallel execution across exact `implementation-agent` / `test-implementer` workers, with rationale.
-- The strategy must recommend whether `/rubber-duck:orchestrate-implementation` should coordinate the work or whether a simple `/rubber-duck:implement` pass is enough.
-- Parallel implementation must only be recommended when tasks can be assigned disjoint write sets and merged without cross-task ordering risk.
-- Subtasks should be small, concrete, independently executable when marked parallel or independent, and complete enough that their `task_N.md` can truthfully mark the task done after its acceptance and verification checks pass.
-- Every parallel group must name its integration checkpoint, including contract drift handling, generated-artifact reconciliation, shared verification, and task-document consistency checks.
+- Every plan must include `Implementation Surface` before `Implementation Strategy`.
+- Shared boundaries require `Contract / Interface Definition` before `Implementation Surface`; plans with no contract change must name the stable existing interface.
+- `simple` plans may recommend `single focused pass`; `medium` and `complex` plans must include implementation subtasks.
+- `medium` and `complex` subtasks must be vertical slices that deliver one observable behavior end to end. Horizontal setup tasks are allowed only to establish a shared contract that later slices consume.
+- Each subtask must include task number, short title, status, execution mode, consumed or produced contract/interface, ownership/files, dependencies, acceptance checks with expected command results when known, and progress document name such as `task_1.md`.
+- Parallel implementation requires disjoint write sets, stable interfaces, low merge risk, and an integration checkpoint for contract drift, generated artifacts, shared verification, and task-document consistency.
+- `complex` plans should include decision notes for consequential architecture, contract, data, migration, security, or third-party choices.
 
 ## Reviewer Orchestration Notes
 
-- Run the exact pre-built `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` agents before asking for human approval when the agents are available. `plan-security-reviewer` may return no findings for plans with no security/privacy surface; it still preserves the coordinator output contract.
-- Prefer running direct specialist reviewer agents in parallel when the current assistant environment supports it, then pass their outputs to the relevant coordinator or lead reviewer for synthesis and question preservation.
-- Do not run a coordinator or lead reviewer in the same fan-out batch as specialists whose outputs it must synthesize.
-- Wait for all available specialist reviewers and coordinator reviewers, merge their findings, then run `document-reviewer` last on the merged plan.
-- Use blocking findings, security/privacy questions, and reviewer conflicts as approval blockers unless they are explicitly deferred by the human as non-blocking.
-- If an expected reviewer agent is unavailable, note that gap in the final response and add it to the plan's Blocking Questions, Deferred Non-Blocking Questions, or Approval notes when it affects approval confidence.
-- The invoking skill owns the final document. Reviewer agents return findings only; they do not edit the document.
-- Do not approve the plan on behalf of the human.
+- Run `plan-future-maintainer`, `plan-security-reviewer`, and `plan-staff-engineer` before human approval when available.
+- Run direct specialists in parallel only when they do not feed a later coordinator or lead reviewer. Do not run a coordinator or lead reviewer in the same fan-out batch as specialists whose outputs it must synthesize.
+- Merge reviewer findings, preserve questions, then run `document-reviewer` last.
+- Treat blocking findings, security/privacy questions, and reviewer conflicts as approval blockers unless the human explicitly defers them as non-blocking.
+- The invoking skill owns final document edits and never approves the plan on behalf of the human.
 
 ## Approval Loop
 

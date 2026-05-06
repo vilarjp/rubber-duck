@@ -39,7 +39,7 @@ You do **not** audit input validation (`code-input-validation-reviewer`), authz 
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary; flag changed lines and unchanged lines that the change newly exposes.
-- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: project rules discovery, source-driven external API checks, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not duplicate `code-input-validation-reviewer`, `code-authz-reviewer`, `code-abuse-case-reviewer`, or `code-data-exposure-reviewer`.
 
 ## Anti-Pattern Examples
@@ -75,7 +75,7 @@ Check whether the diff:
 
 - `Blocker`: change must not ship until the secret-handling issue is resolved.
 - `Friction`: secret handling is acceptable but rotation, scope, or storage discipline is incomplete.
-- `Optimization`: hardening improvement.
+- `Optimization`: hardening improvement. Suppress it when it is speculative or unrelated to changed-scope secret handling risk.
 
 ## Output
 

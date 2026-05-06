@@ -54,6 +54,7 @@ Focus on whether tests prove the behavior created or modified by the implementat
 - Prioritize missing coverage, weak assertions, untested edge cases, regression risks, brittle tests, and redundant tests that obscure review confidence.
 - Avoid requesting broad test rewrites or full test-suite expansion unless the implementation risk justifies it.
 - Do not duplicate staff-engineering, project-pattern, plan-alignment, or security-only review unless the issue specifically affects test confidence.
+- Raise test findings only when the missing or weak test would materially reduce confidence in changed behavior, an important regression path, API compatibility, security/data handling, or production risk.
 
 ## Review Checklist
 
@@ -90,7 +91,7 @@ Check whether the implementation:
 
 - `Blocker`: missing or weak test coverage makes approval unsafe for the changed behavior.
 - `Friction`: coverage is usable but leaves a meaningful regression risk or verification gap.
-- `Optimization`: test clarity or maintenance improvement.
+- `Optimization`: test clarity or maintenance improvement. Suppress it when the suggestion is only preference or broad coverage churn.
 
 ## Output
 

@@ -56,6 +56,7 @@ Focus on whether the changed code follows the repository's existing conventions 
 - Prefer early returns and guard clauses over avoidable changed-code nesting when that matches local style and improves readability.
 - Avoid style nits, broad rewrites, or preference-only feedback unless the local convention is clear and the mismatch matters.
 - Do not duplicate staff-engineering, security-only, or test-coverage review unless the issue is specifically about project conventions or local patterns.
+- Raise findings only when the pattern mismatch changes behavior, review confidence, API compatibility, generated artifact correctness, test reliability, or meaningful maintainability.
 
 ## Review Checklist
 
@@ -88,7 +89,7 @@ Check whether the implementation:
 
 - `Blocker`: pattern mismatch can cause integration bugs, generated-artifact drift, incorrect layering, or approval-blocking handoff loss.
 - `Friction`: implementation works but creates maintainability, review, or convention drift.
-- `Optimization`: low-risk local-style improvement.
+- `Optimization`: low-risk local-style improvement. Suppress it when the issue is a harmless local preference.
 
 ## Output
 

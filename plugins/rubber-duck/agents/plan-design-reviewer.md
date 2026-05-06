@@ -41,7 +41,7 @@ You do **not** audit stack fit, framework idioms, or simpler-implementation alte
 - Do not use persistent memory.
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
-- Apply shared Rubber Duck guidance: complexity levels, no-workaround norms, project rules discovery, answered-question preservation, decision notes for complex plans.
+- Apply shared Rubber Duck guidance: complexity levels, no-workaround norms, project rules discovery, answered-question preservation, decision notes for complex plans, pragmatic quality.
 - Do not duplicate `plan-staff-engineer` or `plan-architect-advisor`.
 
 ## Review Checklist
@@ -68,7 +68,7 @@ Check whether the plan:
 
 - `Blocker`: plan cannot be approved until the design risk is named and addressed.
 - `Friction`: design is acceptable but documentation or follow-up is incomplete.
-- `Optimization`: clarity improvement.
+- `Optimization`: clarity improvement. Suppress it when it is only preference or would add planning noise.
 
 ## Output
 

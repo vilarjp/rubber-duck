@@ -46,6 +46,7 @@ Use these shared references when they apply:
 - `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only vs workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - `../_shared/clarifying-questions.md` to resolve behavior, ownership, data, or security uncertainty without over-asking.
 - `../_shared/artifact-quality-gates.md` before writing or finalizing planned `task_N.md` progress documents.
+- `../_shared/pragmatic-quality.md` for vertical-slice execution, short task documents, and meaningful review discipline.
 
 ## Agent Crew
 
@@ -76,6 +77,7 @@ Use these shared references when they apply:
    - When an approved plan includes `Contract / Interface Definition`, read it before selecting tasks. A task that changes or depends on a shared contract must identify whether that contract is already stable, produced by an earlier task, or a blocker for delegation.
    - When an older approved plan lacks `Implementation Surface`, derive temporary boundaries from `Files / Modules To Touch`, `Test Plan`, security/rollout notes, and subtask ownership. If those boundaries are ambiguous or approval-relevant, stop and ask the human before editing or delegating.
    - When an approved plan includes `Implementation Subtasks`, treat those subtasks as the implementation queue.
+   - Prefer the next ready vertical slice that can be implemented and tested end to end. Do not convert the run into a horizontal layer pass unless the approved plan names that task as a contract/setup dependency.
    - Read existing `task_N.md` documents before editing so completed subtasks are not repeated.
    - If the human names a specific subtask, implement only that subtask unless its dependencies are incomplete.
    - If no subtask is named, choose the next ready subtask from the plan: the first uncompleted sequential task whose dependencies are complete, or the next independent task from the recommended parallel group.
@@ -128,6 +130,7 @@ Use these shared references when they apply:
 7. Write subtask progress documents when following planned subtasks.
    - For each completed planned subtask, create or update `task_N.md` in the same docs folder as the plan.
    - Use `templates/task.md` as the default structure.
+   - Keep the task document concise, normally 40-90 lines, and write plain English that explains only what the next task or reviewer needs.
    - Set `created` when the task document is first created and `updated` to the local date on every task-document update.
    - Include the source plan path, planned task text, execution mode, dependencies, implementation summary, changed files, tests and verification, deviations, follow-ups, and recommended next task.
    - Include the contract/interface produced or consumed by the task, any compatibility or integration effect, and whether later tasks can safely depend on it.

@@ -40,6 +40,7 @@ Use these shared references when they apply:
 - `../_shared/agent-orchestration.md` for exact named-agent invocation, read-only delegation, fan-out/fan-in, fallback behavior, context minimization, and how specialist questions flow back to the parent skill.
 - `../_shared/clarifying-questions.md` when review scope, plan alignment, security posture, or expected behavior is unclear.
 - `../_shared/artifact-quality-gates.md` before reviewer fan-out, final document review, and approval handoff.
+- `../_shared/pragmatic-quality.md` for review severity discipline, short review documents, and low-nit behavior.
 
 ## Workflow
 
@@ -73,6 +74,7 @@ Use these shared references when they apply:
    - Do not modify source, tests, configuration, generated artifacts, or documentation other than the final `code-review.md`.
 4. Prioritize findings over commentary.
    - Treat correctness, regression risk, security/privacy issues, missing tests, plan drift, and project-pattern mismatches as first-class review findings.
+   - Require each finding to show changed-scope evidence, concrete impact, and the smallest useful fix or question.
    - Treat over-broad change sets as findings when the reviewed work uses speculative abstractions, broad refactors, new dependencies, architecture changes, or cleanup that is not clearly required to solve the specific problem.
    - Treat workaround smells as findings when changed code relies on type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, or copy-pasted fixes instead of addressing the root cause.
    - Treat unverified external API assumptions as findings or residual uncertainty when they affect correctness, compatibility, security, rollout, or test confidence.
@@ -81,7 +83,8 @@ Use these shared references when they apply:
    - Prefer early returns and guard clauses over avoidable changed-code nesting when that improves correctness, readability, or reviewability; do not request broad rewrites of existing unrelated control flow.
    - Merge duplicate findings from multiple reviewers into one finding with combined evidence.
    - Order findings by severity and user or production impact.
-   - Avoid style nits, broad rewrites, or preference-only feedback unless they hide a concrete bug, review risk, security risk, test gap, or maintainability problem.
+   - Avoid style nits, broad rewrites, speculative hardening, or preference-only feedback unless they hide a concrete bug, review risk, security risk, test gap, API compatibility issue, data-handling issue, production risk, or maintainability problem.
+   - Keep optional suggestions short and do not let them obscure required fixes.
 5. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
    - For PR reviews, derive a short kebab-case slug from the PR title, branch, or PR number.
@@ -89,6 +92,7 @@ Use these shared references when they apply:
 6. Draft the review document.
    - Use `templates/code-review.md` from this skill folder as the default structure.
    - Include only sections that help the human decide whether to approve, request changes, or ask follow-up questions.
+   - Target 60-140 lines unless the diff is genuinely complex; if longer, add a short reason and remove lower-value commentary first.
    - If there are no findings in a section, write `None`.
    - Preserve uncertainty when evidence is unavailable instead of inventing intent, production behavior, compliance scope, or test results.
    - Include workflow compliance notes when generated documents, answered blocking questions, changelogs, plan subtasks, execution strategy, or `task_N.md` progress documents are part of the reviewed change.

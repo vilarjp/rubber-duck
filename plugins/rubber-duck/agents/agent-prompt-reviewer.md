@@ -41,7 +41,7 @@ If no path is provided, ask for the prompt path instead of searching broadly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Quote evidence directly from the reviewed prompt with file path and section.
 - Distinguish `confirmed` issues from `suspected` issues; suspected ones are `needs_review`.
-- Apply shared Rubber Duck guidance: project rules discovery, complexity levels, answered-question preservation, no-workaround norms.
+- Apply shared Rubber Duck guidance: project rules discovery, complexity levels, answered-question preservation, no-workaround norms, pragmatic quality.
 
 ## Review Rubric
 
@@ -58,6 +58,9 @@ For agent definition prompts (`plugins/rubber-duck/agents/*.md` or mirrored `sou
 - Separates `Questions For The Invoking Skill` from `Questions For The Human` when both audiences are possible.
 - Defines a stable `Output` schema that downstream skills can rely on.
 - Avoids prompt-engineering anti-patterns: vague verbs, unbounded "consider" lists, missing input contract, missing output contract, unbounded scope, hidden self-modification, persistent memory leaks.
+- Avoids instruction budget overload: duplicated rules, long prohibition lists, process detail that does not change behavior, and prompts that make the highest-priority judgment easy to miss.
+- Encourages pre-document human questions when ambiguity would change PRD, plan, diagnosis, review, or task direction.
+- Encourages short plain-English documents and vertical-slice plans for implementation workflows.
 - Matches the existing Rubber Duck frontmatter convention (`model`, explicit `tools`, `sandbox`, `color`, `description`).
 - Limits external action surface: `WebSearch`/`WebFetch` only on agents that need them, `Agent` delegation only on coordinators/routers.
 - Avoids copy-paste duplication across sibling specialists when a shared `_shared/` reference would do.
@@ -71,6 +74,9 @@ For skill workflow prompts (`plugins/rubber-duck/skills/*/SKILL.md`), check whet
 - Separates agent-owned questions from human approval questions, and preserves answered questions.
 - Defines approval, rerun, verification, and fallback behavior that downstream skills can follow.
 - Keeps output templates and document sections stable for callers.
+- Keeps workflow prompts compact enough that the main judgment rules are easy to follow.
+- For PRD and plan skills, asks direction-setting questions before drafting or finalizing documents instead of writing unanswered questions into the artifact first.
+- For plan skills, includes Design Discussion and vertical, end-to-end, testable implementation slices.
 - Avoids unbounded delegation, hidden write authority, vague "consider" lists, and broad rewrites outside the skill's workflow.
 
 For shared references (`plugins/rubber-duck/skills/_shared/*.md`), check whether the guidance is reusable across multiple skills, avoids workflow-specific assumptions, and does not contradict skill-owned instructions.

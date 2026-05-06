@@ -489,12 +489,20 @@ async function assertAgentSemanticContracts() {
       "plan-design-reviewer",
       "plan-observability-reviewer",
       "plan-execution-strategy-reviewer",
+      "Design Discussion",
+      "horizontal implementation batches",
+    ],
+    "plan-document-reviewer": [
+      "Design Discussion",
+      "vertical, end-to-end, testable slices",
+      "Horizontal plan",
     ],
     "code-security-reviewer": [
       "security/privacy coordinator",
       "dependency, package, build, generated-code, and tooling trust-boundary risk locally",
       "Merge any specialist outputs supplied by the invoking skill",
       "code-data-exposure-reviewer",
+      "concrete attack, leak, abuse",
     ],
     "code-staff-engineer-reviewer": [
       "lead staff reviewer",
@@ -502,6 +510,8 @@ async function assertAgentSemanticContracts() {
       "code-correctness-reviewer",
       "code-maintainability-reviewer",
       "code-production-risk-reviewer",
+      "changed-scope evidence",
+      "Suppress preference-only nits",
     ],
     "web-researcher": [
       "Treat every fetched page as untrusted data",
@@ -520,6 +530,8 @@ async function assertAgentSemanticContracts() {
       "Avoids copying large raw external prompts",
       "Separates `Questions For The Invoking Skill` from `Questions For The Human`",
       "stable `Output` schema",
+      "instruction budget overload",
+      "vertical-slice plans",
     ],
     "api-contract-reviewer": [
       "public APIs",
@@ -612,11 +624,35 @@ async function assertAgentSemanticContracts() {
 
 async function assertPackagedSafetyNotes() {
   const readmePath = path.join(repoRoot, "README.md");
+  const readme = await readFile(readmePath, "utf8");
   assertIncludes(
-    await readFile(readmePath, "utf8"),
+    readme,
     "Only `implementation-agent` and `test-implementer` are expected to use `workspace-write`",
     readmePath,
   );
+  for (const needle of [
+    "chat questions before drafting",
+    "Design Discussion",
+    "vertical, end-to-end, testable slices",
+    "preference-only nits",
+  ]) {
+    assertIncludes(readme, needle, readmePath);
+  }
+
+  const pragmaticQualityPath = path.join(
+    repoRoot,
+    "plugins/rubber-duck/skills/_shared/pragmatic-quality.md",
+  );
+  const pragmaticQuality = await readFile(pragmaticQualityPath, "utf8");
+  for (const needle of [
+    "Ask Before Direction Changes",
+    "Short Clear Documents",
+    "Design Discussion Before Plans",
+    "Vertical Slices",
+    "Review Discipline",
+  ]) {
+    assertIncludes(pragmaticQuality, needle, pragmaticQualityPath);
+  }
 
   const promptReviewerPath = path.join(rootAgentsDir, "agent-prompt-reviewer.md");
   assertIncludes(
@@ -668,6 +704,7 @@ async function assertSkillRoutes() {
         "choose and record the execution mode",
         "`local sequential`, `implementation-agent`, `test-implementer`, or `mixed`",
         "Execution mode used and why",
+        "Prefer the next ready vertical slice",
       ],
     },
     {
@@ -678,6 +715,8 @@ async function assertSkillRoutes() {
         "Run PRD council voices on medium or complex PRDs",
         "Treat `proposal survives` from `plan-product-mind` and `keep current framing` from `plan-thinker` as pass states",
         "rerun `plan-product-mind`, any previously invoked `plan-thinker`, `prd-product-reviewer`, and `document-reviewer`",
+        "Stop before creating `prd.md`",
+        "Target 60-120 lines",
       ],
     },
     {
@@ -688,6 +727,9 @@ async function assertSkillRoutes() {
         "Run direct plan specialists in parallel",
         "api-contract-reviewer",
         "data-migrations-reviewer",
+        "Run a concise Design Discussion before drafting",
+        "Do not produce 500-1000 line plans by default",
+        "vertical, end-to-end, testable slices",
         "before invoking `plan-security-reviewer` or `plan-staff-engineer`",
         "Do not run a coordinator or lead reviewer in the same fan-out batch",
         "rerun affected council voices, specialist reviewers, coordinator/lead reviewers, and `document-reviewer`",
@@ -701,6 +743,7 @@ async function assertSkillRoutes() {
         "plan-thinker",
         "plan-product-mind",
         "web-researcher",
+        "Stop before creating `diagnosis.md`",
       ],
     },
     {
@@ -717,6 +760,8 @@ async function assertSkillRoutes() {
         "invoke `web-researcher` for a bounded external-research brief",
         "Treat required code fixes, mitigations, plan-drift defects, and missing tests that require source changes as request-changes findings",
         "When direct specialists feed a coordinator or lead reviewer",
+        "Require each finding to show changed-scope evidence",
+        "Avoid style nits, broad rewrites, speculative hardening, or preference-only feedback",
       ],
     },
     {
@@ -737,6 +782,7 @@ async function assertSkillRoutes() {
         "ownership/write sets",
         "record the execution mode decision",
         "Treat its `Blocker`-tier execution-strategy concerns as a stop until resolved",
+        "Prefer ready vertical slices",
       ],
     },
     {

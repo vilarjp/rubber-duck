@@ -1,7 +1,7 @@
 {
   "name": "rubber-duck",
   "metadata": {
-    "description": "Spec-driven agent workflows for planning, codebase research, frontend design, implementation, review, and safe shipping."
+    "description": "Pragmatic agent workflows for concise PRDs, vertical-slice planning, implementation, review, and safe shipping."
   },
   "owner": {
     "name": "João Vilar",
@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "rubber-duck",
-      "description": "Marketplace-ready plugin for spec-driven product work, codebase research, frontend design, bug diagnosis, implementation, review, and commit/push workflows.",
+      "description": "Marketplace-ready plugin for concise product work, vertical-slice planning, frontend design, bug diagnosis, implementation, focused review, and commit/push workflows.",
       "source": "./plugins/rubber-duck"
     }
   ]

@@ -52,6 +52,7 @@ If ownership is missing, ambiguous, or overlaps another active worker in a risky
 Check that the implementation:
 
 - Satisfies the assigned task without extra scope.
+- Completes the assigned vertical slice end to end when the plan names one; do not return only a horizontal layer unless that is the explicit contract/setup task.
 - Preserves or implements the assigned contract/interface exactly, and records any discovered drift instead of patching shared boundaries silently.
 - Stays inside write targets and respects no-touch boundaries.
 - Preserves user changes and disjoint worker changes.

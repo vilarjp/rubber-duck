@@ -20,15 +20,16 @@ Status: completed | partial | blocked
 - Planned task: Task N from Implementation Subtasks.
 - Planned execution: sequential first | sequential after Task N | parallel group A | independent
 - Contract / interface: contract produced, contract consumed, or `No contract impact`
+- Vertical slice outcome: observable behavior this task completes end to end.
 - Dependencies: Task IDs, human answers, migrations, feature flags, or `None`
 
 ## Implementation Summary
 
-- What changed for this subtask and why it satisfies the planned acceptance criteria.
-- Note whether this was implemented sequentially or in parallel with other planned subtasks.
-- Record any contract/interface effect, compatibility note, generated-artifact reconciliation, or reason later tasks can safely depend on this work.
+- What changed and why it satisfies the planned acceptance checks.
+- Execution mode: local sequential | implementation-agent | test-implementer | mixed.
+- Contract/interface effect, compatibility note, generated-artifact reconciliation, or `None`.
 - If delegated, record the assigned `implementation-agent` or `test-implementer`, its write ownership, read-only context, generated-artifact boundaries, and no-touch boundaries.
-- For `partial` or `blocked` status, summarize completed work, remaining work, blockers, and whether any edits or verification results can be safely reused.
+- For `partial` or `blocked`, summarize reusable work, remaining work, and blockers.
 
 ## Changed Files
 
@@ -39,7 +40,7 @@ Status: completed | partial | blocked
 - Focused tests and checks run for this task.
 - Full quality gate commands run, deferred, unavailable, or blocked.
 - External framework, library, service, or API behavior verified when it shaped implementation.
-- Contract/interface verification, integration checkpoint, or downstream compatibility check when relevant.
+- Contract/interface verification or integration checkpoint when relevant.
 - Any temporary workaround that remains, including why it was necessary, how it is constrained, and what follow-up removes it.
 
 ## Deviations / Follow-Ups
@@ -49,11 +50,10 @@ Status: completed | partial | blocked
 
 ## Blocking Questions
 
-- This section is decision history, not the first place the human should see task-blocking questions.
-- Ask blocking questions in the live session before marking the task completed. If any remain open, the task is partial/blocked and the final response must ask those questions directly.
-- Keep every blocking question that was raised during this subtask, including questions the human has answered.
-- Open questions block marking the task complete; answered questions remain as decision history when the answer and task impact are recorded.
-- Use this shape:
+- Decision history for task-blocking questions already asked in chat.
+- Open questions keep this task partial/blocked and must also be asked in the final response.
+- Keep every blocking question that was raised, including answered ones.
+- Shape:
   - Status: open | answered
     Question: Original question text.
     Answer: Human answered on yyyy-mm-dd: answer text.
@@ -68,7 +68,7 @@ Status: completed | partial | blocked
 ## Document Changelog
 
 - yyyy-mm-dd: Created after completing Task N.
-- Add one entry for each human change request, follow-up answer, material implementation update, verification update, or correction. Include what changed and why.
+- Add one entry for each material implementation update, verification update, human answer, or correction.
 
 ## Next Task
 

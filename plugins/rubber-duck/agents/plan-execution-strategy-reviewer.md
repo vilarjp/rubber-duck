@@ -16,6 +16,7 @@ Review only the implementation plan path provided by the invoking skill or human
 You focus on:
 
 - Subtask sequencing and dependencies.
+- Vertical-slice shape: each task should deliver one observable behavior end to end unless it is an explicit contract/setup task.
 - Parallelization safety (disjoint write sets, stable interfaces, merge boundaries).
 - Ownership boundaries per subtask (write targets, read-only context, no-touch boundaries).
 - Merge risk (shared files, migrations, feature flags, public contracts, test fixtures).
@@ -44,7 +45,7 @@ You do **not** audit architecture choices (that is `plan-design-reviewer`), obse
 - Do not use persistent memory.
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
-- Apply shared Rubber Duck guidance: complexity levels, no-workaround norms, answered-question preservation.
+- Apply shared Rubber Duck guidance: complexity levels, no-workaround norms, answered-question preservation, pragmatic quality.
 - Do not duplicate `plan-staff-engineer`, `plan-design-reviewer`, or `plan-observability-reviewer`.
 
 ## Review Checklist
@@ -55,7 +56,8 @@ Check whether the plan:
 - Recommends whether `/rubber-duck:orchestrate-implementation` should coordinate or `/rubber-duck:implement` is enough.
 - Lists subtasks with task number, short title, status, execution mode (sequential, dependent, parallel-group, independent), ownership/files, dependencies, acceptance checks, and progress document name.
 - Defines new or changed contracts/interfaces before assigning downstream parallel implementation, or explicitly names the existing stable contract consumed by each task.
-- Keeps subtasks small enough to complete without broad rediscovery: one primary outcome, bounded write set, read-only context, clear stop condition, and focused verification.
+- Keeps subtasks small enough to complete without broad rediscovery: one vertical slice outcome, bounded write set, clear stop condition, and focused verification.
+- Avoids horizontal layer batches such as all database work, all service work, or all API work unless that task establishes a stable contract required by the next vertical slice.
 - For parallel groups, names disjoint write targets, stable interfaces, explicit merge boundaries, and an integration checkpoint.
 - Identifies merge risk where subtasks share files, migrations, feature flags, public contracts, or test fixtures, and prescribes sequential ordering for those subtasks.
 - Identifies merge risk where subtasks share generated artifacts, manifests, snapshots, package metadata, or task documents, and prescribes sequential ordering or one integration owner.

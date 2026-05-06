@@ -9,12 +9,12 @@
   <img alt="Codex compatible" src="https://img.shields.io/badge/Codex-compatible-10A37F?style=for-the-badge">
   <img alt="Spec driven" src="https://img.shields.io/badge/spec--driven-workflows-F8C84E?style=for-the-badge">
   <img alt="Safe shipping" src="https://img.shields.io/badge/safe-shipping-2FBF71?style=for-the-badge">
-  <img alt="Version 0.4.2" src="https://img.shields.io/badge/version-0.4.2-FF8A4C?style=for-the-badge">
+  <img alt="Version 0.5.0" src="https://img.shields.io/badge/version-0.5.0-FF8A4C?style=for-the-badge">
 </p>
 
-Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into crisp artifacts, reviewed plans, focused implementation, and safer commits. It is cute on the outside, stubbornly practical on the inside.
+Rubber Duck is a marketplace-ready plugin for Claude Code and Codex that turns fuzzy software work into clear questions, concise artifacts, vertical implementation slices, focused review, and safer commits. It is cute on the outside, stubbornly practical on the inside.
 
-Bring it a product idea, Jira link, bug report, local diff, or GitHub PR. Rubber Duck helps ask the right questions, write the right document, call in specialist reviewers, and keep the path from idea to push small enough to reason about.
+Bring it a product idea, Jira link, bug report, local diff, or GitHub PR. Rubber Duck asks direction-setting questions before it locks in a document, keeps plans small enough to review, calls in specialist reviewers, and keeps the path from idea to push testable end to end.
 
 This repository is built from a clean-room plan. It does not assume or reuse any previous Rubber Duck implementation.
 
@@ -74,11 +74,15 @@ Install the Codex custom agents for the current project:
 
 This generates 62 Codex custom-agent TOML files under the nearest project root's `.codex/agents/` with `gpt-5.5`, medium reasoning, and each Rubber Duck agent's declared sandbox. Use `/rubber-duck:setup-codex-agents --global` if you want the generated agents in `~/.codex/agents/` instead. Re-run setup after upgrading Rubber Duck so existing Codex projects regenerate the current agent inventory.
 
+Upgrade note for `0.5.0`: PRD, planning, diagnosis, implementation, orchestration, and code-review prompts now use the shared pragmatic-quality guidance. Direction-setting questions are asked in chat before documents are created or finalized, medium and complex plans use a concise Design Discussion, implementation subtasks default to vertical end-to-end slices, and reviewer agents suppress low-value nits in favor of meaningful correctness, test, security, data, production, compatibility, and maintainability findings.
+
 Upgrade note for `0.4.1`: live plugin metadata no longer advertises the retired eval workflow, setup and validation share the same agent parsing/rendering contract, `source-agents` can be synchronized mechanically, and prompt contracts now preserve reviewer questions and severity/confidence discipline more consistently.
 
 Upgrade note for `0.4.0`: setup now refuses to write through symlinked agents directories, symlinked Rubber Duck target TOML files, or non-file Rubber Duck target destinations, and it prunes stale Rubber Duck generated TOML files that carry the Rubber Duck generated header. Unrelated custom TOML files, including symlinked dotfiles-managed agents, are preserved.
 
 Workflow note for `0.4.0`: medium or complex PRDs and plans may run plan-time council voices before formal review. Non-pass council positions are approval blockers until the document is adjusted, the reviewer concedes, or the human explicitly records a non-blocking deferral.
+
+Workflow note: PRD and plan flows now ask chat questions before drafting when ambiguity would change direction. Medium and complex plans add a concise Design Discussion before `plan.md`, then break work into vertical, end-to-end, testable slices instead of horizontal layer batches.
 
 Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a Rubber Duck skill:
 
@@ -97,13 +101,13 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 
 | Moment             | Rubber Duck helps with                                                                                             |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| Product idea       | Turns rough prompts or Jira context into a concise PRD.                                                            |
-| Technical planning | Builds a contract-first, where-aware implementation plan with ownership surfaces, execution strategy, small subtasks, and maintainer/security/staff review. |
+| Product idea       | Asks product-shaping questions first, then turns rough prompts or Jira context into a concise PRD.                 |
+| Technical planning | Aligns direction through a short Design Discussion, then writes a concise vertical-slice plan with ownership surfaces and focused review. |
 | Bug investigation  | Produces an evidence-backed diagnosis before anyone starts changing code.                                          |
 | Orchestration      | Coordinates approved plan subtasks sequentially or with parallel-safe `implementation-agent` and `test-implementer` workers. |
 | Implementation     | Guides scoped, test-first changes against an approved artifact or direct request, including planned task progress and bounded agent delegation. |
 | Frontend design    | Creates or renovates polished, responsive, accessible frontend experiences with UX/UI, accessibility, and UX-writing specialist review when useful. |
-| Code review        | Reviews local diffs or PRs with specialist agents for correctness, security, tests, patterns, and plan alignment.  |
+| Code review        | Reviews local diffs or PRs for meaningful correctness, security, tests, API compatibility, data handling, production risk, patterns, and plan alignment. |
 | Commit and push    | Organizes related-change commits, checks shipping hygiene, blocks protected branches, asks for explicit confirmation, and pushes safely. |
 
 ## Skill Menu
@@ -111,7 +115,7 @@ Invoke Rubber Duck from the plugin and skill mention UI, or ask Codex to use a R
 | Invoke                                    | Use it when                                                            | Inputs                                                                             | Output                                                                                       |
 | ----------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `/rubber-duck:prd`                        | You need the what and why before implementation.                       | Free-form prompt or Jira link.                                                     | `docs/yyyy-mm-dd-{slug}/prd.md` pending approval.                                            |
-| `/rubber-duck:plan`                       | You need the technical where and how for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                    | `docs/yyyy-mm-dd-{slug}/plan.md` pending approval, with `Implementation Surface` and subtasks for medium-to-complex work. |
+| `/rubber-duck:plan`                       | You need technical direction and vertical implementation slices for a feature, bug fix, or approved PRD. | Prompt, Jira link, or PRD slug.                                                    | Chat Design Discussion when needed, then `docs/yyyy-mm-dd-{slug}/plan.md` pending approval with `Implementation Surface` and vertical subtasks for medium-to-complex work. |
 | `/rubber-duck:diagnosis`                  | You need to understand a bug before fixing it.                         | Bug report, Jira link, logs, reproduction notes, or source hint.                   | `docs/yyyy-mm-dd-{slug}/diagnosis.md` pending approval.                                      |
 | `/rubber-duck:orchestrate-implementation` | You need to coordinate an approved plan's subtasks.                    | Approved plan slug/path, optional task IDs, and optional sequential/parallel hint. | Code/tests changed; completed planned subtasks emit `task_N.md` progress docs.               |
 | `/rubber-duck:implement`                  | You are ready to make a scoped code change.                            | Implementation prompt, Jira link, or approved plan/diagnosis/code-review slug.     | Code/tests changed; planned subtasks emit `task_N.md` progress docs.                         |
@@ -128,7 +132,7 @@ Every workflow skill declares at least one specialist agent crew.
 
 Skills invoke exact pre-built agent names when those agents exist. Claude Code installs Markdown agents from `plugins/rubber-duck/agents/`, where they are pinned to Sonnet. Codex uses `/rubber-duck:setup-codex-agents` to generate equivalent TOML custom agents with `gpt-5.5` and medium reasoning. Launch prompts should provide only run-specific context such as document paths, diffs, source summaries, assigned tasks, ownership boundaries, and verification results; they should not replace the full agent definition with a compressed generic role prompt.
 
-Agent usage scales by complexity: simple work stays local or uses one narrow specialist, medium work uses research or review agents when risk warrants it, and complex work uses explicit fan-out/fan-in across independent questions or disjoint write sets. Plans define contracts or stable existing interfaces before assigning parallel implementation. After parallel workers return, the invoking skill acts as integration coordinator and reconciles contract assumptions, generated artifacts, task documents, and verification before dependent work starts. Read-only agents inspect and advise. Workspace-write agents are limited to `implementation-agent` and `test-implementer`; they require explicit ownership boundaries and are inspected by the invoking skill before completion.
+Agent usage scales by complexity: simple work stays local or uses one narrow specialist, medium work uses research or review agents when risk warrants it, and complex work uses explicit fan-out/fan-in across independent questions or disjoint write sets. Plans define contracts or stable existing interfaces before assigning parallel implementation, but implementation tasks default to vertical slices that produce one observable behavior and focused verification. After parallel workers return, the invoking skill acts as integration coordinator and reconciles contract assumptions, generated artifacts, task documents, and verification before dependent work starts. Read-only agents inspect and advise. Workspace-write agents are limited to `implementation-agent` and `test-implementer`; they require explicit ownership boundaries and are inspected by the invoking skill before completion.
 
 ## Research And Implementation Crew
 
@@ -230,34 +234,37 @@ Approval-gated documents start as `pending-approval` in YAML frontmatter and inc
 
 Approval is intentionally a loop. Rubber Duck should ask follow-up questions as many times as necessary until approval-relevant ambiguity is resolved, explicitly deferred by the human as non-blocking, or the workflow stops. Generated documents separate `Blocking Questions` from `Deferred Non-Blocking Questions` so unresolved approval blockers do not get hidden in ordinary notes. When the human answers a blocking question, the original question stays in the document as an answered entry with the human answer, answer date, and document impact.
 
-Clarifying questions are intentionally narrow. Rubber Duck investigates local code, docs, tests, and generated artifacts first, then asks 1-2 focused questions when the answer would materially change scope, architecture, behavior, data handling, security, rollout, ownership, or approval. Agents surface candidate questions with blocking/non-blocking classification; the invoking skill decides what to ask and records the answer.
+Clarifying questions are intentionally narrow. Rubber Duck investigates local code, docs, tests, and generated artifacts first, then asks 1-2 focused questions when the answer would materially change scope, architecture, behavior, data handling, security, rollout, ownership, or approval. When an answer would change a PRD, plan, diagnosis, review, or task direction, the question is asked in chat before the document is created or finalized. Agents surface candidate questions with blocking/non-blocking classification; the invoking skill decides what to ask and records the answer.
 
 Material document updates are tracked in `Document Changelog`, including human answers, requested changes, reviewer-driven updates, approvals, and requested-changes decisions.
 
-Plans include `Contract / Interface Definition` and `Implementation Surface` before execution strategy so the document says which contract is stable and where work may happen before it says how to do the work. The surface separates write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Implementation and orchestration skills pass those boundaries to read-only agents as context and to workspace-write agents as explicit ownership.
+Plans include a concise Design Discussion for medium, complex, risky, or directionally ambiguous work before `plan.md` is finalized. Plans still include `Contract / Interface Definition` and `Implementation Surface` before execution strategy so the document says which contract is stable and where work may happen before it says how to do the work. The surface separates write targets, read-only context, tests and verification surfaces, generated artifacts, no-touch boundaries, and parallel or merge-risk notes. Implementation and orchestration skills pass those boundaries to read-only agents as context and to workspace-write agents as explicit ownership.
 
-Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. Subtasks are expected to be small, concrete, completion-oriented units with a consumed or produced contract/interface, bounded write set, read-only context, dependencies, focused acceptance checks, and `task_N.md` output. The strategy recommends `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Parallel groups include an integration checkpoint so contract drift, generated artifacts, task documents, and verification are reconciled before dependent work starts. Completed planned subtasks create colocated progress documents such as:
+Medium-to-complex plans include `Implementation Strategy` and `Implementation Subtasks`. Subtasks are expected to be vertical, concrete, completion-oriented slices with one observable outcome, a consumed or produced contract/interface, bounded write set, dependencies, focused acceptance checks, and `task_N.md` output. Horizontal setup tasks are allowed only when they establish a shared contract later slices consume. The strategy recommends `single focused pass`, `incremental task-by-task`, or parallel `implementation-agent` / `test-implementer` delegation, and records whether `/rubber-duck:orchestrate-implementation` should coordinate the run or a simple `/rubber-duck:implement` pass is enough. Parallel groups include an integration checkpoint so contract drift, generated artifacts, task documents, and verification are reconciled before dependent work starts. Completed planned subtasks create colocated progress documents such as:
 
 ```text
 docs/yyyy-mm-dd-{slug}/task_1.md
 docs/yyyy-mm-dd-{slug}/task_2.md
 ```
 
-Rubber Duck uses the existing complexity labels `simple`, `medium`, and `complex` to scale ceremony. Simple plans stay single-pass when possible, medium plans include explicit subtasks, and complex plans add stronger sequencing, rollout, rollback, security, and decision context. Plans created from PRDs include a stricter PRD-to-plan alignment check so goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions survive translation into implementation work.
+Rubber Duck uses the existing complexity labels `simple`, `medium`, and `complex` to scale ceremony. Simple plans stay single-pass when possible, medium plans include explicit vertical subtasks, and complex plans add stronger sequencing, rollout, rollback, security, and decision context. Plans created from PRDs include a stricter PRD-to-plan alignment check so goals, acceptance criteria, non-goals, risks, dependencies, and answered blocking questions survive translation into implementation work.
 
-Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They cover clarifying questions, complexity levels, project rules discovery, source-driven external API checks, no-workaround guidance, PRD-to-plan alignment, artifact quality gates, and optional mini-ADR-style decision notes for complex plans.
+Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They cover pragmatic quality, clarifying questions, complexity levels, project rules discovery, source-driven external API checks, no-workaround guidance, PRD-to-plan alignment, artifact quality gates, and optional mini-ADR-style decision notes for complex plans.
 
 ## Safety Rails
 
 - `implement` follows TDD whenever feasible and explains when it cannot.
 - Skills discover repository-local rules and conventions before relying on generic preferences.
 - Skills can use read-only codebase and docs agents to investigate first, then ask focused human questions for unresolved uncertainty.
+- PRD, plan, diagnosis, code-review, and task workflows ask direction-setting questions in chat before creating or finalizing an approval-gated document.
+- Generated documents target plain English, short sections, and only the detail needed for the next decision.
 - Skills minimize and redact connector, Jira, PR, log, screenshot, and user-provided content before persisting it or passing it to agents, and ask before using material from a different repository, project, customer, or workspace.
 - Skills verify external framework, library, service, or API behavior from repository evidence, local package/source docs, official docs, or version-specific references when that behavior shapes a plan, implementation, diagnosis, or review.
 - Skills prefer root-cause fixes and flag workaround smells such as type suppression, lint/test bypasses, swallowed errors, arbitrary sleeps, monkey patches, scattered special cases, and copy-pasted fixes.
 - `orchestrate-implementation` owns multi-subtask coordination and only runs parallel workers when tasks are explicitly parallel-safe.
 - `orchestrate-implementation` acts as integration coordinator after parallel work, stopping dependent work when contract/interface drift needs one explicit adjustment owner.
 - `implement` reads planned subtasks and existing `task_N.md` documents before choosing the next task.
+- `implement` and `orchestrate-implementation` prefer the next ready vertical slice that can be implemented and tested end to end.
 - `implement` and `orchestrate-implementation` may use `implementation-agent` only for bounded production-code work with explicit write ownership, read-only context, no-touch boundaries, dependencies, expected tests, and progress-document expectations.
 - `implement` and `orchestrate-implementation` may use `test-implementer` only for bounded test work with explicit write ownership.
 - `frontend-design` can fan out to UX/UI, accessibility, and UX-writing specialists for substantial work, then merges their read-only findings before final polish.
@@ -272,7 +279,7 @@ Shared workflow references live in `plugins/rubber-duck/skills/_shared/`. They c
 - `setup-codex-agents` can use `agent-packaging-reviewer` when validating mirror consistency, sandbox declarations, generated TOML behavior, and release risk; it also uses `agent-runtime-parity-reviewer` when generated TOML behavior, sandbox parity, model/reasoning defaults, or tool fallback behavior changes.
 - Skills keep work scoped and avoid unrelated refactors.
 - Jira links rely only on authenticated tools already available in the user's current assistant session.
-- Reviewer agents return findings and questions to the invoking skill instead of writing separate review files.
+- Reviewer agents return findings and questions to the invoking skill instead of writing separate review files, and suppress preference-only nits that do not affect correctness, maintainability, tests, API compatibility, security, data handling, production risk, or user impact.
 
 ## Troubleshooting
 

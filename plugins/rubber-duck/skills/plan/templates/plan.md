@@ -14,61 +14,66 @@ Status: pending-approval
 
 ## Summary
 
-One short paragraph describing the intended technical change and the outcome it should enable.
+One short paragraph with the technical change, user-visible outcome, and implementation style.
 
 ## Source Context
 
-- Prompt, Jira issue, or PRD path used as the source of truth.
-- Key requirements, constraints, and non-goals carried into implementation planning.
+- Source of truth: prompt, Jira issue, PRD path, or approved artifact.
+- Key requirements, constraints, and non-goals.
+
+## Design Discussion
+
+- Chat alignment status: completed | skipped because simple | pending.
+- Aligned direction: simplest viable design and why.
+- Rejected heavier option: what was avoided and why.
+- Human answers that changed direction, if any.
 
 ## PRD Alignment
 
-- For plans created from a PRD, map goals, acceptance criteria, non-goals, risks, and answered blocking questions to planned work or explicit out-of-scope rationale.
+- For PRD-backed plans, map goals and acceptance criteria to vertical slices, tests, or explicit out-of-scope rationale.
 - Write `Not applicable` when the source is not a PRD.
 
 ## Current System Notes
 
-- Existing files, modules, tests, commands, data flows, or conventions that shape the implementation.
-- Project rules discovered from local instructions, config, manifests, CI, nearby files, or generated artifacts when they affect the plan.
-- External framework, library, service, or API behavior verified from repository evidence, local package/source docs, official docs, release notes, or existing tests when relevant.
-- Confirmed facts only; call out assumptions separately.
+- Confirmed files, modules, tests, commands, data flows, and conventions that shape the work.
+- External behavior verified from repository evidence or authoritative docs when relevant.
+- Assumptions: list separately or write `None`.
 
 ## Proposed Approach
 
-- Smallest correct implementation sequence.
-- Important decisions, tradeoffs, dependencies, and rejected heavier alternatives.
-- Root-cause path for bug fixes; avoid workaround strategies unless they are explicitly temporary, constrained, and tracked.
+- Smallest correct implementation path.
+- Important decisions and tradeoffs.
+- Root-cause path for bug fixes. Temporary workarounds must be constrained and tracked.
 
 ## Contract / Interface Definition
 
-- New or changed contracts/interfaces: public APIs, CLI commands, plugin interfaces, generated artifact formats, schemas, events, component props, storage shape, module boundaries, or test fixture contracts.
-- Existing stable contracts consumed by this work.
-- Contract owner and first task that establishes or confirms the contract before downstream implementation.
-- Compatibility expectations, versioning, migration, or deprecation notes.
-- Write `No contract change; implementation consumes the existing <surface> contract` when applicable.
+- New or changed contract/interface, if any.
+- Existing stable contract this work consumes.
+- Compatibility, migration, or deprecation notes.
+- Write `No contract change; implementation consumes the existing <surface> contract` when no boundary changes.
 
 ## Implementation Surface
 
-- Write targets: files, modules, generated artifacts, configuration, data stores, or external systems that implementation may change.
-- Read-only context: files, docs, tests, logs, generated artifacts, external references, or prior decisions that should be inspected but not edited.
-- Tests and verification surfaces: focused tests, fixtures, commands, snapshots, manual checks, or quality gates expected to prove the work.
-- Generated artifacts: files or outputs that may be created, refreshed, checked in, ignored, or must remain untouched.
-- No-touch boundaries: files, modules, APIs, data, generated outputs, or project areas that must stay unchanged unless the human approves a scope change.
-- Parallel and merge-risk notes: ownership boundaries, shared files, sequencing constraints, conflicts, and tasks that must not run concurrently.
+- Write targets:
+- Read-only context:
+- Tests and verification:
+- Generated artifacts:
+- No-touch boundaries:
+- Parallel or merge-risk notes:
 
 ## Implementation Strategy
 
 - Complexity: simple | medium | complex.
 - Recommended execution: single focused pass | incremental task-by-task | parallel implementation-agent/test-implementer delegation.
 - Rationale: why this mode is safer or faster for this work.
-- Orchestration recommendation: whether `/rubber-duck:orchestrate-implementation` should coordinate the plan, whether a simple `/rubber-duck:implement` pass is enough, and whether exact `implementation-agent` or `test-implementer` workers can safely implement independent subtasks.
-- Parallel safety notes: shared files, shared state, migrations, test dependencies, merge risks, and any tasks that must not run at the same time.
-- Integration checkpoint: how the orchestrator will reconcile contract assumptions, generated artifacts, task documents, and verification after any parallel group before dependent work begins.
+- Orchestration: `/rubber-duck:implement` or `/rubber-duck:orchestrate-implementation`.
+- Parallel safety: name safe groups or write `Sequential only`.
+- Integration checkpoint: what must be reconciled before dependent work begins.
 
 ## Decision Notes
 
-- For complex plans only, capture important architecture, public-contract, data, migration, security, third-party integration, or avoided-heavier-alternative decisions.
-- Use this shape when needed:
+- Complex plans only. Capture decisions that future maintainers must understand.
+- Shape:
   - Decision: chosen approach.
   - Alternatives considered: viable alternatives.
   - Rationale: why this path is safest or simplest now.
@@ -77,56 +82,40 @@ One short paragraph describing the intended technical change and the outcome it 
 
 ## Implementation Subtasks
 
-- Task 1: Short task title.
+- Task 1: Vertical slice title.
   Status: planned
   Execution: sequential first | sequential after Task N | parallel group A | independent
   Contract / interface: contract produced, contract consumed, or `No contract impact`
+  Slice outcome: observable behavior this task completes end to end
   Ownership / files: `path/to/file`, `path/to/other`
-  Read-only context: `path/to/context` or `None`
   Dependencies: Task IDs, human answers, migrations, feature flags, or `None`
-  Acceptance: Observable completion criteria, focused tests/checks, expected command results, and stop condition.
+  Acceptance: focused tests/checks, expected command results, and stop condition.
   Integration notes: merge boundary, generated artifacts, task-document updates, or `None`
   Progress document: `task_1.md`
 - For simple work that does not need breakdown, write `Not applicable: single focused pass is recommended`.
 
-## Files / Modules To Touch
-
-- `path/to/file`: planned responsibility or change.
-
-## Data Model / Migrations
-
-- Storage, schema, migration, backfill, compatibility, or cleanup work.
-- Write `Not applicable` when no data model changes are planned.
-
-## API / UI Behavior
-
-- Public contracts, routes, components, commands, user flows, or integration behavior that will change.
-- Write `Not applicable` when no API or UI behavior changes are planned.
-
 ## Test Plan
 
-- Focused tests to add or update.
-- Full quality gate to run before completion: formatting checks, linting, type checks, builds or compilation, and the full automated test suite when those commands exist.
-- Manual checks only for behavior that cannot be covered by the automated gate.
+- Focused checks per vertical slice.
+- Full quality gate: format, lint, type check, build/compile, and full tests when those commands exist.
+- Manual checks only when automation is not practical.
 
 ## Security / Privacy / Compliance
 
-- Data types involved, especially PII, credentials, customer content, logs, or analytics.
-- Authorization, validation, sanitization, logging, retention, abuse-case, and dependency considerations.
+- Data, authorization, validation, logging, retention, abuse, dependency, and compliance notes.
 - Write `No material security or privacy impact identified` only when supported by source context.
 
 ## Rollout / Rollback
 
-- Deployment, feature flag, migration, compatibility, monitoring, rollback, or recovery notes.
+- Deployment, flag, migration, compatibility, monitoring, rollback, or recovery notes.
 - Write `Not applicable` for local-only or document-only changes.
 
 ## Blocking Questions
 
-- This section is decision history, not the first place the human should see approval-blocking questions.
-- Ask blocking questions in the live session before presenting the plan for approval. If any remain open, the plan remains pending and not approval-ready, and the final response must ask those questions directly.
-- Keep every blocking question that was raised, including questions the human has answered.
-- Open questions block approval; answered questions remain as decision history and do not block approval when the answer and document impact are recorded.
-- Use this shape:
+- Decision history for blocking questions already asked in chat.
+- Open questions keep this plan pending and must also be asked in the final response.
+- Keep every blocking question that was raised, including answered ones.
+- Shape:
   - Status: open | answered
     Question: Original question text.
     Answer: Human answered on yyyy-mm-dd: answer text.
@@ -135,13 +124,13 @@ One short paragraph describing the intended technical change and the outcome it 
 
 ## Deferred Non-Blocking Questions
 
-- Questions the human explicitly accepted as safe to defer, with the reason approval can still proceed.
+- Questions the human explicitly accepted as safe to defer, with the reason approval can continue.
 - Write `None` when there are no deferred questions.
 
 ## Document Changelog
 
 - yyyy-mm-dd: Created from prompt, Jira, or PRD context.
-- Add one entry for each human change request, follow-up answer, reviewer-driven material update, approval, or requested-changes decision. Include what changed and why.
+- Add one entry for each material human answer, reviewer-driven update, approval, or requested-changes decision.
 
 ## Approval
 

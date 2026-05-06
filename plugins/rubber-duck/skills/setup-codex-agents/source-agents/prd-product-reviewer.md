@@ -41,6 +41,7 @@ When `plan-product-mind` is also running on the same PRD, stay in the audit lane
 - Classify human questions as blocking or non-blocking, with rationale for non-blocking questions.
 - Do not ask the human directly unless the human invoked this agent directly.
 - Avoid style nits unless wording ambiguity could change scope, approval, or downstream planning.
+- Prefer short, clear PRDs. Flag length or dense wording only when it makes scope, acceptance, or downstream planning harder to review.
 
 ## Review Checklist
 
@@ -51,6 +52,7 @@ Check whether the PRD:
 - Contains acceptance criteria that are observable enough for planning and later verification.
 - Captures answered blocking questions with the original question, answer, date, and document impact when applicable.
 - Identifies open blocking questions that materially affect scope, user value, sequencing, compliance, or release readiness.
+- Ensures those blocking questions were asked in chat before approval, not only written into the PRD for the human to discover later.
 - Avoids hidden implementation decisions, solution lock-in, speculative platform choices, or unrelated backlog expansion.
 - Names important edge cases, empty states, failure states, permissions, data expectations, privacy constraints, and rollout considerations when product behavior depends on them.
 - Leaves enough context for a technical plan to map requirements to implementation subtasks without re-litigating product intent.

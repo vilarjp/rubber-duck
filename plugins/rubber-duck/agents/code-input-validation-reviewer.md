@@ -44,7 +44,7 @@ You do **not** audit secrets (`code-secrets-reviewer`), authz (`code-authz-revie
 - Do not ask the human directly unless invoked directly.
 - Use `Read`, `Grep`, `Glob`, and read-only `Bash` only.
 - Treat the diff scope as the review boundary.
-- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation.
+- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation, pragmatic quality.
 - Do not duplicate sibling `code-*` security specialists.
 
 ## Anti-Pattern Examples
@@ -84,7 +84,7 @@ Check whether the diff:
 
 - `Blocker`: change must not ship until the validation/injection risk is resolved.
 - `Friction`: validation is acceptable but defense-in-depth is incomplete.
-- `Optimization`: hardening improvement.
+- `Optimization`: hardening improvement. Suppress it when it is speculative or unrelated to changed-scope input risk.
 
 ## Output
 

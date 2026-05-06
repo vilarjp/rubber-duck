@@ -45,6 +45,7 @@ Use these shared references when they apply:
 - `../_shared/agent-orchestration.md` for skill-owned orchestration, exact named-agent invocation, read-only vs workspace-write delegation, fan-out/fan-in, fallback behavior, and where-aware ownership boundaries.
 - `../_shared/clarifying-questions.md` when selected tasks expose behavior, ownership, dependency, or verification uncertainty.
 - `../_shared/artifact-quality-gates.md` before finalizing `task_N.md` progress documents or orchestration summaries.
+- `../_shared/pragmatic-quality.md` for vertical-slice execution, concise task documents, and review discipline.
 
 ## Agent Crew
 
@@ -77,6 +78,7 @@ Use these shared references when they apply:
 3. Build the task queue.
    - If the human named task IDs, consider only those tasks and their unmet dependencies.
    - Otherwise choose the next ready task for `incremental task-by-task` plans.
+   - Prefer ready vertical slices that can be implemented and tested end to end. Treat horizontal setup tasks as eligible only when the approved plan marks them as required contract/setup work for later slices.
    - For plans recommending parallel `implementation-agent` / `test-implementer` delegation, identify all ready tasks in the same parallel-safe group when the human asked for parallel execution or all-ready execution, then assign production-code tasks to exact `implementation-agent` workers.
    - A task is ready only when its dependencies are complete, no open blocking questions affect it, the contract/interface it consumes is stable, and its ownership/files do not conflict with another selected task.
    - Before launching workers, invoke `plan-execution-strategy-reviewer` when selected tasks, proposed parallel groups, shared write targets, migrations, feature flags, contracts, or test fixtures create sequencing or merge-risk uncertainty. Pass the approved plan, selected task IDs, existing `task_N.md` state, proposed execution mode, ownership/write sets, known conflicts, and unresolved blockers. Treat its `Blocker`-tier execution-strategy concerns as a stop until resolved.

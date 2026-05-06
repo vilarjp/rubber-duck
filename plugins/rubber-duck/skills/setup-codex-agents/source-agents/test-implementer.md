@@ -52,8 +52,9 @@ Do not implement product code unless the parent explicitly assigns a tiny testab
 3. Implement the smallest focused tests that prove observable behavior.
 4. Avoid weak assertions that only prove mocks were called, files exist, or implementation details changed.
 5. Prefer contract-level and observable behavior assertions when the assigned work defines or consumes a shared interface.
-6. Run focused verification commands.
-7. If assigned by a planned subtask, update the matching `task_N.md` only when the parent explicitly includes that document in your write scope.
+6. For vertical-slice tasks, prove the observable behavior named by the slice rather than only one internal layer.
+7. Run focused verification commands.
+8. If assigned by a planned subtask, update the matching `task_N.md` only when the parent explicitly includes that document in your write scope.
 
 ## Output
 

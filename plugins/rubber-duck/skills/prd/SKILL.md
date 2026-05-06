@@ -39,6 +39,8 @@ Use `../_shared/clarifying-questions.md` to keep product questions focused on ap
 
 Use `../_shared/artifact-quality-gates.md` before product review, document review, and approval handoff.
 
+Use `../_shared/pragmatic-quality.md` for the ask-before-drafting gate, short clear document style, and review discipline.
+
 ## Agent Crew
 
 - Use `docs-locator` and `docs-analyzer` when prior product docs, generated artifacts, decisions, or project context may shape requirements.
@@ -64,6 +66,7 @@ Use `../_shared/artifact-quality-gates.md` before product review, document revie
    - Apply the clarifying-questions reference: ask 1-2 focused questions at a time when possible, explain why each answer matters, and classify blocking vs non-blocking uncertainty.
    - Treat questions returned by docs or review agents as candidate questions for the parent skill to ask; specialist agents do not ask the human directly unless invoked directly.
    - Ask as many times as necessary until approval-relevant product ambiguity is resolved.
+   - Stop before creating `prd.md` when an unanswered blocking question would materially change the PRD's direction. Ask in chat, wait for the answer or explicit non-blocking deferral, then draft.
    - Do not ask about details that the human explicitly accepts as deferred and non-blocking.
 4. Derive the output folder.
    - Use the local current date in `yyyy-mm-dd` format.
@@ -72,6 +75,8 @@ Use `../_shared/artifact-quality-gates.md` before product review, document revie
 5. Draft a concise PRD.
    - Use `templates/prd.md` from this skill folder as the default structure.
    - Include only sections that help the work move forward.
+   - Target 60-120 lines unless the product problem is genuinely complex; if longer, add a short reason and cut lower-value detail first.
+   - Write plain English with short sentences and concrete bullets so a non-native English reader can scan it quickly.
    - Keep facts, assumptions, non-goals, risks, blocking questions, and deferred non-blocking questions distinct.
    - Prefer evidence over speculation.
    - Use clear acceptance criteria that a future plan or implementation can verify.

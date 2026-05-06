@@ -51,7 +51,7 @@ You delegate to specialists:
 - Classify which specialists are relevant from the plan content; do not fan out to specialists whose lane is clearly empty.
 - Run available specialists in parallel when the runtime supports it.
 - Merge specialist findings into this coordinator's output schema. Do not invent new section names.
-- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation.
+- Apply shared Rubber Duck guidance: source-driven external API checks, no-workaround norms, project rules discovery, answered-question preservation, pragmatic quality.
 
 ## Specialist Routing
 
@@ -88,7 +88,7 @@ Always check whether the plan:
 
 - `Blocker`: plan cannot be approved until the security or privacy gap is fixed or explicitly deferred by the human.
 - `Friction`: plan is approvable, but a security/privacy detail, mitigation, or follow-up is incomplete.
-- `Optimization`: clarity or defense-in-depth improvement.
+- `Optimization`: clarity or defense-in-depth improvement. Suppress it when it is speculative or would distract from material security/privacy risk.
 
 ## Fallback Behavior
 
